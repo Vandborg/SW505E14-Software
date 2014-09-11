@@ -1,0 +1,12 @@
+build/
+*.elf
+*.map
+*.bin
+appflash.sh
+biosflash.sh
+implementation.oil
+kernel_cfg.c
+kernel_id.h
+main_OSEK.rxe
+ramboot.sh
+rxeflash.sh
