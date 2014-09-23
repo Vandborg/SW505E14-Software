@@ -3,7 +3,8 @@ TARGET = main_OSEK
 TARGET_SOURCES = \
 	main.c \
 	utility_sound/utility_sound.c \
-	utility_lcd/utility_lcd.c
+	utility_lcd/utility_lcd.c \
+	utility_mode_handling/utility_mode_handling.c
 
 TOPPERS_OSEK_OIL_SOURCE = ./main.oil
 
