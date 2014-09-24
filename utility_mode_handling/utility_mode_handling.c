@@ -16,23 +16,41 @@
 // Used to check if a not default mode is wanted
 void check_startup_mode(void)
 {
+	// Wait until the user releases the finger from the run button
+	while(ecrobot_is_RUN_button_pressed()) {
+		// Wait
+	}
 
-	systick_wait_ms(2000);
+	int current_tick = systick_get_ms();
+	int systick_target = current_tick + 5000;
+	int next_tick = current_tick;
 
-	for(int i = 0; i < 4; i++)
+	// Give the user some time to interact with the unit
+	while(current_tick <= systick_target) 
 	{
-		if(!ecrobot_is_RUN_button_pressed())
+		current_tick = systick_get_ms();
+
+		// Check if the unit should tick
+		if(next_tick <= current_tick) 
 		{
-			play_sound(SOUND_MODE_WAIT);
-			systick_wait_ms(1000);
+			next_tick = next_tick + 1000;
+			play_sound(SOUND_TICK);
 		}
-		else
-		{
+
+		// Check if the run button is pressed
+		if(ecrobot_is_RUN_button_pressed()) {
+			// Give button feedback
+			play_sound(SOUND_BUTTON_FEEDBACK);
+
+			// Go to the select mode menu
 			select_mode();
-			return;
+
+			// exit from the loop
+			break;
 		}
 	}
 
+	// Return to the default program
 	play_sound(SOUND_MODE_START);
 }
 
