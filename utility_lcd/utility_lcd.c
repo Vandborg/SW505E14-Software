@@ -4,7 +4,7 @@
 #include "ecrobot_interface.h"
 #include <string.h>
 
-/* Writes a string of chars on a given line on the display returns 1 if it succeeds */
+// Writes a string of chars on a given line on the display returns 1 if it succeeds
 int write_to_lcd_line(int line_number, char* string)
 {
    // Check if the line number argument was valid
@@ -22,4 +22,10 @@ int write_to_lcd_line(int line_number, char* string)
 
    // The writing was unsuccesful
    return 0;
+}
+
+// Clears a line on the display
+int clear_lcd_line(int line_number)
+{
+   write_to_lcd_line(line_number, "                ");
 }
