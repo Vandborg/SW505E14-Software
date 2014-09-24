@@ -10,5 +10,6 @@
 #define SOUND_MODE_SELECT		114
 #define SOUND_MODE_START 		115
 #define SOUND_NOTIFICATION		116
+#define SOUND_TICK				117
 
 #endif

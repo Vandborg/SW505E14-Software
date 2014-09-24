@@ -69,5 +69,9 @@ void play_sound(int sound)
 			ecrobot_sound_tone(500, 100, 60);
 			systick_wait_ms(200);
 		break;
+
+		case SOUND_TICK:
+			ecrobot_sound_tone(300, 100, 70);
+		break;
 	}
 }
