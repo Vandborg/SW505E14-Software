@@ -1,8 +1,8 @@
 #ifndef UTILITY_LCD_H_   /* Include guard */
 #define UTILITY_LCD_H_
 
-int write_to_lcd_line(int line_number, char* string);
+int lcd_display_line(int line_number, char* string, int update_display);
 
-int clear_lcd_line(int line_number);
+void lcd_clear_line(int line_number, int update_display);
 
 #endif

@@ -60,7 +60,7 @@ void select_mode(void)
 {
 	systick_wait_ms(1000);
 	play_sound(SOUND_MODE_START);
-	write_to_lcd_line(1, "SELECTING MODE");
+	lcd_display_line(1, "SELECTING MODE", 1);
 
    int selected_mode = 1;
    int run_button_was_pressed = 0;
@@ -82,8 +82,8 @@ void select_mode(void)
 		
 		switch(selected_mode)
 		{
-			case 1 : write_to_lcd_line(2, "Default"); break;
-			case 2 : write_to_lcd_line(2, "CountToTen"); break;
+			case 1 : lcd_display_line(2, "Default", 1); break;
+			case 2 : lcd_display_line(2, "CountToTen", 1); break;
 		}
 		
 		if(0)
@@ -102,5 +102,5 @@ void select_mode(void)
 void other_call(void)
 {
 	display_clear(1);
-	write_to_lcd_line(1, "other call complete");
+	lcd_display_line(1, "other call complete", 1);
 }
