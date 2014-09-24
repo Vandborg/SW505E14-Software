@@ -18,7 +18,7 @@ void scan_colors(void)
 	// Set the mode for the color sensor.
 	ecrobot_set_nxtcolorsensor(COLOR_SENSOR, COLORSENSOR);
 
-	// Wait for the user to start
+	// Prepare the display
 	display_clear(1);
 	display_goto_xy(0, 1);
 	display_string("COLOR ON SENSOR:");
@@ -28,14 +28,16 @@ void scan_colors(void)
 	display_string("to scan color.");
 	display_update();
 
-	//  Boolean to check if run button is pressed
+	// Boolean to check if run button is pressed
 	int run_button_press = 0;
 
 	// Check if it is first time running pressing the button
 	int first_time_pressed = 1;
 
+	// Loop until the user breaks the loop by pressing the back button
 	while(1)
 	{
+		// Wait for the user to press the run button
 		if(ecrobot_is_RUN_button_pressed() && !run_button_press)
 		{
 			// Set the run button to be pressed
@@ -97,5 +99,7 @@ void scan_colors(void)
 		{
 			run_button_press = 0;
 		}
+		
+		// TODO: Check if the user pressed the back button.
 	}	
 }
