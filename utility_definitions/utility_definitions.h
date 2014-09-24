@@ -11,4 +11,9 @@
 #define SOUND_MODE_START 		115
 #define SOUND_NOTIFICATION		116
 
+// Hardware namings
+#define LEFT_MOTOR NXT_PORT_A
+#define RIGHT_MOTOR NXT_PORT_B
+#define COLOR_SENSOR NXT_PORT_S1
+
 #endif
