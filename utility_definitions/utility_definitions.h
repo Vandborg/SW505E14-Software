@@ -3,6 +3,7 @@
 
 // The first two numbers indicate which category the definition belongs to. ie 11 for sound 
 
+// Sound indentification
 #define SOUND_STARTUP 			110
 #define SOUND_SHUTDOWN 			111
 #define SOUND_BUTTON_FEEDBACK 	112
@@ -11,9 +12,11 @@
 #define SOUND_MODE_START 		115
 #define SOUND_NOTIFICATION		116
 
-// Hardware namings
+// Motor port indentification
 #define LEFT_MOTOR NXT_PORT_A
 #define RIGHT_MOTOR NXT_PORT_B
+
+// Sensor port indentification
 #define COLOR_SENSOR NXT_PORT_S1
 
 #endif
