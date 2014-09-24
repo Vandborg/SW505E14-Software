@@ -17,7 +17,6 @@ void user_1ms_isr_type2(void) { }
 TASK(Task1) 
 { 
 
-	play_sound_mario();
 
 	TerminateTask();
 
