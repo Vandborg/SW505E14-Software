@@ -17,4 +17,6 @@ void play_sound_end_task(void);
 
 void play_sound_dsb(void);
 
+void play_sound_mario(void);
+
 #endif

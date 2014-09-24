@@ -17,11 +17,7 @@ void user_1ms_isr_type2(void) { }
 TASK(Task1) 
 { 
 
-	play_sound_startup();
-
-	check_startup_mode();
-
-	play_sound_shutdown();
+	play_sound_mario();
 
 	TerminateTask();
 
