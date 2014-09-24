@@ -8,6 +8,7 @@
 
 // Own libraries
 #include "utility_sound/utility_sound.h"
+#include "utility_definitions/utility_definitions.h"
 
 #define NUMBER_OF_COLOR_SCANS 3000
 
@@ -53,7 +54,7 @@ void scan_colors(void)
 			display_goto_xy(0, 2);
 			display_string("Scanning ...");
 			display_update();
-			play_sound_mode_wait();
+			play_sound(SOUND_MODE_WAIT);
 			
 			// Read the color
 			S16 rgb[3] = {0, 0, 0};
@@ -90,7 +91,7 @@ void scan_colors(void)
 			display_int(blue, 3);
 			display_update();	
 
-			play_sound_end_task();	
+			play_sound(SOUND_NOTIFICATION);	
 		}
 		else if(!ecrobot_is_RUN_button_pressed())
 		{
