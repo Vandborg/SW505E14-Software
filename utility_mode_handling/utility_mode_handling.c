@@ -10,6 +10,7 @@
 #include "utility_sound/utility_sound.h"  
 #include "utility_lcd/utility_lcd.h"
 #include "color_scanning/color_scanning.h"
+#include "sonar_sensor/sonar_sensor.h"
 
 // Number of modes including default
 #define NUMBER_OF_MODES 2
@@ -42,7 +43,8 @@ void check_startup_mode(void)
 	display_clear(1);
 
 	// Add all utility mode functions
-	add_utility_mode_function("Color scanner", &scan_colors);
+	add_utility_mode_function("COLOR SENSOR", &scan_colors);
+	add_utility_mode_function("SONAR SENSOR", &sonar_scan);
 
 	// Wait until the user releases the finger from the run button
 	while(ecrobot_is_RUN_button_pressed()) {
