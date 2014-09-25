@@ -2,6 +2,7 @@
 #include "kernel_id.h"
 #include "ecrobot_interface.h"
 #include "string.h"
+#include <limits.h>
 
 // Own header
 #include "color_scanning/color_scanning.h"
@@ -11,6 +12,7 @@
 #include "utility_definitions/utility_definitions.h"
 
 #define NUMBER_OF_COLOR_SCANS 3000
+#define ENTER_BUTTON_EXIT_WAIT 2000
 
 // Scans and outputs values from the color scanner
 void scan_colors(void)
@@ -29,12 +31,15 @@ void scan_colors(void)
 	display_update();
 
 	// Boolean to check if run button is pressed
-	int run_button_press = 0;
+	int run_button_press = 0;	
 
-	// Check if it is first time running pressing the button
-	int first_time_pressed = 1;
+	// Check if it is first time running pressing the RUN button
+	int first_time_run_button_pressed = 1;
 
-	// Loop until the user breaks the loop by pressing the back button
+	// Integer to hold time of pressing buttons
+	int time_on_first_enter_button_press = INT_MAX;
+
+	// Loop until the user breaks the loop by pressing the holding the enter button
 	while(1)
 	{
 		// Wait for the user to press the run button
@@ -44,10 +49,10 @@ void scan_colors(void)
 			run_button_press = 1;
 
 			// Clear the display on first scan.
-			if(first_time_pressed)
+			if(first_time_run_button_pressed)
 			{
 				display_clear(1);
-				first_time_pressed = 0;
+				first_time_run_button_pressed = 0;
 			}
 
 			// Tell the user that it is scanning
@@ -95,11 +100,23 @@ void scan_colors(void)
 
 			play_sound(SOUND_NOTIFICATION);	
 		}
+		// Has the enter button been released
 		else if(!ecrobot_is_RUN_button_pressed())
 		{
 			run_button_press = 0;
 		}
 		
-		// TODO: Check if the user pressed the back button.
+		// Is the ENTER button not pressed
+		if(!ecrobot_is_ENTER_button_pressed())
+		{	
+			// Reset the wait variable
+			time_on_first_enter_button_press = systick_get_ms();
+		}
+
+		// Have the button been pressed long enough to leave the program
+		if((systick_get_ms() - time_on_first_enter_button_press) > ENTER_BUTTON_EXIT_WAIT)
+		{
+			return;
+		}
 	}	
 }
