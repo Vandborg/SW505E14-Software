@@ -8,8 +8,9 @@
 #include "color_scanning/color_scanning.h"
 
 // Own libraries
-#include "utility_sound/utility_sound.h"
 #include "utility_definitions/utility_definitions.h"
+#include "utility_lcd/utility_lcd.h"
+#include "utility_sound/utility_sound.h"
 
 // Number of scans to be executed
 #define NUMBER_OF_COLOR_SCANS 3000
@@ -22,24 +23,21 @@ void scan_colors(void)
 
 	// Prepare the display
 	display_clear(1);
-	display_goto_xy(0, 1);
-	display_string("COLOR ON SENSOR:");
-	display_goto_xy(0, 2);
-	display_string("Press RUN-button");
-	display_goto_xy(0, 3);
-	display_string("to scan color.");
-	display_update();
+	lcd_display_line(0, "- COLOR SENSOR -", 0);
+	lcd_display_line(1, "================", 0);
+	lcd_display_line(3, "R: ", 0);
+	lcd_display_line(4, "G: ", 0);
+	lcd_display_line(5, "B: ", 0);
+	lcd_display_line(6, "================", 0);
+	lcd_display_line(7, "      EXIT  SCAN", 1);
 
 	// Boolean to check if run button is pressed
 	int run_button_press = 0;	
 
-	// Check if it is first time running pressing the RUN button
-	int first_time_run_button_pressed = 1;
-
 	// Integer to hold time of pressing buttons
 	int time_on_first_enter_button_press = INT_MAX;
 
-	// Loop until the user breaks the loop by pressing the holding the enter button
+	// Loop until the user breaks the loop by holding the enter button
 	while(1)
 	{
 		// Wait for the user to press the run button
@@ -48,19 +46,14 @@ void scan_colors(void)
 			// Set the run button to be pressed
 			run_button_press = 1;
 
-			// Clear the display on first scan.
-			if(first_time_run_button_pressed)
-			{
-				display_clear(1);
-				first_time_run_button_pressed = 0;
-			}
-
 			// Tell the user that it is scanning
-			display_goto_xy(0, 1);
-			display_string("COLOR ON SENSOR:");
-			display_goto_xy(0, 2);
-			display_string("Scanning ...");
-			display_update();
+			lcd_display_line(2, "Scanning ...", 0);
+			lcd_clear_line(3, 0);
+			lcd_clear_line(4, 0);
+			lcd_clear_line(5, 0);
+			lcd_display_line(3, "R: ", 0);
+			lcd_display_line(4, "G: ", 0);
+			lcd_display_line(5, "B: ", 1);
 			play_sound(SOUND_MODE_WAIT);
 			
 			// Read the color
@@ -84,20 +77,14 @@ void scan_colors(void)
 			green = green / NUMBER_OF_COLOR_SCANS;
 			blue = blue / NUMBER_OF_COLOR_SCANS;
 
-			display_clear(1);
-			display_goto_xy(0, 1);
-			display_string("COLOR ON SENSOR:");
-			display_goto_xy(0, 3);
-			display_string("R: ");
+			lcd_clear_line(2, 1);
+			display_goto_xy(3, 3);
 			display_int(red, 3);
-			display_goto_xy(0, 4);
-			display_string("G: ");
+			display_goto_xy(3, 4);
 			display_int(green, 3);
-			display_goto_xy(0, 5);
-			display_string("B: ");
+			display_goto_xy(3, 5);
 			display_int(blue, 3);
 			display_update();	
-
 			play_sound(SOUND_NOTIFICATION);	
 		}
 		// Has the enter button been released
@@ -106,17 +93,20 @@ void scan_colors(void)
 			run_button_press = 0;
 		}
 		
-		// Is the ENTER button not pressed
-		if(!ecrobot_is_ENTER_button_pressed())
+		// Chek if the enter button is pressed for long enough time to exit
+		if(ecrobot_is_ENTER_button_pressed())
 		{	
-			// Reset the wait variable
-			time_on_first_enter_button_press = systick_get_ms();
-		}
+			// Time when the button was pressed
+			int enter_button_pressed_start_time = systick_get_ms();
 
-		// Have the button been pressed long enough to leave the program
-		if((systick_get_ms() - time_on_first_enter_button_press) > ENTER_BUTTON_EXIT_TIMEOUT)
-		{
-			return;
+			// Continusly check if enought time has past to exit
+			while(ecrobot_is_ENTER_button_pressed())
+			{
+				if(enter_button_pressed_start_time + ENTER_BUTTON_EXIT_TIMEOUT < systick_get_ms()) 
+				{	
+					return;
+				}
+			}
 		}
 	}	
 }
