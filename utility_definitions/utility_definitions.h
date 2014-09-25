@@ -20,4 +20,7 @@
 // Sensor port indentification
 #define COLOR_SENSOR NXT_PORT_S1
 
+// Time definitions
+#define ENTER_BUTTON_EXIT_TIMEOUT 2000
+
 #endif
