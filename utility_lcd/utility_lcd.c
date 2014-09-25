@@ -1,8 +1,10 @@
-#include "utility_lcd.h"  
 #include "kernel.h"
 #include "kernel_id.h"
 #include "ecrobot_interface.h"
 #include <string.h>
+
+// Own header
+#include "utility_lcd.h"
 
 #define LCD_MIN_LINE 0
 #define LCD_MAX_LINE 8
@@ -22,7 +24,8 @@ int lcd_display_line(int line_number, char* string, int update_display)
 		display_string(string);
 
 		// Check if the display should be updated
-		if(update_display) {
+		if(update_display) 
+		{
 			display_update();
 		}
 	
@@ -42,7 +45,8 @@ void lcd_clear_line(int line_number, int update_display)
 	display_string("                ");
 
 	// Check if the display should be updated
-	if(update_display) {
+	if(update_display) 
+	{
 		display_update();
 	}
 }
