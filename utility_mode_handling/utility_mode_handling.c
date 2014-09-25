@@ -38,6 +38,9 @@ void add_utility_mode_function(char* name, void (*func)(void)) {
 // Used to check if a not default mode is wanted
 void check_startup_mode(void)
 {
+	// Clear the display
+	display_clear(1);
+
 	// Add all utility mode functions
 	add_utility_mode_function("Color scanner", &scan_colors);
 
@@ -46,34 +49,70 @@ void check_startup_mode(void)
 		// Wait
 	}
 
+	// Show boot menu
+	lcd_display_line(0, "----- BOOT -----", 0);
+	lcd_display_line(1, "================", 0);
+
+	lcd_display_line(4, "[              ]", 0);
+
+	lcd_display_line(6, "================", 0);
+	lcd_display_line(7, "      STRT  MODE", 1);
+
 	int current_tick = systick_get_ms();
-	int systick_target = current_tick + 5000;
 	int next_tick = current_tick;
+	int tick_delay = 500;
+
+	int current_ticks = 0;
+	int target_ticks = 14;
 
 	// Give the user some time to interact with the unit
-	while(current_tick <= systick_target) 
+	while(current_ticks <= target_ticks) 
 	{
+		// Update the current tick
 		current_tick = systick_get_ms();
 
 		// Check if the unit should tick
 		if(next_tick <= current_tick) 
 		{
-			next_tick = next_tick + 1000;
-			play_sound(SOUND_TICK);
+			// Play tick sound every second tick
+			if(current_ticks % 2 == 0) 
+			{
+				play_sound(SOUND_TICK);
+			}
+
+			// Update loading bar
+			display_goto_xy(current_ticks + 1, 4);
+			display_string("#");
+			display_update();
+
+			// Set next tick
+			next_tick = next_tick + tick_delay;
+			current_ticks++;
 		}
 
 		// Check if the run button is pressed
 		if(ecrobot_is_RUN_button_pressed()) {
-			// Give button feedback
-			play_sound(SOUND_BUTTON_FEEDBACK);
+			// Clear the display
+			display_clear(1);
 
 			// Go to the select mode menu
 			select_mode();
 
-			// exit from the loop
+			// Exit from the loop
+			break;
+		}
+
+		if(ecrobot_is_ENTER_button_pressed()) {
+			// Exit from the loop
 			break;
 		}
 	}
+
+	// Give button feedback
+	play_sound(SOUND_BUTTON_FEEDBACK);
+
+	// Clear the display
+	display_clear(1);
 
 	// Return to the default program
 	play_sound(SOUND_MODE_START);

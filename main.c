@@ -28,5 +28,7 @@ void ecrobot_device_terminate(void)
 
 TASK(Task1) 
 { 
+	check_startup_mode();
+
 	TerminateTask();
 }
