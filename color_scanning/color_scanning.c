@@ -11,8 +11,8 @@
 #include "utility_sound/utility_sound.h"
 #include "utility_definitions/utility_definitions.h"
 
+// Number of scans to be executed
 #define NUMBER_OF_COLOR_SCANS 3000
-#define ENTER_BUTTON_EXIT_WAIT 2000
 
 // Scans and outputs values from the color scanner
 void scan_colors(void)
@@ -114,7 +114,7 @@ void scan_colors(void)
 		}
 
 		// Have the button been pressed long enough to leave the program
-		if((systick_get_ms() - time_on_first_enter_button_press) > ENTER_BUTTON_EXIT_WAIT)
+		if((systick_get_ms() - time_on_first_enter_button_press) > ENTER_BUTTON_EXIT_TIMEOUT)
 		{
 			return;
 		}
