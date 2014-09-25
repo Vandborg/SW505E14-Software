@@ -31,6 +31,7 @@ void ecrobot_device_terminate(void)
 
 TASK(Task1) 
 { 
-	scan_colors();
+	check_startup_mode();
+
 	TerminateTask();
 }
