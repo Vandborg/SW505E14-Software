@@ -28,6 +28,5 @@ void ecrobot_device_terminate(void)
 
 TASK(Task1) 
 { 
-	scan_colors();
 	TerminateTask();
 }
