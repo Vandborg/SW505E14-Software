@@ -7,9 +7,9 @@
 #include "sonar_sensor.h"
 
 // Own libraries
-#include "utility_definitions/utility_definitions.h"
-#include "utility_lcd/utility_lcd.h"
-#include "utility_sound/utility_sound.h"
+#include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_lcd/utility_lcd.h"
+#include "utility/utility_sound/utility_sound.h"
 
 #define SONAR_SCAN_DELAY 200
 

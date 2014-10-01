@@ -7,8 +7,8 @@
 #include "stdio.h"
 
 // Own libraries
-#include "utility_sound/utility_sound.h"  
-#include "utility_lcd/utility_lcd.h"
+#include "utility/utility_sound/utility_sound.h"  
+#include "utility/utility_lcd/utility_lcd.h"
 #include "color_scanning/color_scanning.h"
 #include "sonar_sensor/sonar_sensor.h"
 
