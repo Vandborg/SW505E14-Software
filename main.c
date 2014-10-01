@@ -1,15 +1,15 @@
 // Third party libraries
+#include "ecrobot_interface.h"
 #include "kernel.h"
 #include "kernel_id.h"
-#include "ecrobot_interface.h"
 #include "string.h"
 
 // Own libraries
-#include "utility_definitions/utility_definitions.h"
-#include "utility_mode_handling/utility_mode_handling.h" 
-#include "utility_sound/utility_sound.h"  
 #include "color_scanning/color_scanning.h"
 #include "sonar_sensor/sonar_sensor.h"
+#include "utility_definitions/utility_definitions.h"
+#include "utility_mode_handling/utility_mode_handling.h" 
+#include "utility_sound/utility_sound.h"
 
 // System clock
 void user_1ms_isr_type2(void) 
