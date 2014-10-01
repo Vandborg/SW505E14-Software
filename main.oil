@@ -18,8 +18,8 @@ CPU ATMEL_AT91SAM7S256
   /* Definition of application mode */
   APPMODE appmode1{}; 
 
-  /* Definition of Task1 */
-  TASK Task1
+  /* Definition of TASK_boot */
+  TASK TASK_boot
   {
     AUTOSTART = TRUE { APPMODE = appmode1; };
     PRIORITY = 1; /* Smaller value means lower priority */ 
