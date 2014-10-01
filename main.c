@@ -4,9 +4,9 @@
 #include "string.h"
 
 // Own libraries
-#include "utility_definitions/utility_definitions.h"
-#include "utility_mode_handling/utility_mode_handling.h" 
-#include "utility_sound/utility_sound.h"  
+#include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_mode_handling/utility_mode_handling.h" 
+#include "utility/utility_sound/utility_sound.h"  
 #include "color_scanning/color_scanning.h"
 #include "sonar_sensor/sonar_sensor.h"
 
