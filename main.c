@@ -1,19 +1,20 @@
+// Third party libraries
+#include "ecrobot_interface.h"
 #include "kernel.h"
 #include "kernel_id.h"
-#include "ecrobot_interface.h"
 #include "string.h"
 
 // Own libraries
-#include "utility/utility_definitions/utility_definitions.h"
-#include "utility/utility_mode_handling/utility_mode_handling.h" 
-#include "utility/utility_sound/utility_sound.h"  
 #include "color_scanning/color_scanning.h"
 #include "sonar_sensor/sonar_sensor.h"
-
-// Hook routines
+#include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_mode_handling/utility_mode_handling.h" 
+#include "utility/utility_sound/utility_sound.h"
 
 // System clock
-void user_1ms_isr_type2(void) { }
+void user_1ms_isr_type2(void) 
+{ 
+}
 
 // On device initialization
 void ecrobot_device_initialize(void)
@@ -29,7 +30,8 @@ void ecrobot_device_terminate(void)
 	ecrobot_term_sonar_sensor(SONAR_SENSOR);
 }
 
-TASK(Task1) 
+// The boot task of the program
+TASK(TASK_boot) 
 { 
 	check_startup_mode();
 
