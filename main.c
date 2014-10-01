@@ -10,6 +10,7 @@
 #include "utility/utility_definitions/utility_definitions.h"
 #include "utility/utility_mode_handling/utility_mode_handling.h" 
 #include "utility/utility_sound/utility_sound.h"
+#include "utility/utility_movement/utility_braking.h"
 
 // System clock
 void user_1ms_isr_type2(void) 
@@ -32,7 +33,23 @@ void ecrobot_device_terminate(void)
 
 // The boot task of the program
 TASK(TASK_boot) 
-{ 
+{   
+    while(1)
+    {
+        nxt_motor_set_speed(NXT_PORT_A, 100, 0);
+        nxt_motor_set_speed(NXT_PORT_B, 100, 0);
+        systick_wait_ms(1000);
+        forklift_brake(1, 100);
+        play_sound(SOUND_TICK);
+        systick_wait_ms(2000);
+        nxt_motor_set_speed(NXT_PORT_A, 100, 0);
+        nxt_motor_set_speed(NXT_PORT_B, 100, 0);
+        systick_wait_ms(1000);
+        nxt_motor_set_speed(NXT_PORT_A, 0, 0);
+        nxt_motor_set_speed(NXT_PORT_B, 0, 0);
+        systick_wait_ms(2000);
+    }
+
 	check_startup_mode();
 
 	TerminateTask();
