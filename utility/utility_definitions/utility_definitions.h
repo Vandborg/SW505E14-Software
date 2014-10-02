@@ -28,7 +28,7 @@
     #define LCD_LINE_THREE  122
     #define LCD_LINE_FOUR   123
     #define LCD_LINE_FIVE   124
-    #define LCD_LINE_SIZ    125
+    #define LCD_LINE_SIX    125
     #define LCD_LINE_SEVEN  126
     #define LCD_LINE_EIGHT  127
 

@@ -26,7 +26,7 @@ void color_sensor_measurement(void)
 	lcd_display_line(LCD_LINE_TWO,   "================", FALSE);
 	lcd_display_line(LCD_LINE_FOUR,  "R:              ", FALSE);
 	lcd_display_line(LCD_LINE_FIVE,  "G:              ", FALSE);
-	lcd_display_line(LCD_LINE_SIZ,   "B:              ", FALSE);
+	lcd_display_line(LCD_LINE_SIX,   "B:              ", FALSE);
 	lcd_display_line(LCD_LINE_SEVEN, "================", FALSE);
 	lcd_display_line(LCD_LINE_EIGHT, "      EXIT  SCAN", TRUE);
 
@@ -45,7 +45,7 @@ void color_sensor_measurement(void)
 			lcd_display_line(LCD_LINE_THREE, "Scanning ...    ", FALSE);
 			lcd_display_line(LCD_LINE_FOUR,  "R:              ", FALSE);
 			lcd_display_line(LCD_LINE_FIVE,  "G:              ", FALSE);
-			lcd_display_line(LCD_LINE_SIZ,   "B:              ", TRUE);
+			lcd_display_line(LCD_LINE_SIX,   "B:              ", TRUE);
 			
 			play_sound(SOUND_MODE_WAIT); // Play wait sound
 			
