@@ -11,6 +11,7 @@
 #include "utility/utility_definitions/utility_definitions.h"
 #include "utility/utility_lcd/utility_lcd.h"
 #include "utility/utility_sound/utility_sound.h"
+#include "utility/utility_string/utility_string.h"
 
 // Number of scans to be executed
 #define NUMBER_OF_COLOR_SCANS 3000
@@ -85,15 +86,18 @@ void color_measurement(void)
             blue = blue / NUMBER_OF_COLOR_SCANS;
 
             // Update display with average color values
-            lcd_clear_line(LCD_LINE_THREE, TRUE);
-            display_goto_xy(3, 3);
-            display_int(red, 3);
-            display_goto_xy(3, 4);
-            display_int(green, 3);
-            display_goto_xy(3, 5);
-            display_int(blue, 3);
-            display_update();   
-            play_sound(SOUND_NOTIFICATION); 
+            lcd_clear_line(LCD_LINE_THREE, TRUE); // Not scannig anymore
+            char red_str[4];
+            lcd_display_string_at_column(LCD_LINE_FOUR, LCD_COLUMN_FOUR,
+                             int_to_string(red, red_str), FALSE, FALSE);
+            char green_str[4];
+            lcd_display_string_at_column(LCD_LINE_FIVE, LCD_COLUMN_FOUR,
+                             int_to_string(green, green_str), FALSE, FALSE);
+            char blue_str[4];
+            lcd_display_string_at_column(LCD_LINE_SIX, LCD_COLUMN_FOUR,
+                             int_to_string(blue, blue_str), FALSE, TRUE);
+
+            play_sound(SOUND_NOTIFICATION); // Notify that the scan is done
         }
         // Has the enter button been released
         else if(ecrobot_is_RUN_button_pressed() == FALSE)
