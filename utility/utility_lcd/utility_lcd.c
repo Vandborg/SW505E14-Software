@@ -37,7 +37,7 @@ int convert_line_id_to_line_number(int line_number_id)
         case LCD_LINE_FIVE:
             line_number = 4;
             break;
-        case LCD_LINE_SIZ:
+        case LCD_LINE_SIX:
             line_number = 5;
             break;
         case LCD_LINE_SEVEN:
