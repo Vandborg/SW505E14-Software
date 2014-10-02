@@ -1,8 +1,8 @@
+// Third party libraries
+#include "ecrobot_interface.h"
 #include "kernel.h"
 #include "kernel_id.h"
-#include "ecrobot_interface.h"
 #include "string.h"
-#include <limits.h>
 
 // Own header
 #include "boot_programs/color_sensor_measurement/color_sensor_measurement.h"
@@ -15,55 +15,54 @@
 // Number of scans to be executed
 #define NUMBER_OF_COLOR_SCANS 3000
 
-// Scans and outputs values from the color scanner
 void color_sensor_measurement(void)
 {
 	// Set the mode for the color sensor.
 	ecrobot_set_nxtcolorsensor(COLOR_SENSOR, COLORSENSOR);
 
 	// Prepare the display
-	display_clear(1);
-	lcd_display_line(0, "  MEASURE COLOR ", 0);
-	lcd_display_line(1, "================", 0);
-	lcd_display_line(3, "R: ", 0);
-	lcd_display_line(4, "G: ", 0);
-	lcd_display_line(5, "B: ", 0);
-	lcd_display_line(6, "================", 0);
-	lcd_display_line(7, "      EXIT  SCAN", 1);
+	display_clear(TRUE);
+	lcd_display_line(LCD_LINE_ONE,   "  MEASURE COLOR ", FALSE);
+	lcd_display_line(LCD_LINE_TWO,   "================", FALSE);
+	lcd_display_line(LCD_LINE_FOUR,  "R:              ", FALSE);
+	lcd_display_line(LCD_LINE_FIVE,  "G:              ", FALSE);
+	lcd_display_line(LCD_LINE_SIZ,   "B:              ", FALSE);
+	lcd_display_line(LCD_LINE_SEVEN, "================", FALSE);
+	lcd_display_line(LCD_LINE_EIGHT, "      EXIT  SCAN", TRUE);
 
-	// Boolean to check if run button is pressed
-	int run_button_press = 0;
+	// Boolean to check if run button is released
+	int run_button_released = TRUE;
 
 	// Loop until the user breaks the loop by holding the enter button
-	while(1)
+	while(TRUE)
 	{
 		// Wait for the user to press the run button
-		if(ecrobot_is_RUN_button_pressed() && !run_button_press)
+		if(ecrobot_is_RUN_button_pressed() && run_button_released)
 		{
-			// Set the run button to be pressed
-			run_button_press = 1;
+			run_button_released = FALSE; // The button is pressed
 
 			// Tell the user that it is scanning
-			lcd_display_line(2, "Scanning ...", 0);
-			lcd_clear_line(3, 0);
-			lcd_clear_line(4, 0);
-			lcd_clear_line(5, 0);
-			lcd_display_line(3, "R: ", 0);
-			lcd_display_line(4, "G: ", 0);
-			lcd_display_line(5, "B: ", 1);
-			play_sound(SOUND_MODE_WAIT);
+			lcd_display_line(LCD_LINE_THREE, "Scanning ...    ", FALSE);
+			lcd_display_line(LCD_LINE_FOUR,  "R:              ", FALSE);
+			lcd_display_line(LCD_LINE_FIVE,  "G:              ", FALSE);
+			lcd_display_line(LCD_LINE_SIZ,   "B:              ", TRUE);
 			
-			// Read the color
-			S16 rgb[3] = {0, 0, 0};
+			play_sound(SOUND_MODE_WAIT); // Play wait sound
+			
+			S16 rgb[3] = {0, 0, 0}; // Allocate space for color measurement
 
+			// Used to calculate the average of color values.
 			int red = rgb[0];
 			int green = rgb[1]; 
 			int blue = rgb[2];
 
-			// Read the color 100 times
+			// Measure the color 
 			for(int i = 0; i < NUMBER_OF_COLOR_SCANS; i++)
 			{
+				// Get the color from the sensor
 				ecrobot_get_nxtcolorsensor_rgb(COLOR_SENSOR, rgb);
+
+				// Increment the color values
 				red += rgb[0];
 				green += rgb[1];
 				blue += rgb[2];
@@ -74,7 +73,8 @@ void color_sensor_measurement(void)
 			green = green / NUMBER_OF_COLOR_SCANS;
 			blue = blue / NUMBER_OF_COLOR_SCANS;
 
-			lcd_clear_line(2, 1);
+			// Update display with average color values
+			lcd_clear_line(LCD_LINE_THREE, TRUE);
 			display_goto_xy(3, 3);
 			display_int(red, 3);
 			display_goto_xy(3, 4);
@@ -85,9 +85,9 @@ void color_sensor_measurement(void)
 			play_sound(SOUND_NOTIFICATION);	
 		}
 		// Has the enter button been released
-		else if(!ecrobot_is_RUN_button_pressed())
+		else if(ecrobot_is_RUN_button_pressed() == FALSE)
 		{
-			run_button_press = 0;
+			run_button_released = TRUE;
 		}
 		
 		// Chek if the enter button is pressed for long enough time to exit
@@ -99,7 +99,8 @@ void color_sensor_measurement(void)
 			// Continusly check if enought time has past to exit
 			while(ecrobot_is_ENTER_button_pressed())
 			{
-				if(enter_button_pressed_start_time + ENTER_BUTTON_EXIT_TIMEOUT < systick_get_ms()) 
+				if(enter_button_pressed_start_time + ENTER_BUTTON_EXIT_TIMEOUT < 
+				   systick_get_ms()) 
 				{	
 					return;
 				}
