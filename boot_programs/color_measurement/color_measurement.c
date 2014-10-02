@@ -5,7 +5,7 @@
 #include "string.h"
 
 // Own header
-#include "boot_programs/color_sensor_measurement/color_sensor_measurement.h"
+#include "boot_programs/color_measurement/color_measurement.h"
 
 // Own libraries
 #include "utility/utility_definitions/utility_definitions.h"
@@ -15,7 +15,7 @@
 // Number of scans to be executed
 #define NUMBER_OF_COLOR_SCANS 3000
 
-void color_sensor_measurement(void)
+void color_measurement(void)
 {
 	// Set the mode for the color sensor.
 	ecrobot_set_nxtcolorsensor(COLOR_SENSOR, COLORSENSOR);

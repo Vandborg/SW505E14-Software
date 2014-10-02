@@ -52,7 +52,7 @@ void boot_device(void)
     display_clear(TRUE); // Clear the display
 
     // Add all utility mode functions
-    add_boot_program("MEASURE COLOR", &color_sensor_measurement);
+    add_boot_program("MEASURE COLOR", &color_measurement);
     add_boot_program("SONAR SENSOR", &sonar_scan);
 
     // Wait until the user releases the finger from the run button
