@@ -5,7 +5,7 @@
 #include <limits.h>
 
 // Own header
-#include "boot_programs/color_scanning.h"
+#include "boot_programs/color_sensor_measurement/color_sensor_measurement.h"
 
 // Own libraries
 #include "utility/utility_definitions/utility_definitions.h"
@@ -16,7 +16,7 @@
 #define NUMBER_OF_COLOR_SCANS 3000
 
 // Scans and outputs values from the color scanner
-void scan_colors(void)
+void color_sensor_measurement(void)
 {
 	// Set the mode for the color sensor.
 	ecrobot_set_nxtcolorsensor(COLOR_SENSOR, COLORSENSOR);
@@ -32,10 +32,7 @@ void scan_colors(void)
 	lcd_display_line(7, "      EXIT  SCAN", 1);
 
 	// Boolean to check if run button is pressed
-	int run_button_press = 0;	
-
-	// Integer to hold time of pressing buttons
-	int time_on_first_enter_button_press = INT_MAX;
+	int run_button_press = 0;
 
 	// Loop until the user breaks the loop by holding the enter button
 	while(1)

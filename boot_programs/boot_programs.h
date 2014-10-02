@@ -1,7 +1,7 @@
 #ifndef BOOT_PROGRAMS_H_   /* Header guard */
     #define BOOT_PROGRAMS_H_
 
-    #include "boot_programs/color_scanning.h"
+    #include "boot_programs/color_sensor_measurement/color_sensor_measurement.h"
     #include "boot_programs/sonar_sensor.h"
 
     /*
