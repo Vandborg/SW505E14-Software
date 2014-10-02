@@ -5,7 +5,7 @@
 #include <limits.h>
 
 // Own header
-#include "color_scanning/color_scanning.h"
+#include "boot_programs/color_scanning.h"
 
 // Own libraries
 #include "utility_definitions/utility_definitions.h"
