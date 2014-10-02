@@ -23,7 +23,7 @@ void color_sensor_measurement(void)
 
 	// Prepare the display
 	display_clear(1);
-	lcd_display_line(0, "- COLOR SENSOR -", 0);
+	lcd_display_line(0, "  MEASURE COLOR ", 0);
 	lcd_display_line(1, "================", 0);
 	lcd_display_line(3, "R: ", 0);
 	lcd_display_line(4, "G: ", 0);
