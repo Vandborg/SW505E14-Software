@@ -176,11 +176,19 @@ int lcd_display_lines(int start_line_number_id, int number_of_lines,
         return LCD_LINES_OUT_OF_BOUNDS;
     }
 
+    int line_result = 0; // Placeholder for display line return code
+    int new_lnid = 0; // Placedholder for line number id
+    
+
     // Run through the display content and send it to the display buffer
     for(int i = 0; i < number_of_lines; i++)
     {
-        lcd_display_line(convert_line_number_to_line_number_id(line_number + i),
-                         display_content[i], FALSE);
+        new_lnid = convert_line_number_to_line_number_id(line_number + i);
+        line_result = lcd_display_line(new_lnid, display_content[i], FALSE);
+        if(line_result != LCD_SUCCESS)
+        {
+            return line_result;
+        }
     }
 
     // If the display should be updated update
