@@ -2,7 +2,7 @@
     #define BOOT_PROGRAMS_H_
 
     #include "boot_programs/color_measurement/color_measurement.h"
-    #include "boot_programs/sonar_sensor.h"
+    #include "boot_programs/distance_measurement/distance_measurement.h"
 
     /*
      * Add a boot program

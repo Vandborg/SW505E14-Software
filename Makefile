@@ -4,7 +4,7 @@ TARGET_SOURCES = \
     main.c \
     boot_programs/boot_programs.c \
     boot_programs/color_measurement/color_measurement.c \
-    boot_programs/sonar_sensor.c \
+    boot_programs/distance_measurement/distance_measurement.c \
     utility/utility_lcd/utility_lcd.c \
     utility/utility_sound/utility_sound.c \
 

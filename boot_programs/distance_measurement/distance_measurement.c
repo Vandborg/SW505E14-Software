@@ -4,7 +4,7 @@
 #include <limits.h>
 
 // Own header
-#include "sonar_sensor.h"
+#include "distance_measurement.h"
 
 // Own libraries
 #include "utility/utility_definitions/utility_definitions.h"
@@ -14,7 +14,7 @@
 #define SONAR_SCAN_DELAY 200
 
 // Scan and display the output of the sonar sensor
-void sonar_scan(void)
+void distance_measurement(void)
 {
 	// Prepare the display
 	display_clear(1);

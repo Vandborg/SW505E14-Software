@@ -53,7 +53,7 @@ void boot_device(void)
 
     // Add all utility mode functions
     add_boot_program("MEASURE COLOR", &color_measurement);
-    add_boot_program("SONAR SENSOR", &sonar_scan);
+    add_boot_program("MEASURE DISTANCE", &distance_measurement);
 
     // Wait until the user releases the finger from the run button
     while(ecrobot_is_RUN_button_pressed()) 
