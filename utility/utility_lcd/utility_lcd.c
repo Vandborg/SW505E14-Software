@@ -113,4 +113,6 @@ int lcd_clear_line(int line_number_id, int update_display)
     {
         display_update();
     }
+
+    return LCD_SUCCESS; // Everything went well
 }
