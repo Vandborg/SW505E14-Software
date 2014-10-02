@@ -27,4 +27,16 @@
     int lcd_display_lines(int start_line_number_id, int number_of_lines, 
                           char display_content[8][17], int update_display);
 
+    /*
+     * Will display a string on line at a given column.
+     * line_number_id     Identifier for the line number.
+     * column_number_id   Identifier for the column number.
+     * string             String to be displayed.
+     * clear_line         Indicate if the line should be cleared first.
+     * update_display     Indicate if the display should be updated. . 
+     */
+    int lcd_display_string_at_column(int line_number_id, int column_number_id, 
+                                   char* string, int clear_line, 
+                                   int update_display);
+
 #endif

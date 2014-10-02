@@ -33,10 +33,30 @@
     #define LCD_LINE_EIGHT  127
 
     // Return codes for lcd
-    #define LCD_SUCCESS               130
-    #define LCD_INVALID_LINE_NUMBER   131    
-    #define LCD_INVALID_STRING_LENGTH 132
-    #define LCD_LINES_OUT_OF_BOUNDS   133
+    #define LCD_SUCCESS                130
+    #define LCD_INVALID_LINE_NUMBER    131    
+    #define LCD_INVALID_STRING_LENGTH  132
+    #define LCD_LINES_OUT_OF_BOUNDS    133
+    #define LCD_INVALID_COLUMN_NUMBER  134
+    #define LCD_STRING_OUT_OF_BOUNDS   135
+
+    // Display column 
+    #define LCD_COLUMN_ONE          140
+    #define LCD_COLUMN_TWO          141
+    #define LCD_COLUMN_THREE        142
+    #define LCD_COLUMN_FOUR         143
+    #define LCD_COLUMN_FIVE         144
+    #define LCD_COLUMN_SIX          145
+    #define LCD_COLUMN_SEVEN        146
+    #define LCD_COLUMN_EIGHT        147
+    #define LCD_COLUMN_NINE         148
+    #define LCD_COLUMN_TEN          149
+    #define LCD_COLUMN_ELEVEN       1410
+    #define LCD_COLUMN_TWELVE       1411
+    #define LCD_COLUMN_THIRTEEN     1412
+    #define LCD_COLUMN_FOURTEEN     1413
+    #define LCD_COLUMN_FIFTEEN      1414
+    #define LCD_COLUMN_SIXTEEN      1415
 
     // Motor port indentification
     #define LEFT_MOTOR NXT_PORT_A
