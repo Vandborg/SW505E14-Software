@@ -16,6 +16,7 @@
 // Motor port indentification
 #define LEFT_MOTOR NXT_PORT_A
 #define RIGHT_MOTOR NXT_PORT_B
+#define FORK_MOTOR NXT_PORT_C
 
 // Sensor port indentification
 #define COLOR_SENSOR NXT_PORT_S1
