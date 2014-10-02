@@ -11,16 +11,16 @@
 #include "../utility_definitions/utility_definitions.h"
 
 // Locally needed definitions
-#define FADING_SPEED_REDUCTION 1.10
-#define SLOW_SPEED_REDUCTION 1.03
-#define MOTOR_LOWER_SPEED_LIMIT 10
+#define FADING_SPEED_REDUCTION 1.10// This is an arbitrary value. Change if need
+#define SLOW_SPEED_REDUCTION 1.03  // This is an arbitrary value. Change if need
+#define MOTOR_LOWER_SPEED_LIMIT 10 // This is an arbitrary value. Change if need
 #define MOTOR_NO_SPEED 0
 #define BRAKE 1
 #define NO_BRAKE 0
-#define SMALL_WAIT_MS 100
+#define SMALL_WAIT_MS 100          // This is an arbitrary value. Change if need
 
 // Main function that that brakes the forklift. Call this to brake.
-void forklift_brake(int brakepower, int forklift_speed)
+void forklift_brake(int brakepower, int left_motor_speed, int right_motor_speed)
 {
     switch(brakepower)
     {
@@ -28,10 +28,10 @@ void forklift_brake(int brakepower, int forklift_speed)
             fullstop_brake();
             break;
         case MEDIUM_BRAKEPOWER:
-            fading_brake(brakepower, forklift_speed);
+            fading_brake(brakepower, left_motor_speed, right_motor_speed);
             break;
         case LOW_BRAKEPOWER:
-            slow_brake(brakepower, forklift_speed);
+            slow_brake(brakepower, left_motor_speed, right_motor_speed);
             break;
         default :
             break;
@@ -43,86 +43,66 @@ void fullstop_brake(void)
 {
     nxt_motor_set_speed(LEFT_MOTOR, MOTOR_NO_SPEED, BRAKE);
     nxt_motor_set_speed(RIGHT_MOTOR, MOTOR_NO_SPEED, BRAKE);
+    
+    // small wait to make sure it has time to reduce the speed to 0.
     systick_wait_ms(SMALL_WAIT_MS);
 }
 
 // Function that reduces both motors' speed gradually from current speed to 0. 
-void fading_brake(int brakepower, int forklift_speed)
+void fading_brake(int brakepower, int left_motor_speed, int right_motor_speed)
 {
-    if(forklift_speed > MOTOR_NO_SPEED)
+    /* Loops while either left or right motor is above the speed limit in either
+     * reverse or normal driving direction
+     */
+    while(left_motor_speed > MOTOR_LOWER_SPEED_LIMIT ||
+          left_motor_speed < -MOTOR_LOWER_SPEED_LIMIT || 
+          right_motor_speed > MOTOR_LOWER_SPEED_LIMIT ||
+          right_motor_speed < -MOTOR_LOWER_SPEED_LIMIT)
     {
-        while(forklift_speed > MOTOR_LOWER_SPEED_LIMIT)
-        {
-            nxt_motor_set_speed(LEFT_MOTOR, 
-                                forklift_speed / FADING_SPEED_REDUCTION,
-                                BRAKE);
-            nxt_motor_set_speed(RIGHT_MOTOR, 
-                                forklift_speed / FADING_SPEED_REDUCTION,
-                                BRAKE);
-            systick_wait_ms(SMALL_WAIT_MS);
-            forklift_speed = forklift_speed / FADING_SPEED_REDUCTION;
-        }
-        fullstop_brake();
+        // Compute the reduced speed which is the old speed divided by a factor
+        left_motor_speed = left_motor_speed / FADING_SPEED_REDUCTION;
+        right_motor_speed = right_motor_speed / FADING_SPEED_REDUCTION;
 
-    }
-    else if(forklift_speed < MOTOR_NO_SPEED)
-    {
-        while(forklift_speed < -MOTOR_LOWER_SPEED_LIMIT)
-        {
-            nxt_motor_set_speed(LEFT_MOTOR, 
-                                forklift_speed / FADING_SPEED_REDUCTION,
-                                BRAKE);
-            nxt_motor_set_speed(RIGHT_MOTOR, 
-                                forklift_speed / FADING_SPEED_REDUCTION,
-                                BRAKE);
-            systick_wait_ms(SMALL_WAIT_MS);
-            forklift_speed = forklift_speed / FADING_SPEED_REDUCTION;
-        }
-        fullstop_brake();
-    }
-    else
-    {
-        //Wheel-motors not moving
-    }
-}
+        // Set the motors to run at the reduced speeds.
+        nxt_motor_set_speed(LEFT_MOTOR, left_motor_speed, BRAKE);
+        nxt_motor_set_speed(RIGHT_MOTOR, right_motor_speed, BRAKE);
 
-//  Function that reduces both motors' speed slowly from current speed to 0.
-void slow_brake(int brakepower, int forklift_speed)
+        // small wait to make sure it drives a bit at the reduced speed before
+        // reducing the speed further.
+        systick_wait_ms(SMALL_WAIT_MS);
+    }
+
+    // Makes a full stop brake at the end, to make sure it doesn't keep rolling.
+    fullstop_brake();
+
+} 
+
+// Function that reduces both motors' speed slowly from current speed to 0.
+void slow_brake(int brakepower, int left_motor_speed, int right_motor_speed)
 {
-    if(forklift_speed > MOTOR_NO_SPEED)
-    {   
-        while(forklift_speed > MOTOR_LOWER_SPEED_LIMIT)
-        {
-            nxt_motor_set_speed(LEFT_MOTOR, 
-                                forklift_speed / SLOW_SPEED_REDUCTION,
-                                BRAKE);
-            nxt_motor_set_speed(RIGHT_MOTOR, 
-                                forklift_speed / SLOW_SPEED_REDUCTION,
-                                BRAKE);
-            systick_wait_ms(SMALL_WAIT_MS);
-            forklift_speed = forklift_speed / SLOW_SPEED_REDUCTION;
-        }
-
-        fullstop_brake();
-
-    }
-    else if(forklift_speed < MOTOR_NO_SPEED)
+    /* Loops while either left or right motor is above the speed limit in either
+     * reverse or normal driving direction
+     */
+     while(left_motor_speed > MOTOR_LOWER_SPEED_LIMIT ||
+           left_motor_speed < -MOTOR_LOWER_SPEED_LIMIT || 
+           right_motor_speed > MOTOR_LOWER_SPEED_LIMIT ||
+           right_motor_speed < -MOTOR_LOWER_SPEED_LIMIT)
     {
-        while(forklift_speed < -MOTOR_LOWER_SPEED_LIMIT)
-        {
-            nxt_motor_set_speed(LEFT_MOTOR, 
-                                forklift_speed / SLOW_SPEED_REDUCTION,
-                                BRAKE);
-            nxt_motor_set_speed(RIGHT_MOTOR, 
-                                forklift_speed / SLOW_SPEED_REDUCTION,
-                                BRAKE);
-            systick_wait_ms(SMALL_WAIT_MS);
-            forklift_speed = forklift_speed / SLOW_SPEED_REDUCTION;
-        }
-        fullstop_brake();
+        // Compute the reduced speed which is the old speed divided by a factor
+        left_motor_speed = left_motor_speed / SLOW_SPEED_REDUCTION;
+        right_motor_speed = right_motor_speed / SLOW_SPEED_REDUCTION;
+
+        // Set the motors to run at the reduced speeds.
+        nxt_motor_set_speed(LEFT_MOTOR, left_motor_speed, BRAKE);
+        nxt_motor_set_speed(RIGHT_MOTOR, right_motor_speed, BRAKE);
+
+        // small wait to make sure it drives a bit at the reduced speed before
+        // reducing the speed further.
+        systick_wait_ms(SMALL_WAIT_MS);
+        
     }
-    else
-    {
-        //Wheel-motors not moving
-    }
+
+    // Makes a full stop brake at the end, to make sure it doesn't keep rolling.
+    fullstop_brake();
+
 }
