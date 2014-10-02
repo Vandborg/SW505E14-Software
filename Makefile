@@ -7,6 +7,7 @@ TARGET_SOURCES = \
     boot_programs/sonar_sensor.c \
     utility/utility_lcd/utility_lcd.c \
     utility/utility_sound/utility_sound.c \
+	utility/utility_movement/utility_distance.c \
 
 TOPPERS_OSEK_OIL_SOURCE = ./main.oil
 
