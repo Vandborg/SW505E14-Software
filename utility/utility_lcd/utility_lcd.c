@@ -5,10 +5,10 @@
 #include "string.h"
 
 // Own header
-#include "utility_lcd.h"
+#include "utility/utility_lcd/utility_lcd.h"
 
 // Own libraries
-#include "utility_definitions/utility_definitions.h"
+#include "utility/utility_definitions/utility_definitions.h"
 
 #define LCD_MIN_LINE 0 // Minimum line number to write to
 #define LCD_MAX_LINE 7 // Maximum line number to write to

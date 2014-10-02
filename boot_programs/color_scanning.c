@@ -8,9 +8,9 @@
 #include "boot_programs/color_scanning.h"
 
 // Own libraries
-#include "utility_definitions/utility_definitions.h"
-#include "utility_lcd/utility_lcd.h"
-#include "utility_sound/utility_sound.h"
+#include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_lcd/utility_lcd.h"
+#include "utility/utility_sound/utility_sound.h"
 
 // Number of scans to be executed
 #define NUMBER_OF_COLOR_SCANS 3000

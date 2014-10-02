@@ -9,9 +9,9 @@
 #include "boot_programs/boot_programs.h"
 
 // Own libraries
-#include "utility_definitions/utility_definitions.h"
-#include "utility_lcd/utility_lcd.h"
-#include "utility_sound/utility_sound.h"
+#include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_lcd/utility_lcd.h"
+#include "utility/utility_sound/utility_sound.h"
 
 #define NUMBER_OF_MODES 10 // Number of modes including default
 #define INITIALIZE_MODE -1 // First mode, used to initialize menu
@@ -149,7 +149,6 @@ void select_mode(void)
     int mode = INITIALIZE_MODE;
 
     int exit_mode = 0; // An additional mode that is used to exit
-    int line = 3; // Line number to display the selector on
 
     // Loop indefinitely until the user breaks
     while(TRUE) 

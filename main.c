@@ -5,9 +5,9 @@
 #include "string.h"
 
 // Own libraries
-#include "utility_definitions/utility_definitions.h"
 #include "boot_programs/boot_programs.h" 
-#include "utility_sound/utility_sound.h"
+#include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_sound/utility_sound.h"
 
 // System clock
 void user_1ms_isr_type2(void) 
