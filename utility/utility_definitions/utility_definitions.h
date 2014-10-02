@@ -12,6 +12,9 @@
         #define FALSE 0 
     #endif
 
+    #define LCD_WIDTH 16
+    #define LCD_HEIGHT 8
+
     // Sound indentification
     #define SOUND_STARTUP           110
     #define SOUND_SHUTDOWN          111
