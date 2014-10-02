@@ -11,7 +11,7 @@
 #define LOW_BRAKEPOWER 0
 #define FADING_SPEED_REDUCTION 1.10
 #define SLOW_SPEED_REDUCTION 1.03
-#define MOTOR_LOWER_SPEED_LIMIT 30
+#define MOTOR_LOWER_SPEED_LIMIT 10
 #define MOTOR_NO_SPEED 0
 #define BRAKE 1
 #define NO_BRAKE 0
@@ -103,7 +103,6 @@ void slow_brake(int brakepower, int forklift_speed)
         }
 
         fullstop_brake();
-        systick_wait_ms(100);
 
     }
     else if(forklift_speed < MOTOR_NO_SPEED)
@@ -120,7 +119,6 @@ void slow_brake(int brakepower, int forklift_speed)
             forklift_speed = forklift_speed / SLOW_SPEED_REDUCTION;
         }
         fullstop_brake();
-        systick_wait_ms(100);
     }
     else
     {
