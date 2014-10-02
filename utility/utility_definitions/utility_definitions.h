@@ -50,4 +50,9 @@
     // Time definitions
     #define ENTER_BUTTON_EXIT_TIMEOUT 2000
 
+// Braking definitions
+#define HIGH_BRAKEPOWER 2
+#define MEDIUM_BRAKEPOWER 1
+#define LOW_BRAKEPOWER 0
+
 #endif
