@@ -24,17 +24,17 @@ char* int_to_string(int number, char string[])
 {
     int i, sign;
 
-    if ((sign = n) < 0)  /* record sign */
-     n = -n;          /* make n positive */
+    if ((sign = number) < 0)  /* record sign */
+     number = -number;          /* make n positive */
     i = 0;
     do {       /* generate digits in reverse order */
-     s[i++] = n % 10 + '0';   /* get next digit */
-    } while ((n /= 10) > 0);     /* delete it */
+     string[i++] = number % 10 + '0';   /* get next digit */
+    } while ((number /= 10) > 0);     /* delete it */
     if (sign < 0)
-     s[i++] = '-';
-    s[i] = '\0';
+     string[i++] = '-';
+    string[i] = '\0';
 
-    reverse(s);
+    reverse(string);
 
-    return s;
+    return string;
 }
