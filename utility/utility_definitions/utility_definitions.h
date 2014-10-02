@@ -33,9 +33,10 @@
     #define LCD_LINE_EIGHT  127
 
     // Return codes for lcd
-    #define LCD_SUCCESS 130
-    #define LCD_INVALID_LINE_NUMBER 131
+    #define LCD_SUCCESS               130
+    #define LCD_INVALID_LINE_NUMBER   131    
     #define LCD_INVALID_STRING_LENGTH 132
+    #define LCD_LINES_OUT_OF_BOUNDS   133
 
     // Motor port indentification
     #define LEFT_MOTOR NXT_PORT_A

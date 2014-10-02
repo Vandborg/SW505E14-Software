@@ -12,6 +12,8 @@
 
 #define LCD_MIN_LINE 0 // Minimum line number to write to
 #define LCD_MAX_LINE 7 // Maximum line number to write to
+#define LCD_MAX_NUMBER_OF_LINES 8 // Maximum amount of lines to write
+#define LCD_MIN_NUMBER_OF_LINES 1 // Minimum amount of lines to write
 #define STR_MAX_LENGTH 16 // Maximum string length to write
 #define LEFTMOST_CHARACTER 0 // The index of the leftmost character
 #define EMPTY_STRING "                " // Used to clear line
@@ -52,6 +54,80 @@ int convert_line_id_to_line_number(int line_number_id)
     }
 
     return line_number;
+}
+
+int convert_line_number_to_line_number_id(int line_number) 
+{
+    int line_number_id = LCD_INVALID_LINE_NUMBER;
+
+    switch(line_number)
+    {
+        case 0: 
+            line_number_id = LCD_LINE_ONE;
+            break;
+        case 1:
+            line_number_id = LCD_LINE_TWO;
+            break;
+        case 2:
+            line_number_id = LCD_LINE_THREE;
+            break;
+        case 3:
+            line_number_id = LCD_LINE_FOUR;
+            break;
+        case 4:
+            line_number_id = LCD_LINE_FIVE;
+            break;
+        case 5:
+            line_number_id = LCD_LINE_SIX;
+            break;
+        case 6:
+            line_number_id = LCD_LINE_SEVEN;
+            break;
+        case 7:
+            line_number_id = LCD_LINE_EIGHT;
+            break;
+        default:
+            line_number_id = LCD_INVALID_LINE_NUMBER;
+            break;
+    }
+
+    return line_number_id;
+}
+
+int lcd_display_lines(int start_line_number_id, int number_of_lines, 
+                      char display_content[8][17], int update_display)
+{
+    // Convert the line number identifier to normal line number
+    int line_number = convert_line_id_to_line_number(start_line_number_id);
+
+    // Check if the line number is invalid
+    if(line_number == LCD_INVALID_LINE_NUMBER)
+    {
+        return LCD_INVALID_LINE_NUMBER;
+    }
+
+    // Check if the line number and number of lines is out of bounds
+    if(number_of_lines > LCD_MAX_NUMBER_OF_LINES ||
+       number_of_lines < LCD_MIN_NUMBER_OF_LINES ||
+       line_number + number_of_lines > LCD_MAX_NUMBER_OF_LINES)
+    {
+        return LCD_LINES_OUT_OF_BOUNDS;
+    }
+
+    // Run through the display content and send it to the display buffer
+    for(int i = 0; i < number_of_lines; i++)
+    {
+        lcd_display_line(convert_line_number_to_line_number_id(line_number + i),
+                         display_content[i], FALSE);
+    }
+
+    // If the display should be updated update
+    if(update_display)
+    {
+        display_update();
+    }
+
+    return LCD_SUCCESS; // Everything went well
 }
 
 int lcd_display_line(int line_number_id, char* string, int update_display)
