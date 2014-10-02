@@ -8,6 +8,7 @@ TARGET_SOURCES = \
     utility/utility_lcd/utility_lcd.c \
     utility/utility_sound/utility_sound.c \
 	utility/utility_movement/utility_distance.c \
+	utility/utility_movement/utility_drive_straight.c \
 
 TOPPERS_OSEK_OIL_SOURCE = ./main.oil
 

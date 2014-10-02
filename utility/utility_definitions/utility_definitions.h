@@ -49,4 +49,9 @@
     // Time definitions
     #define ENTER_BUTTON_EXIT_TIMEOUT 2000
 
+    // Motor speeds
+    #define SLOW 60
+    #define MEDIUM 80
+    #define FAST 100
+
 #endif
