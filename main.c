@@ -5,10 +5,12 @@
 #include "string.h"
 
 // Own libraries
-#include "boot_programs/boot_programs.h" 
+#include "color_scanning/color_scanning.h"
+#include "sonar_sensor/sonar_sensor.h"
 #include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_mode_handling/utility_mode_handling.h" 
 #include "utility/utility_sound/utility_sound.h"
-#include "utility/utility_movement/utility_distance.h"
+#include "utility/utility_movement/utility_braking.h"
 
 // System clock
 void user_1ms_isr_type2(void) 
@@ -31,8 +33,8 @@ void ecrobot_device_terminate(void)
 
 // The boot task of the program
 TASK(TASK_boot) 
-{ 
-	boot_device();
+{   
+	check_startup_mode();
 
 	TerminateTask();
 }
