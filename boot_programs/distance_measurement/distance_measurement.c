@@ -10,22 +10,27 @@
 #include "utility/utility_definitions/utility_definitions.h"
 #include "utility/utility_lcd/utility_lcd.h"
 #include "utility/utility_sound/utility_sound.h"
+#include "utility/utility_string/utility_string.h"
 
 #define SONAR_SCAN_DELAY 200 // Ms inbetween scans from sensor
 
 void distance_measurement(void)
 {
-    // Prepare the display
-    display_clear(TRUE);
-    lcd_display_line(LCD_LINE_ONE,   "  MEASURE COLOR ", FALSE);
-    lcd_display_line(LCD_LINE_TWO,   "================", FALSE);
-    lcd_display_line(LCD_LINE_FOUR,  "CURRENT:        ", FALSE);
-    lcd_display_line(LCD_LINE_FIVE,  "LOCK:           ", FALSE);
-    lcd_display_line(LCD_LINE_SEVEN, "================", FALSE);
-    lcd_display_line(LCD_LINE_EIGHT, "      EXIT  LOCK", TRUE);
+    // Create menu
+    char menu[LCD_HEIGHT][LCD_WIDTH + 1] = {"MEASURE DISTANCE",
+                                            "================",
+                                            "                ",
+                                            "CURRENT:        ",
+                                            "LOCK:           ",
+                                            "                ",
+                                            "================",
+                                            "      EXIT  LOCK"};
+
+    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, menu, TRUE); // Display the menu
 
     int run_button_released = TRUE; // Boolean to check if run button is pressed
     int sensor_output = 0; // The output from the sonar sensor
+    char* output_str = null; // String to put on the display
 
     // Loop until the user breaks the loop by holding the enter button
     while(TRUE)
@@ -34,9 +39,12 @@ void distance_measurement(void)
         if(systick_get_ms() % SONAR_SCAN_DELAY == 0)
         {
             sensor_output = ecrobot_get_sonar_sensor(SONAR_SENSOR);
-            display_goto_xy(9, 3);
-            display_int(sensor_output, 3);
-            display_update();
+
+            output_str = int_to_string(sensor_output, output_str);
+
+            lcd_display_string_at_column(LCD_LINE_FOUR, LCD_COLUMN_TEN,
+                             output_str, FALSE, TRUE);
+
         }
 
         // Wait for the user to press the run button
@@ -45,10 +53,12 @@ void distance_measurement(void)
             run_button_released = FALSE; // Set the run button to be pressed
             play_sound(SOUND_BUTTON_FEEDBACK); // Play button feedback
 
+            // Update the output str
+            output_str = int_to_string(sensor_output, output_str);
+
             // Update the sensor values on the display
-            display_goto_xy(9, 4);
-            display_int(sensor_output, 3);
-            display_update();  
+            lcd_display_string_at_column(LCD_LINE_FIVE, LCD_COLUMN_TEN, 
+                                         output_str, FALSE, TRUE);
         }
         // Has the enter button been released
         else if(ecrobot_is_RUN_button_pressed() == FALSE)
