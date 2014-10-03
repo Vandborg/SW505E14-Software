@@ -20,7 +20,6 @@
     #define SOUND_SHUTDOWN          111
     #define SOUND_BUTTON_FEEDBACK   112
     #define SOUND_MODE_WAIT         113
-    #define SOUND_MODE_SELECT       114
     #define SOUND_MODE_START        115
     #define SOUND_NOTIFICATION      116
     #define SOUND_TICK              117
@@ -60,6 +59,10 @@
     #define LCD_COLUMN_FOURTEEN     1413
     #define LCD_COLUMN_FIFTEEN      1414
     #define LCD_COLUMN_SIXTEEN      1415
+    
+    // Return codes for sound library
+    #define SOUND_SUCCESS 150
+    #define SOUND_INVALID_ID 151
 
     // Motor port indentification
     #define LEFT_MOTOR NXT_PORT_A

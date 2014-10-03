@@ -1,6 +1,10 @@
-#ifndef UTILITY_SOUND_H_   /* Include guard */
-#define UTILITY_SOUND_H_
-
-void play_sound(int);
+#ifndef UTILITY_SOUND_H_
+    #define UTILITY_SOUND_H_
+    
+    /*
+     * Plays a specific sound
+     * sound   Identifier for the sound to play
+     */
+    int play_sound(int sound);
 
 #endif
