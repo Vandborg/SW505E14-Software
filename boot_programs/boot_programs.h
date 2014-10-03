@@ -3,6 +3,7 @@
 
     #include "boot_programs/color_measurement/color_measurement.h"
     #include "boot_programs/distance_measurement/distance_measurement.h"
+    #include "boot_programs/fork_reset/fork_reset.h"
 
     /*
      * Add a boot program
