@@ -10,6 +10,7 @@ TARGET_SOURCES = \
     utility/utility_movement/utility_distance.c \
     utility/utility_sound/utility_sound.c \
     utility/utility_string/utility_string.c \
+    utility/utility_fork/utility_fork.c \
     boot_programs/boot_programs.c \
 
 TOPPERS_OSEK_OIL_SOURCE = ./main.oil
