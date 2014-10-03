@@ -14,9 +14,6 @@
 #define FADING_SPEED_REDUCTION 1.10// This is an arbitrary value. Change if need
 #define SLOW_SPEED_REDUCTION 1.03  // This is an arbitrary value. Change if need
 #define MOTOR_LOWER_SPEED_LIMIT 10 // This is an arbitrary value. Change if need
-#define MOTOR_NO_SPEED 0
-#define BRAKE 1
-#define NO_BRAKE 0
 #define SMALL_WAIT_MS 100          // This is an arbitrary value. Change if need
 
 // Main function that that brakes the forklift. Call this to brake.

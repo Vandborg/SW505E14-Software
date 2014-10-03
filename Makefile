@@ -4,6 +4,7 @@ TARGET_SOURCES = \
     main.c \
     boot_programs/color_measurement/color_measurement.c \
     boot_programs/distance_measurement/distance_measurement.c \
+    boot_programs/fork_reset/fork_reset.c \
     utility/utility_lcd/utility_lcd.c \
     utility/utility_movement/utility_braking.c \
     utility/utility_movement/utility_distance.c \

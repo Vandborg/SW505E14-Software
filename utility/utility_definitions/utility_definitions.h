@@ -76,9 +76,15 @@
     // Time definitions
     #define ENTER_BUTTON_EXIT_TIMEOUT 2000
 
-// Braking definitions
-#define HIGH_BRAKEPOWER 2
-#define MEDIUM_BRAKEPOWER 1
-#define LOW_BRAKEPOWER 0
+    // Braking definitions
+    #define HIGH_BRAKEPOWER 2
+    #define MEDIUM_BRAKEPOWER 1
+    #define LOW_BRAKEPOWER 0
+    #define BRAKE 1
+    #define NO_BRAKE 0
+
+    // Motor speeds
+    #define MOTOR_NO_SPEED 0
+    #define MOTOR_FULL_SPEED 100
 
 #endif
