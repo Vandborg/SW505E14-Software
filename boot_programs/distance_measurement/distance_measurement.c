@@ -26,7 +26,7 @@ void distance_measurement(void)
                                             "================",
                                             "      EXIT  LOCK"};
 
-    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, menu, TRUE); // Display the menu                                            
+    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, menu, TRUE); // Display the menu
 
     int run_button_released = TRUE; // Boolean to check if run button is pressed
     int sensor_output = 0; // The output from the sonar sensor
