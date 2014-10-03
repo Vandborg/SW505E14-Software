@@ -83,6 +83,9 @@ void fork_reset(void)
                 if(enter_button_pressed_start_time + ENTER_BUTTON_EXIT_TIMEOUT <
                    systick_get_ms()) 
                 {   
+                    // Set fork motor count to 0,
+                    // so the fork is completely reset.
+                    nxt_motor_set_count(FORK_MOTOR, 0);
                     return;
                 }
             }
