@@ -216,6 +216,7 @@ void select_mode(void)
             else 
             {
                 display_clear(TRUE); // Clear the display
+                play_sound(SOUND_MODE_START); // Play button click sound
                 boot_programs[mode - 1].func(); // Call the function
                 mode = INITIALIZE_MODE; // Reset the mode 
                 display_clear(TRUE); // Clear the display
