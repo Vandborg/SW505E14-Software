@@ -18,18 +18,18 @@ void fork_reset(void)
 
     while(ecrobot_is_RUN_button_pressed()) 
     {
-        // Wait
+        // Busy wait for run button to be released
     }
 
-    display_clear(TRUE);
-
-    lcd_display_line(LCD_LINE_ONE,   "----- LIFT -----", FALSE);
-    lcd_display_line(LCD_LINE_TWO,   "================", FALSE);
-    lcd_display_line(LCD_LINE_FOUR,  "[INSERT BUTTON ]", FALSE);
-    lcd_display_line(LCD_LINE_FIVE,  "[   IN PORT 4  ]", FALSE);
-    lcd_display_line(LCD_LINE_SIX,   "[PRESS TO LIFT ]", FALSE);
-    lcd_display_line(LCD_LINE_SEVEN, "================", FALSE);
-    lcd_display_line(LCD_LINE_EIGHT, "      EXIT  MODE", TRUE);
+    char lifting_display[8][17] = {"----- LIFT -----", 
+                                   "================",
+                                   "                ",
+                                   "[INSERT BUTTON ]",
+                                   "[   IN PORT 4  ]",
+                                   "[PRESS TO LIFT ]",
+                                   "================",
+                                   "      EXIT  MODE"};
+    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, lifting_display, TRUE);
 
     int lifting_mode = TRUE; // lifting mode. False = lower, True = lift.
 
@@ -40,7 +40,7 @@ void fork_reset(void)
         {
             while(ecrobot_is_RUN_button_pressed())
             {
-                // Busy wait for button to be released.
+                // Busy wait for run button to be released
             }
             play_sound(SOUND_BUTTON_FEEDBACK);
             lifting_mode = !lifting_mode;
@@ -89,7 +89,6 @@ void fork_reset(void)
         }
     }
 }
-
 
 // Function used to display whether the fork currently lifts or lowers.
 void change_lifting_display_mode(int lifting_mode)
