@@ -33,7 +33,7 @@ void operate_fork(int lifting_mode)
         case LOWERED_FORK:
             move_fork(LIFTING_MODE_LOW);
             break;
-        default
+        default:
             break;
     }
 }
