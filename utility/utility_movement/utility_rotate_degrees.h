@@ -1,6 +1,9 @@
 #ifndef UTILITY_ROTATE_DEGREES_H_   /* Include guard */
 #define UTILITY_ROTATE_DEGREES_H_
 
+// Include definitions
+#include "utility/utility_definitions/utility_definitions.h"
+
 /*
  * Function that handles rotating a single motor a specific amount of degrees
  * with a specific speed

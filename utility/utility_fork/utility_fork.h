@@ -1,6 +1,9 @@
 #ifndef UTILITY_FORK_H_H   /* Include guard */
 #define UTILITY_FORK_H_H
 
+// Include definitions
+#include "utility/utility_definitions/utility_definitions.h"
+
 /*
  * Function that checks which lift height is desired and calls the
  * lifting function with a converted value. 

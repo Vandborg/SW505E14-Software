@@ -1,6 +1,9 @@
 #ifndef UTILITY_DISTANCE_H_   /* Include guard */
 #define UTILITY_DISTANCE_H_
 
+// Include definitions
+#include "utility/utility_definitions/utility_definitions.h"
+
 /* 
 * Resets the driving motors count and thereby the distance driven
 * Takes no parameters.

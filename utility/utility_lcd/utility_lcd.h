@@ -1,5 +1,8 @@
 #ifndef UTILITY_LCD_H_
     #define UTILITY_LCD_H_
+
+    // Include definitions
+    #include "utility/utility_definitions/utility_definitions.h"
     
     /*
      * Will display a string on a specific line. Can update the display.
@@ -7,14 +10,14 @@
      * string           String to display on the line.
      * update_display   Indicate if the display should be updated. 
      */
-    int lcd_display_line(int line_number_id, char* string, int update_display);
+    int lcd_display_line(int line_number_id, char* string, bool update_display);
     
     /*
      * Will clear a specific line.
      * line_number_id   Identifier for the line number.
      * update_display   Indicate if the display should be updated. 
      */
-    int lcd_clear_line(int line_number_id, int update_display);
+    int lcd_clear_line(int line_number_id, bool update_display);
 
     /*
      * Will display an array of strings form a specific line number for
@@ -25,7 +28,7 @@
      * update_display           Indicate if the display should be updated. 
      */
     int lcd_display_lines(int start_line_number_id, int number_of_lines, 
-                          char display_content[8][17], int update_display);
+                          char display_content[8][17], bool update_display);
 
     /*
      * Will display a string on line at a given column.
@@ -37,6 +40,6 @@
      */
     int lcd_display_string_at_column(int line_number_id, int column_number_id, 
                                    char* string, int clear_line, 
-                                   int update_display);
+                                   bool update_display);
 
 #endif

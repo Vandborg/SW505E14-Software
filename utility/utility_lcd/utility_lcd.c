@@ -2,6 +2,7 @@
 #include "kernel.h"
 #include "kernel_id.h"
 #include "ecrobot_interface.h"
+#include "stdbool.h"
 #include "string.h"
 
 // Own header
@@ -157,7 +158,7 @@ int convert_column_number_id_to_column_number(int column_number_id)
 }
 
 int lcd_display_lines(int start_line_number_id, int number_of_lines, 
-                      char display_content[8][17], int update_display)
+                      char display_content[8][17], bool update_display)
 {
     // Convert the line number identifier to normal line number
     int line_number = convert_line_id_to_line_number(start_line_number_id);
@@ -200,7 +201,7 @@ int lcd_display_lines(int start_line_number_id, int number_of_lines,
     return LCD_SUCCESS; // Everything went well
 }
 
-int lcd_display_line(int line_number_id, char* string, int update_display)
+int lcd_display_line(int line_number_id, char* string, bool update_display)
 {
     // Convert the line number identifier to normal line number
     int line_number = convert_line_id_to_line_number(line_number_id);
@@ -241,7 +242,7 @@ int lcd_display_line(int line_number_id, char* string, int update_display)
 
 int lcd_display_string_at_column(int line_number_id, int column_number_id, 
                                    char* string, int clear_line, 
-                                   int update_display)
+                                   bool update_display)
 {
     // Convert the line number identifier to normal line number
     int line_number = convert_line_id_to_line_number(line_number_id);
@@ -290,7 +291,7 @@ int lcd_display_string_at_column(int line_number_id, int column_number_id,
     return LCD_SUCCESS; // Everything went well
 }
 
-int lcd_clear_line(int line_number_id, int update_display)
+int lcd_clear_line(int line_number_id, bool update_display)
 {   
     // Convert the line number identifier to normal line number
     int line_number = convert_line_id_to_line_number(line_number_id);

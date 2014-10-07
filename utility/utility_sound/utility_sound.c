@@ -52,7 +52,7 @@ void play_pause(int duration)
 	systick_wait_ms(duration);
 }
 
-void play_note(int note, int duration, int sound_level, int with_pause)
+void play_note(int note, int duration, int sound_level, bool with_pause)
 {
 	ecrobot_sound_tone(note, duration, sound_level);
 	if(with_pause)

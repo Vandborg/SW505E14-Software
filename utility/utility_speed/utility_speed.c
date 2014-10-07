@@ -21,7 +21,7 @@
 #define SPEED_NOT_SET -1
 
 // Checks if the current is within a range
-int is_within_range(int start, int current, int end)
+bool is_within_range(int start, int current, int end)
 {
     // START ---- CURRENT ---- TARGET
     if(start <= current && current <= end)
