@@ -6,6 +6,7 @@ TARGET_SOURCES = \
     boot_programs/distance_measurement/distance_measurement.c \
     utility/utility_lcd/utility_lcd.c \
     utility/utility_movement/utility_braking.c \
+    utility/utility_string/utility_string.c \
     utility/utility_movement/utility_distance.c \
     utility/utility_sound/utility_sound.c \
     boot_programs/boot_programs.c \
