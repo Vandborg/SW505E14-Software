@@ -10,7 +10,7 @@
 #include "utility/utility_definitions/utility_definitions.h"
 
 // Function that rotates one engine a specific amount of degrees at given speed
-void motor_rotate_degrees(int degrees, int speed, char* motor)
+void motor_rotate_degrees(int degrees, int speed, U32 motor)
 {
     
     int current_rotations = nxt_motor_get_count(motor);
@@ -50,7 +50,7 @@ void motor_rotate_degrees(int degrees, int speed, char* motor)
 // want to turn. Defines are made for this in utility_definions.h. 
 // Use this to avoid having to compute how many degrees correspond to a specific
 // amount of rotations on your own. 
-void motor_rotate_rotations(int rotations, int mode, int speed, char* motor)
+void motor_rotate_rotations(int rotations, int mode, int speed, U32 motor)
 {
     motor_rotate_degrees((rotations*360)/mode, speed, motor);
 }
