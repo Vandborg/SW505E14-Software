@@ -92,4 +92,14 @@
     #define LIFTED_FORK 1
     #define LOWERED_FORK 0
 
+    // Defines used to turn wheels a certain rotation without having to
+    // compute the degrees on your own. Add more if needed
+    #define WHOLE_ROTATION 1
+    #define HALF_ROTATION 2
+    #define THIRD_ROTATION 3
+    #define QUARTER_ROTATION 4
+    #define FIFTH_ROTATION 5
+    #define SIXTH_ROTATION 6
+
+
 #endif
