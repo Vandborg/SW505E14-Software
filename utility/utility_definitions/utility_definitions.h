@@ -93,4 +93,9 @@
     #define MOTOR_NO_SPEED 0
     #define MOTOR_FULL_SPEED 100
 
+    // Fork definitions
+    #define MAXED_FORK 2
+    #define LIFTED_FORK 1
+    #define LOWERED_FORK 0
+
 #endif
