@@ -12,6 +12,7 @@
 #include "utility/utility_sound/utility_sound.h"
 
 #define LIFTING_SPEED 70
+#define OPTIONAL_TOUCH_SENSOR NXT_PORT_S4
 
 void fork_reset(void)
 {
@@ -47,13 +48,13 @@ void fork_reset(void)
             change_lifting_display_mode(lifting_mode);
         }
         // If the touch sensor is pressed, either lift or lower the fork.
-        else if(ecrobot_get_touch_sensor(NXT_PORT_S4) &&
+        else if(ecrobot_get_touch_sensor(OPTIONAL_TOUCH_SENSOR) &&
                 !ecrobot_is_RUN_button_pressed())
         {
             // Lifting mode is true. This lifts the fork.
             if(lifting_mode)
             {
-                while(ecrobot_get_touch_sensor(NXT_PORT_S4))
+                while(ecrobot_get_touch_sensor(OPTIONAL_TOUCH_SENSOR))
                 {
                     nxt_motor_set_speed(FORK_MOTOR, LIFTING_SPEED, NO_BRAKE);
                     systick_wait_ms(50);
@@ -63,7 +64,7 @@ void fork_reset(void)
             // Lifting mode is false. This lowers the fork.
             else
             {
-                while(ecrobot_get_touch_sensor(NXT_PORT_S4))
+                while(ecrobot_get_touch_sensor(OPTIONAL_TOUCH_SENSOR))
                 {
                     nxt_motor_set_speed(FORK_MOTOR, -LIFTING_SPEED, NO_BRAKE);
                     systick_wait_ms(50);
