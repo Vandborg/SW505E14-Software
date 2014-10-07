@@ -184,7 +184,7 @@ int lcd_display_lines(int start_line_number_id, int number_of_lines,
     for(int i = 0; i < number_of_lines; i++)
     {
         new_lnid = convert_line_number_to_line_number_id(line_number + i);
-        line_result = lcd_display_line(new_lnid, display_content[i], FALSE);
+        line_result = lcd_display_line(new_lnid, display_content[i], false);
         if(line_result != LCD_SUCCESS)
         {
             return line_result;
@@ -218,7 +218,7 @@ int lcd_display_line(int line_number_id, char* string, int update_display)
     }
 
     // Clear the line
-    int lcd_clear_line_result = lcd_clear_line(line_number_id, FALSE);
+    int lcd_clear_line_result = lcd_clear_line(line_number_id, false);
 
     // Check if the lcd clear line returns an error code
     if(lcd_clear_line_result == LCD_INVALID_LINE_NUMBER) 
@@ -271,7 +271,7 @@ int lcd_display_string_at_column(int line_number_id, int column_number_id,
     if(clear_line)
     {
         // Check if the clear line went well
-        int clear_line_result = lcd_clear_line(line_number_id, FALSE);
+        int clear_line_result = lcd_clear_line(line_number_id, false);
         if(clear_line_result != LCD_SUCCESS)
         {
             return clear_line_result;

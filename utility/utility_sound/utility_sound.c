@@ -68,49 +68,49 @@ int play_sound(int sound)
 	{
 		// Indicating that the unit has started
 		case SOUND_STARTUP:
-			play_note(NOTE_C_4, NOTE_WAIT_QUARTER, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_E_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_G_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
+			play_note(NOTE_C_4, NOTE_WAIT_QUARTER, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_E_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_G_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
 			play_pause(NOTE_WAIT_EIGHTH);
-			play_note(NOTE_G_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
+			play_note(NOTE_G_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
 			break;
 
 		// Indicating that the unit is shutting down
 		case SOUND_SHUTDOWN:
-			play_note(NOTE_G_4, NOTE_WAIT_QUARTER, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_E_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_C_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
+			play_note(NOTE_G_4, NOTE_WAIT_QUARTER, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_E_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_C_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
 			play_pause(NOTE_WAIT_EIGHTH);
-			play_note(NOTE_C_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
+			play_note(NOTE_C_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
 			break;
 
 		// Indicating that a button has been pressed
 		case SOUND_BUTTON_FEEDBACK: 
-			play_note(NOTE_B_6, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
+			play_note(NOTE_B_6, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
 			break;
 
 		// Indicating that the unit is waiting for something
 		case SOUND_MODE_WAIT:
-			play_note(NOTE_G_6, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_F_6, NOTE_WAIT_EIGHTH, SOUND_LEVEL_MEDIUM, TRUE);
+			play_note(NOTE_G_6, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_F_6, NOTE_WAIT_EIGHTH, SOUND_LEVEL_MEDIUM, true);
 			break;
 
 		// Indicating that a mode has been started
 		case SOUND_MODE_START:
-			play_note(NOTE_D_5, NOTE_WAIT_QUARTER, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_G_5, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_E_5, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
+			play_note(NOTE_D_5, NOTE_WAIT_QUARTER, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_G_5, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_E_5, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
 			break;
 
 		// Indicating that the unit created a notification
 		case SOUND_NOTIFICATION:
-			play_note(NOTE_F_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_E_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
-			play_note(NOTE_F_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, TRUE);
+			play_note(NOTE_F_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_E_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
+			play_note(NOTE_F_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, true);
 			break;
 
 		case SOUND_TICK:
-			play_note(NOTE_D_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, FALSE);
+			play_note(NOTE_D_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, false);
 			break;
 
 		default:

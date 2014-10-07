@@ -22,7 +22,7 @@ void color_measurement(void)
     ecrobot_set_nxtcolorsensor(COLOR_SENSOR, COLORSENSOR);
 
     // Prepare the display
-    display_clear(TRUE);
+    display_clear(true);
 
     // Create menu
     char menu[LCD_HEIGHT][LCD_WIDTH + 1] = {"  MEASURE COLOR ",
@@ -34,30 +34,30 @@ void color_measurement(void)
                                             "================",
                                             "      EXIT  SCAN"};
 
-    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, menu, TRUE); // Display the menu
+    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, menu, true); // Display the menu
 
     // Boolean to check if run button is released
-    int run_button_released = TRUE;
+    int run_button_released = true;
 
     // Loop until the user breaks the loop by holding the enter button
-    while(TRUE)
+    while(true)
     {
         // Wait for the user to press the run button
         if(ecrobot_is_RUN_button_pressed() && run_button_released)
         {
-            run_button_released = FALSE; // The button is pressed
+            run_button_released = false; // The button is pressed
             play_sound(SOUND_BUTTON_FEEDBACK); // Play button feedback
 
             int menu_height = 4;
 
             // Create menu
-            char scanning_menu[LCD_HEIGHT][LCD_WIDTH + 1] = {"Scanning...     ",
-                                                             "R:              ",
-                                                             "G:              ",
-                                                             "B:              "};
+            char scanning_menu[LCD_HEIGHT][LCD_WIDTH + 1] ={"Scanning...     ",
+                                                            "R:              ",
+                                                            "G:              ",
+                                                            "B:              "};
 
             // Display the menu
-            lcd_display_lines(LCD_LINE_THREE, menu_height, scanning_menu, TRUE);
+            lcd_display_lines(LCD_LINE_THREE, menu_height, scanning_menu, true);
             
             play_sound(SOUND_MODE_WAIT); // Play wait sound
             
@@ -86,23 +86,23 @@ void color_measurement(void)
             blue = blue / NUMBER_OF_COLOR_SCANS;
 
             // Update display with average color values
-            lcd_clear_line(LCD_LINE_THREE, TRUE); // Not scannig anymore
+            lcd_clear_line(LCD_LINE_THREE, true); // Not scannig anymore
             char red_str[4];
             lcd_display_string_at_column(LCD_LINE_FOUR, LCD_COLUMN_FOUR,
-                             int_to_string(red, red_str), FALSE, FALSE);
+                             int_to_string(red, red_str), false, false);
             char green_str[4];
             lcd_display_string_at_column(LCD_LINE_FIVE, LCD_COLUMN_FOUR,
-                             int_to_string(green, green_str), FALSE, FALSE);
+                             int_to_string(green, green_str), false, false);
             char blue_str[4];
             lcd_display_string_at_column(LCD_LINE_SIX, LCD_COLUMN_FOUR,
-                             int_to_string(blue, blue_str), FALSE, TRUE);
+                             int_to_string(blue, blue_str), false, true);
 
             play_sound(SOUND_NOTIFICATION); // Notify that the scan is done
         }
         // Has the enter button been released
-        else if(ecrobot_is_RUN_button_pressed() == FALSE)
+        else if(ecrobot_is_RUN_button_pressed() == false)
         {
-            run_button_released = TRUE;
+            run_button_released = true;
         }
         
         // Chek if the enter button is pressed for long enough time to exit
