@@ -1,6 +1,9 @@
 #ifndef UTILITY_SPEED_H_
     #define UTILITY_SPEED_H_
     
+    // Include definitions
+    #include "utility/utility_definitions/utility_definitions.h"
+
     /*
      * Calculates a speed with ease in/out effect
      * start_mc     The motor count from where the easening should begin

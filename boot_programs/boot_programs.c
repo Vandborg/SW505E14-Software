@@ -49,7 +49,7 @@ void add_boot_program(char* name, void (*func)(void))
 
 void boot_device(void)
 {
-    display_clear(TRUE); // Clear the display
+    display_clear(true); // Clear the display
 
     // Add all utility mode functions
     add_boot_program("MEASURE COLOR", &color_measurement);
@@ -63,13 +63,13 @@ void boot_device(void)
     }
 
     // Show boot menu
-    lcd_display_line(LCD_LINE_ONE,   "----- BOOT -----", FALSE);
-    lcd_display_line(LCD_LINE_TWO,   "================", FALSE);
+    lcd_display_line(LCD_LINE_ONE,   "----- BOOT -----", false);
+    lcd_display_line(LCD_LINE_TWO,   "================", false);
 
-    lcd_display_line(LCD_LINE_FIVE,  "[              ]", FALSE);
+    lcd_display_line(LCD_LINE_FIVE,  "[              ]", false);
 
-    lcd_display_line(LCD_LINE_SEVEN, "================", FALSE);
-    lcd_display_line(LCD_LINE_EIGHT, "      STRT  MODE", TRUE);
+    lcd_display_line(LCD_LINE_SEVEN, "================", false);
+    lcd_display_line(LCD_LINE_EIGHT, "      STRT  MODE", true);
 
     // Setup for integers used to handle timing of the boot menu
     int current_tick = systick_get_ms();
@@ -119,7 +119,7 @@ void boot_device(void)
     }
 
     play_sound(SOUND_BUTTON_FEEDBACK); // Give button feedback
-    display_clear(TRUE); // Clear the display
+    display_clear(true); // Clear the display
     play_sound(SOUND_MODE_START); // Return to the default program
 }
 
@@ -139,8 +139,8 @@ void select_mode(void)
     }
 
     // Used to check if the user released the buttons before new checks
-    int run_button_released = TRUE;
-    int enter_button_released = TRUE;
+    int run_button_released = true;
+    int enter_button_released = true;
 
     /* 
      * Indicates which mode is currently being displayed to the user.
@@ -152,22 +152,22 @@ void select_mode(void)
     int exit_mode = 0; // An additional mode that is used to exit
 
     // Loop indefinitely until the user breaks
-    while(TRUE) 
+    while(true) 
     {
         // Check if the run button is pressed
         if((ecrobot_is_RUN_button_pressed() && run_button_released) 
            || mode == INITIALIZE_MODE) 
         {
-            run_button_released = FALSE; // The button was pressed
+            run_button_released = false; // The button was pressed
             play_sound(SOUND_BUTTON_FEEDBACK); // Play button click sound
 
             // Display the menu on first iteration
             if(mode == INITIALIZE_MODE) 
             {
-                lcd_display_line(LCD_LINE_ONE,   "----- MENU -----", FALSE);
-                lcd_display_line(LCD_LINE_TWO,   "================", FALSE);
-                lcd_display_line(LCD_LINE_SEVEN, "================", FALSE);
-                lcd_display_line(LCD_LINE_EIGHT, "  /   SLCT  NEXT", TRUE);
+                lcd_display_line(LCD_LINE_ONE,   "----- MENU -----", false);
+                lcd_display_line(LCD_LINE_TWO,   "================", false);
+                lcd_display_line(LCD_LINE_SEVEN, "================", false);
+                lcd_display_line(LCD_LINE_EIGHT, "  /   SLCT  NEXT", true);
             }
 
             // Increment mode correctly
@@ -183,25 +183,25 @@ void select_mode(void)
             // Update the display corresponding to the current mode
             if(mode == exit_mode) 
             {
-                lcd_display_line(LCD_LINE_FOUR, "<EXIT>", TRUE);
+                lcd_display_line(LCD_LINE_FOUR, "<EXIT>", true);
             }
             else 
             {
                 lcd_display_line(LCD_LINE_FOUR, boot_programs[mode - 1].name, 
-                                 TRUE);
+                                 true);
             }
         }
-        else if(ecrobot_is_RUN_button_pressed() == FALSE) 
+        else if(ecrobot_is_RUN_button_pressed() == false) 
         {
-            run_button_released = TRUE; // The button was released
+            run_button_released = true; // The button was released
         }
 
         // Check if the enter button is pressed
         if(ecrobot_is_ENTER_button_pressed() && enter_button_released) 
         {
-            enter_button_released = FALSE; // Button is pressed
+            enter_button_released = false; // Button is pressed
             play_sound(SOUND_BUTTON_FEEDBACK); // Play button click sound
-            display_clear(TRUE); // Clear the display
+            display_clear(true); // Clear the display
 
             // Wait until the user releases the button
             while(ecrobot_is_ENTER_button_pressed()) 
@@ -216,16 +216,16 @@ void select_mode(void)
             }
             else 
             {
-                display_clear(TRUE); // Clear the display
+                display_clear(true); // Clear the display
                 play_sound(SOUND_MODE_START); // Play button click sound
                 boot_programs[mode - 1].func(); // Call the function
                 mode = INITIALIZE_MODE; // Reset the mode 
-                display_clear(TRUE); // Clear the display
+                display_clear(true); // Clear the display
             }
         }
-        else if(ecrobot_is_ENTER_button_pressed() == FALSE) 
+        else if(ecrobot_is_ENTER_button_pressed() == false) 
         {
-            enter_button_released = TRUE; // Enter button released
+            enter_button_released = true; // Enter button released
         }
     }
 }

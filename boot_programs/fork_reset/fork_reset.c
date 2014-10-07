@@ -30,11 +30,11 @@ void fork_reset(void)
                                    "[PRESS TO LIFT ]",
                                    "================",
                                    "      EXIT  MODE"};
-    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, lifting_display, TRUE);
+    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, lifting_display, true);
 
-    int lifting_mode = TRUE; // lifting mode. False = lower, True = lift.
+    int lifting_mode = true; // lifting mode. False = lower, True = lift.
 
-    while(TRUE)
+    while(true)
     {
         // If the run button is pressed, change the lifting mode.
         if(ecrobot_is_RUN_button_pressed())
@@ -100,13 +100,13 @@ void change_lifting_display_mode(int lifting_mode)
     // If the lifting mode is true, the display will show that you are lifting
     if(lifting_mode)
     {
-        lcd_display_line(LCD_LINE_ONE,   "----- LIFT -----", FALSE);
-        lcd_display_line(LCD_LINE_SIX,   "[PRESS TO LIFT ]", TRUE);
+        lcd_display_line(LCD_LINE_ONE,   "----- LIFT -----", false);
+        lcd_display_line(LCD_LINE_SIX,   "[PRESS TO LIFT ]", true);
     }
     // If the lifting mode is false, the display will show that you are lowering
     else
     {
-        lcd_display_line(LCD_LINE_ONE,   "----- LOWER ----", FALSE);
-        lcd_display_line(LCD_LINE_SIX,   "[PRESS TO LOWER]", TRUE);
+        lcd_display_line(LCD_LINE_ONE,   "----- LOWER ----", false);
+        lcd_display_line(LCD_LINE_SIX,   "[PRESS TO LOWER]", true);
     }
 }

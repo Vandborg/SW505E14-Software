@@ -21,21 +21,21 @@
 #define SPEED_NOT_SET -1
 
 // Checks if the current is within a range
-int is_within_range(int start, int current, int end)
+bool is_within_range(int start, int current, int end)
 {
     // START ---- CURRENT ---- TARGET
     if(start <= current && current <= end)
     {
-        return TRUE;
+        return true;
     }
 
     // TARGET ---- CURRENT ---- START
     else if(start >= current && current >= end)
     {
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 int calculate_easing_speed(int start_mc, int end_mc, int current_mc)

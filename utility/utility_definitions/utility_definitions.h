@@ -1,16 +1,10 @@
 #ifndef UTILITY_DEFINITIONS_H_
     #define UTILITY_DEFINITIONS_H_
 
+    // Boolean type
+    #include "stdbool.h"
+
     // The first two numbers indicate which category the definition belongs to.  
-
-    // Boolean shortcuts
-    #ifndef TRUE 
-        #define TRUE 1 
-    #endif
-
-    #ifndef FALSE 
-        #define FALSE 0 
-    #endif
 
     #define LCD_WIDTH 16
     #define LCD_HEIGHT 8

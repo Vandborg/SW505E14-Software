@@ -26,14 +26,14 @@ void distance_measurement(void)
                                             "================",
                                             "      EXIT  LOCK"};
 
-    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, menu, TRUE); // Display the menu
+    lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, menu, true); // Display the menu
 
-    int run_button_released = TRUE; // Boolean to check if run button is pressed
+    int run_button_released = true; // Boolean to check if run button is pressed
     int sensor_output = 0; // The output from the sonar sensor
     char* output_str = null; // String to put on the display
 
     // Loop until the user breaks the loop by holding the enter button
-    while(TRUE)
+    while(true)
     {
         // Update the sonar output when its time to do so
         if(systick_get_ms() % SONAR_SCAN_DELAY == 0)
@@ -43,14 +43,14 @@ void distance_measurement(void)
             output_str = int_to_string(sensor_output, output_str);
 
             lcd_display_string_at_column(LCD_LINE_FOUR, LCD_COLUMN_TEN,
-                             output_str, FALSE, TRUE);
+                             output_str, false, true);
 
         }
 
         // Wait for the user to press the run button
         if(ecrobot_is_RUN_button_pressed() && run_button_released)
         {
-            run_button_released = FALSE; // Set the run button to be pressed
+            run_button_released = false; // Set the run button to be pressed
             play_sound(SOUND_BUTTON_FEEDBACK); // Play button feedback
 
             // Update the output str
@@ -58,12 +58,12 @@ void distance_measurement(void)
 
             // Update the sensor values on the display
             lcd_display_string_at_column(LCD_LINE_FIVE, LCD_COLUMN_TEN, 
-                                         output_str, FALSE, TRUE);
+                                         output_str, false, true);
         }
         // Has the enter button been released
-        else if(ecrobot_is_RUN_button_pressed() == FALSE)
+        else if(ecrobot_is_RUN_button_pressed() == false)
         {
-            run_button_released = TRUE;
+            run_button_released = true;
         }
         
         // Chek if the enter button is pressed for long enough time to exit

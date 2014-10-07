@@ -1,6 +1,9 @@
 #ifndef UTILITY_BRAKING_H_   /* Include guard */
 #define UTILITY_BRAKING_H_
 
+// Include definitions
+#include "utility/utility_definitions/utility_definitions.h"
+
 /* 
  * Main function that that brakes the forklift.
  * Call this to brake.
