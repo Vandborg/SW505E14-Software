@@ -10,7 +10,7 @@
  * Speed         The speed you want to rotate the motor at
  * Motor         The name of the motor you want to turn. LEFT_MOTOR/RIGHT_MOTOR
  */
-void motor_rotate_degrees(int degrees, int speed, char* motor);
+void motor_rotate_degrees(int degrees, int speed, U32 motor);
 
 
 
@@ -26,6 +26,6 @@ void motor_rotate_degrees(int degrees, int speed, char* motor);
  * Speed         The speed you want to rotate the motor at
  * Motor         The name of the motor you want to turn. LEFT_MOTOR/RIGHT_MOTOR
  */
-void motor_rotate_rotations(int rotations, int mode, int speed, char* motor);
+void motor_rotate_rotations(int rotations, int mode, int speed, U32 motor);
 
 #endif
