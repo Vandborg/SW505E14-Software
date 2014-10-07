@@ -1,8 +1,8 @@
 #ifndef UTILITY_DEFINITIONS_H_
     #define UTILITY_DEFINITIONS_H_
 
-    // Library for booleans
-    #include <stdbool.h>
+    // Boolean type
+    #include "stdbool.h"
 
     // The first two numbers indicate which category the definition belongs to.  
 
