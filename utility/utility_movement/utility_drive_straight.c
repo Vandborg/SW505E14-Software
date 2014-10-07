@@ -15,7 +15,7 @@
 #define DISPLACED_STARTUP 60
 
 
-void drive_forward()
+void drive_forward(void)
 {
     nxt_motor_set_speed(RIGHT_MOTOR, DISPLACED_STARTUP, FALSE);
     nxt_motor_set_speed(LEFT_MOTOR, SPEED, TRUE);

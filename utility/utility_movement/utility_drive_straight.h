@@ -1,7 +1,10 @@
 #ifndef UTILITY_DRIVE_STRAIGHT_H_   /* Include guard */
 #define UTILITY_DRIVE_STRAIGHT_H_
 
-
-void drive_forward(int speed, int brake);
+/*
+ * Makes the truck move forward without displaced start
+ * Takes no parameters
+ */
+void drive_forward(void);
 
 #endif
