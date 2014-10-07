@@ -9,6 +9,7 @@ TARGET_SOURCES = \
     utility/utility_movement/utility_braking.c \
     utility/utility_movement/utility_distance.c \
     utility/utility_sound/utility_sound.c \
+    utility/utility_speed/utility_speed.c \
     utility/utility_string/utility_string.c \
     utility/utility_fork/utility_fork.c \
     utility/utility_movement/utility_rotate_degrees.c \

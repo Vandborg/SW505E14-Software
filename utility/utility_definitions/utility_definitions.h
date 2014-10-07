@@ -64,6 +64,12 @@
     #define SOUND_SUCCESS 150
     #define SOUND_INVALID_ID 151
 
+    // Return codes for speed library
+    #define SPEED_SUCCESS 160
+    #define SPEED_CURRENT_BEFORE_START 161
+    #define SPEED_CURRENT_AFTER_END 162
+    #define SPEED_UNKNOW_ERROR 163
+
     // Motor port indentification
     #define LEFT_MOTOR NXT_PORT_A
     #define RIGHT_MOTOR NXT_PORT_B
