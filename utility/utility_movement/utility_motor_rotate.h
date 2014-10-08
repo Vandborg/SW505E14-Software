@@ -1,5 +1,5 @@
-#ifndef UTILITY_ROTATE_DEGREES_H_   /* Include guard */
-#define UTILITY_ROTATE_DEGREES_H_
+#ifndef UTILITY_MOTOR_ROTATE_H_   /* Include guard */
+#define UTILITY_MOTOR_ROTATE_H_
 
 // Include definitions
 #include "utility/utility_definitions/utility_definitions.h"

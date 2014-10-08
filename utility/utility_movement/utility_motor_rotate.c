@@ -1,10 +1,11 @@
+
 // Third party libraries
 #include "ecrobot_interface.h"
 #include "kernel.h"
 #include "kernel_id.h"
 
 // Own header
-#include "utility_rotate_degrees.h"
+#include "utility_motor_rotate.h"
 
 // Own libraries
 #include "utility/utility_definitions/utility_definitions.h"

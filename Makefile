@@ -12,7 +12,7 @@ TARGET_SOURCES = \
     utility/utility_sound/utility_sound.c \
     utility/utility_speed/utility_speed.c \
     utility/utility_fork/utility_fork.c \
-    utility/utility_movement/utility_rotate_degrees.c \
+    utility/utility_movement/utility_motor_rotate.c \
     boot_programs/boot_programs.c \
     utility/utility_movement/utility_drive_straight.c \
     utility/utility_movement/utility_turn_degrees.c \
