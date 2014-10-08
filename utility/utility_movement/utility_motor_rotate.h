@@ -15,9 +15,6 @@
  */
 void motor_rotate_degrees(int degrees, int speed, U32 motor);
 
-
-
-
 /*
  * Function that calls the degrees function, but takes an amount of rotations
  * as input instead. Can also use the mode variable to specify fraction turns.

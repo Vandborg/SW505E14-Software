@@ -17,5 +17,4 @@ void reset_distance(void);
 */
 int current_distance(void);
 
-
 #endif

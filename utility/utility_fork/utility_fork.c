@@ -17,7 +17,6 @@
 #define LIFTING_MODE_MID 275     // This is an arbitrary value. Change if needed
 #define LIFTING_MODE_LOW 35      // This is an arbitrary value. Change if needed
 
-
 // Function that checks which lift height is desired and calls the lifting
 // function with a converted value. Cases can be found in utility_definitions.h
 void operate_fork(int lifting_mode)
