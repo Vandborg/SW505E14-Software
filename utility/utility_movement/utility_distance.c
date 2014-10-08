@@ -10,22 +10,27 @@
 #define MM_TO_CM 10
 #define DEGREES_IN_CIRCLE 360
 
+int start_motor_count_right = 0;
+int start_motor_count_left = 0;
+
 void reset_distance(void) 
 {
-    nxt_motor_set_count(LEFT_MOTOR, 0);
-    nxt_motor_set_count(RIGHT_MOTOR, 0);
+    start_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
+    start_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
 }
 
 int current_distance(void)
 {
-    int distance_left = ((nxt_motor_get_count(LEFT_MOTOR) * 
-                        WHEEL_CIRCUMFERENCE_MM) / 
-                        DEGREES_IN_CIRCLE) / 
+    int distance_left = (nxt_motor_get_count(LEFT_MOTOR) -
+                        start_motor_count_left) * 
+                        WHEEL_CIRCUMFERENCE_MM / 
+                        DEGREES_IN_CIRCLE / 
                         MM_TO_CM;
 
-    int distance_right = ((nxt_motor_get_count(RIGHT_MOTOR) *
-                         WHEEL_CIRCUMFERENCE_MM) / 
-                         DEGREES_IN_CIRCLE) / 
+    int distance_right = (nxt_motor_get_count(RIGHT_MOTOR) - 
+                         start_motor_count_right) *
+                         WHEEL_CIRCUMFERENCE_MM / 
+                         DEGREES_IN_CIRCLE / 
                          MM_TO_CM;
 
     int distance_average = (distance_left + distance_right) / 2;
