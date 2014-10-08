@@ -6,8 +6,8 @@
 
     // The first two numbers indicate which category the definition belongs to.  
 
-    #define LCD_WIDTH 16
-    #define LCD_HEIGHT 8
+    #define LCD_WIDTH   16
+    #define LCD_HEIGHT  8
 
     // Sound indentification
     #define SOUND_STARTUP           110
@@ -55,51 +55,50 @@
     #define LCD_COLUMN_SIXTEEN      1415
     
     // Return codes for sound library
-    #define SOUND_SUCCESS 150
-    #define SOUND_INVALID_ID 151
+    #define SOUND_SUCCESS       150
+    #define SOUND_INVALID_ID    151
 
     // Return codes for speed library
-    #define SPEED_SUCCESS 160
-    #define SPEED_CURRENT_BEFORE_START 161
-    #define SPEED_CURRENT_AFTER_END 162
-    #define SPEED_UNKNOW_ERROR 163
+    #define SPEED_SUCCESS               160
+    #define SPEED_CURRENT_BEFORE_START  161
+    #define SPEED_CURRENT_AFTER_END     162
+    #define SPEED_UNKNOW_ERROR          163
 
     // Motor port indentification
-    #define LEFT_MOTOR NXT_PORT_A
+    #define LEFT_MOTOR  NXT_PORT_A
     #define RIGHT_MOTOR NXT_PORT_B
-    #define FORK_MOTOR NXT_PORT_C
+    #define FORK_MOTOR  NXT_PORT_C
 
     // Sensor port indentification
     #define COLOR_SENSOR NXT_PORT_S1
     #define SONAR_SENSOR NXT_PORT_S2
 
     // Time definitions
-    #define ENTER_BUTTON_EXIT_TIMEOUT 2000
+    #define ENTER_BUTTON_EXIT_TIMEOUT   2000
 
     // Braking definitions
-    #define HIGH_BRAKEPOWER 2
-    #define MEDIUM_BRAKEPOWER 1
-    #define LOW_BRAKEPOWER 0
-    #define BRAKE 1
-    #define NO_BRAKE 0
+    #define HIGH_BRAKEPOWER     2
+    #define MEDIUM_BRAKEPOWER   1
+    #define LOW_BRAKEPOWER      0
+    #define BRAKE               1
+    #define NO_BRAKE            0
 
     // Motor speeds
-    #define MOTOR_NO_SPEED 0
-    #define MOTOR_FULL_SPEED 100
+    #define MOTOR_NO_SPEED      0
+    #define MOTOR_FULL_SPEED    100
 
     // Fork definitions
-    #define MAXED_FORK 2
-    #define LIFTED_FORK 1
-    #define LOWERED_FORK 0
+    #define MAXED_FORK      2
+    #define LIFTED_FORK     1
+    #define LOWERED_FORK    0
 
     // Defines used to turn wheels a certain fraction of a rotation without
     // having to compute the degrees on your own. Add more if needed
-    #define WHOLE_ROTATION 1
-    #define HALF_ROTATION 2
-    #define THIRD_ROTATION 3
-    #define QUARTER_ROTATION 4
-    #define FIFTH_ROTATION 5
-    #define SIXTH_ROTATION 6
-
+    #define WHOLE_ROTATION      1
+    #define HALF_ROTATION       2
+    #define THIRD_ROTATION      3
+    #define QUARTER_ROTATION    4
+    #define FIFTH_ROTATION      5
+    #define SIXTH_ROTATION      6
 
 #endif
