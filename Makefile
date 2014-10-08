@@ -15,6 +15,7 @@ TARGET_SOURCES = \
     utility/utility_movement/utility_rotate_degrees.c \
     boot_programs/boot_programs.c \
     utility/utility_movement/utility_drive_straight.c \
+    utility/utility_movement/utility_turn_degrees.c \
 
 TOPPERS_OSEK_OIL_SOURCE = ./main.oil
 
