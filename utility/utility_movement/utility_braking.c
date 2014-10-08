@@ -77,13 +77,14 @@ void fading_brake(int brakepower, int left_motor_speed, int right_motor_speed)
 // Function that reduces both motors' speed slowly from current speed to 0.
 void slow_brake(int brakepower, int left_motor_speed, int right_motor_speed)
 {
-    /* Loops while either left or right motor is above the speed limit in either
+    /* 
+     * Loops while either left or right motor is above the speed limit in either
      * reverse or normal driving direction
      */
-     while(left_motor_speed > MOTOR_LOWER_SPEED_LIMIT ||
-           left_motor_speed < -MOTOR_LOWER_SPEED_LIMIT || 
-           right_motor_speed > MOTOR_LOWER_SPEED_LIMIT ||
-           right_motor_speed < -MOTOR_LOWER_SPEED_LIMIT)
+    while(left_motor_speed > MOTOR_LOWER_SPEED_LIMIT ||
+          left_motor_speed < -MOTOR_LOWER_SPEED_LIMIT || 
+          right_motor_speed > MOTOR_LOWER_SPEED_LIMIT ||
+          right_motor_speed < -MOTOR_LOWER_SPEED_LIMIT)
     {
         // Compute the reduced speed which is the old speed divided by a factor
         left_motor_speed = left_motor_speed / SLOW_SPEED_REDUCTION;
@@ -101,5 +102,4 @@ void slow_brake(int brakepower, int left_motor_speed, int right_motor_speed)
 
     // Makes a full stop brake at the end, to make sure it doesn't keep rolling.
     fullstop_brake();
-
 }

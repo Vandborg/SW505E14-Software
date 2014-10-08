@@ -80,5 +80,3 @@ void turn_degrees(int degrees_to_turn)
         }       
     }
 }
-
-

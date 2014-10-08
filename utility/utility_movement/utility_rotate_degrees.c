@@ -37,7 +37,6 @@ void motor_rotate_degrees(int degrees, int speed, U32 motor)
     // Checks if the speed is set to 0. If so, skip the entire thing.
     if(speed != MOTOR_NO_SPEED)
     {
-
         // Numeric value of speed
         if(speed < 0)
         {
