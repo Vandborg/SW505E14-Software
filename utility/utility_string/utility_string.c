@@ -4,7 +4,7 @@
 #include "string.h"
 
 // Own libraries
-#include "../utility_string/utility_string.h"
+#include "utility/utility_string/utility_string.h"
 
 // Stolen from http://developer.mbed.org/forum/bugs-suggestions/topic/2319/
 void reverse(s) char *s; 

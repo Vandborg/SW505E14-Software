@@ -4,7 +4,7 @@
 #include "kernel_id.h"
 
 // Own libraries
-#include "../utility_definitions/utility_definitions.h"
+#include "utility/utility_definitions/utility_definitions.h"
 
 #define WHEEL_CIRCUMFERENCE_MM 134
 #define MM_TO_CM 10

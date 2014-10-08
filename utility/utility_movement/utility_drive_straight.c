@@ -4,10 +4,10 @@
 #include "kernel_id.h"
 
 // Own libraries
-#include "../utility_sound/utility_sound.h"
-#include "../utility_string/utility_string.h"
-#include "../utility_definitions/utility_definitions.h"
-#include "../utility_lcd/utility_lcd.h"
+#include "utility/utility_sound/utility_sound.h"
+#include "utility/utility_string/utility_string.h"
+#include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_lcd/utility_lcd.h"
 #include "utility_braking.h"
 #include "utility_distance.h"
 

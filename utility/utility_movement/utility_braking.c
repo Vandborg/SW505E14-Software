@@ -8,7 +8,7 @@
 #include "utility_braking.h"
 
 // Own library includes
-#include "../utility_definitions/utility_definitions.h"
+#include "utility/utility_definitions/utility_definitions.h"
 
 // Locally needed definitions
 #define FADING_SPEED_REDUCTION 1.10// This is an arbitrary value. Change if need
