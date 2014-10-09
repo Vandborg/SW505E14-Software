@@ -6,6 +6,7 @@
 // Own libraries
 #include "boot_programs/boot_programs.h"
 #include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_movement/utility_movement.h"
 
 // System clock
 void user_1ms_isr_type2(void) 
