@@ -52,7 +52,6 @@ void boot_device(void)
     display_clear(true); // Clear the display
 
     // Add all utility mode functions
-    add_boot_program("MEASURE COLOR", &color_measurement);
     add_boot_program("MEASURE DISTANCE", &distance_measurement);
     add_boot_program("LIFT/LOWER FORK", &fork_reset);
 
