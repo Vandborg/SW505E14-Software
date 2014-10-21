@@ -12,99 +12,176 @@
 #include "utility/utility_lcd/utility_lcd.h"
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_string/utility_string.h"
+#include "utility/utility_structs/utility_structs.h"
 
-// Number of scans to be executed
-#define NUMBER_OF_COLOR_SCANS 3000
-
-void color_measurement(void)
+void enter_measurement_mode(void)
 {
-    // Set the mode for the color sensor.
-    ecrobot_set_nxtcolorsensor(COLOR_SENSOR, COLORSENSOR);
+    lcd_display_line(LCD_LINE_EIGHT, "      EXIT  HOLD", true);
+}
 
-    // Prepare the display
-    display_clear(true);
+void enter_normal_mode(void)
+{
+    lcd_display_line(LCD_LINE_EIGHT, "      EXIT  SCAN", true);
+}
 
+// Will reset the menu
+void reset_menu(void)
+{
     // Create menu
     char menu[LCD_HEIGHT][LCD_WIDTH + 1] = {"  MEASURE COLOR ",
                                             "================",
                                             "                ",
-                                            "R:              ",
-                                            "G:              ",
-                                            "B:              ",
+                                            "                ",
+                                            "                ",
+                                            "                ",
                                             "================",
-                                            "      EXIT  SCAN"};
+                                            "                "};
 
     lcd_display_lines(LCD_LINE_ONE, LCD_HEIGHT, menu, true); // Display the menu
+}
 
-    // Boolean to check if run button is released
-    int run_button_released = true;
+void display_color_measurements(color left, color right)
+{
+    char s[17];
 
-    // Loop until the user breaks the loop by holding the enter button
+    // Add indentificators for the color measurements
+    lcd_display_line(LCD_LINE_FOUR, "R:        R:    ", false);
+    lcd_display_line(LCD_LINE_FIVE, "G:        G:    ", false);
+    lcd_display_line(LCD_LINE_SIX,  "B:        B:    ", false);
+
+    // Add the concrete measurements
+    lcd_display_string_at_column(LCD_LINE_FOUR, LCD_COLUMN_FOUR, 
+                                 int_to_string(left.red, s), false, false);
+    lcd_display_string_at_column(LCD_LINE_FIVE, LCD_COLUMN_FOUR, 
+                                 int_to_string(left.green, s), false, false);
+    lcd_display_string_at_column(LCD_LINE_SIX, LCD_COLUMN_FOUR, 
+                                 int_to_string(left.blue, s), false, false);
+
+    lcd_display_string_at_column(LCD_LINE_FOUR, LCD_COLUMN_FOURTEEN, 
+                                 int_to_string(right.red, s), false, false);
+    lcd_display_string_at_column(LCD_LINE_FIVE, LCD_COLUMN_FOURTEEN, 
+                                 int_to_string(right.green, s), false, false);
+    lcd_display_string_at_column(LCD_LINE_SIX, LCD_COLUMN_FOURTEEN, 
+                                 int_to_string(right.blue, s), false, true);
+}
+
+// Scan a color
+color measure_color(U8 sensor)
+{
+    // Buffer for color measurement
+    S16 buffer[3] = { 0, 0, 0 };
+
+    // Allocate space for color measurement
+    color result = { 0, 0, 0 };
+
+    // Get the color from the sensor
+    ecrobot_get_nxtcolorsensor_rgb(sensor, buffer);
+
+    // Increment the color values
+    result.red += buffer[0];
+    result.green += buffer[1];
+    result.blue += buffer[2];
+
+    // Return the result
+    return result;
+}
+
+void color_measurement(void)
+{
+    // Set the mode for the color sensors
+    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_LEFT, COLORSENSOR);
+    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_RIGHT, COLORSENSOR);
+
+    color color_left = { 0, 0, 0 };
+    color color_right = { 0, 0, 0 };
+    color buffer = { 0, 0, 0 };
+
+    bool do_measure_color = false;
+
+    bool run_button_released = false;
+
+    int measurements = 0;
+
+    // Display menu
+    reset_menu();
+    enter_normal_mode();
+
     while(true)
     {
-        // Wait for the user to press the run button
+        // Check if the user pressed the run button
         if(ecrobot_is_RUN_button_pressed() && run_button_released)
         {
-            run_button_released = false; // The button is pressed
-            play_sound(SOUND_BUTTON_FEEDBACK); // Play button feedback
-
-            int menu_height = 4;
-
-            // Create menu
-            char scanning_menu[LCD_HEIGHT][LCD_WIDTH + 1] ={"Scanning...     ",
-                                                            "R:              ",
-                                                            "G:              ",
-                                                            "B:              "};
-
-            // Display the menu
-            lcd_display_lines(LCD_LINE_THREE, menu_height, scanning_menu, true);
-            
-            play_sound(SOUND_MODE_WAIT); // Play wait sound
-            
-            S16 rgb[3] = {0, 0, 0}; // Allocate space for color measurement
-
-            // Used to calculate the average of color values.
-            int red = rgb[0];
-            int green = rgb[1]; 
-            int blue = rgb[2];
-
-            // Measure the color 
-            for(int i = 0; i < NUMBER_OF_COLOR_SCANS; i++)
+            // Wait until the user releases the button again
+            while(ecrobot_is_RUN_button_pressed()) 
             {
-                // Get the color from the sensor
-                ecrobot_get_nxtcolorsensor_rgb(COLOR_SENSOR, rgb);
-
-                // Increment the color values
-                red += rgb[0];
-                green += rgb[1];
-                blue += rgb[2];
+                // Wait 
             }
 
-            // Find avarage
-            red = red / NUMBER_OF_COLOR_SCANS;
-            green = green / NUMBER_OF_COLOR_SCANS;
-            blue = blue / NUMBER_OF_COLOR_SCANS;
+            run_button_released = false;
 
-            // Update display with average color values
-            lcd_clear_line(LCD_LINE_THREE, true); // Not scannig anymore
-            char red_str[4];
-            lcd_display_string_at_column(LCD_LINE_FOUR, LCD_COLUMN_FOUR,
-                             int_to_string(red, red_str), false, false);
-            char green_str[4];
-            lcd_display_string_at_column(LCD_LINE_FIVE, LCD_COLUMN_FOUR,
-                             int_to_string(green, green_str), false, false);
-            char blue_str[4];
-            lcd_display_string_at_column(LCD_LINE_SIX, LCD_COLUMN_FOUR,
-                             int_to_string(blue, blue_str), false, true);
+            // Test if we are already measuring
+            if(do_measure_color) {
+                // Reset the color
+                color_left.red = 0;
+                color_left.green = 0;
+                color_left.blue = 0;
 
-            play_sound(SOUND_NOTIFICATION); // Notify that the scan is done
+                color_right.red = 0;
+                color_right.green = 0;
+                color_right.blue = 0; 
+            }
+            else {
+                // Begin color measurement
+                do_measure_color = true;
+            }
+
+            enter_measurement_mode();
         }
-        // Has the enter button been released
-        else if(ecrobot_is_RUN_button_pressed() == false)
+        else if(ecrobot_is_RUN_button_pressed() == false) 
         {
             run_button_released = true;
         }
-        
+
+        // Check if the device should make mesurements
+        if(do_measure_color)
+        {
+            // Measure color values from left sensor
+            buffer = measure_color(COLOR_SENSOR_LEFT);
+
+            // Update values
+            color_left.red += buffer.red;
+            color_left.green += buffer.green;
+            color_left.blue += buffer.blue;
+
+            // Measure color values from right sensor
+            buffer = measure_color(COLOR_SENSOR_RIGHT);
+
+            // Update values
+            color_right.red += buffer.red;
+            color_right.green += buffer.green;
+            color_right.blue += buffer.blue;
+
+            // If not first scan, calculate average of new and previous
+            if(measurements > 0) {
+                color_left.red /= 2;
+                color_left.green /= 2;
+                color_left.blue /= 2;
+
+                color_right.red /= 2;
+                color_right.green /= 2;
+                color_right.blue /= 2;
+            }
+
+            // Wait when over some measurements
+            if(measurements++ % 250 == 0)
+            {
+                // Update the display
+                display_color_measurements(color_left, color_right);
+
+                systick_wait_ms(500);
+            }
+        }
+
         // Chek if the enter button is pressed for long enough time to exit
         if(ecrobot_is_ENTER_button_pressed())
         {   
@@ -121,5 +198,5 @@ void color_measurement(void)
                 }
             }
         }
-    }   
+    }
 }
