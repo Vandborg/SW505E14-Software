@@ -104,11 +104,11 @@
     #define SIXTH_ROTATION      6
 
     // Color definitions
-    #define COLOR_RED           1
-    #define COLOR_BLUE          2
-    #define COLOR_BLACK         3
-    #define COLOR_GRAY          4
-    #define COLOR_WHITE         5
+    #define COLOR_RED           0
+    #define COLOR_BLUE          1
+    #define COLOR_BLACK         2
+    #define COLOR_GRAY          3
+    #define COLOR_WHITE         4
 
     #define AMOUNT_OF_COLORS    5
     
