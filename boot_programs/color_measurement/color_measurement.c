@@ -172,13 +172,13 @@ void color_measurement(void)
                 color_right.blue /= 2;
             }
 
-            // Update the display
-            display_color_measurements(color_left, color_right);
-
             // Wait when over some measurements
-            if(measurements++ % 100 == 0)
+            if(measurements++ % 250 == 0)
             {
-                systick_wait_ms(250);
+                // Update the display
+                display_color_measurements(color_left, color_right);
+
+                systick_wait_ms(500);
             }
         }
 
