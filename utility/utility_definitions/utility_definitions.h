@@ -71,8 +71,8 @@
 
     // Sensor port indentification
     #define COLOR_SENSOR NXT_PORT_S3 // THIS SHOULD NOT BE USED... 
-    #define COLOR_SENSOR_RIGHT NXT_PORT_S1
-    #define COLOR_SENSOR_LEFT NXT_PORT_S2
+    #define COLOR_SENSOR_RIGHT NXT_PORT_S2
+    #define COLOR_SENSOR_LEFT NXT_PORT_S1
     #define SONAR_SENSOR NXT_PORT_S4
 
     // Time definitions
