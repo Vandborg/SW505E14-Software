@@ -41,7 +41,7 @@ void enter_normal_mode(void)
 void reset_menu(void)
 {
     // Create menu
-    char menu[LCD_HEIGHT][LCD_WIDTH + 1] = {"  MEASURE COLOR ",
+    char menu[LCD_HEIGHT][LCD_WIDTH + 1] = {" CALIBRATE COLOR",
                                             "================",
                                             "                ",
                                             "                ",
