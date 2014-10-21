@@ -101,4 +101,14 @@
     #define FIFTH_ROTATION      5
     #define SIXTH_ROTATION      6
 
+    // Color definitions
+    #define COLOR_RED           1
+    #define COLOR_BLUE          2
+    #define COLOR_BLACK         3
+    #define COLOR_GRAY          4
+    #define COLOR_WHITE         5
+
+    #define AMOUNT_OF_COLORS    5
+    
+
 #endif
