@@ -22,15 +22,40 @@ void user_1ms_isr_type2(void)
 void ecrobot_device_initialize(void)
 {
     // Initialize color values
-    for(int i = 0; i < AMOUNT_OF_COLORS; i++)
-    {
-        Color_left[i].red = 0;
-        Color_left[i].green = 0;
-        Color_left[i].blue = 0;
-        Color_right[i].red = 0;
-        Color_right[i].green = 0;
-        Color_right[i].blue = 0;
-    }
+    Color_left[COLOR_RED].red = 315;
+    Color_left[COLOR_RED].green = 115;
+    Color_left[COLOR_RED].blue = 117;
+    Color_right[COLOR_RED].red = 365;
+    Color_right[COLOR_RED].green = 200;
+    Color_right[COLOR_RED].blue = 178;
+
+    Color_left[COLOR_BLUE].red = 175;
+    Color_left[COLOR_BLUE].green = 138;
+    Color_left[COLOR_BLUE].blue = 172;
+    Color_right[COLOR_BLUE].red = 207;
+    Color_right[COLOR_BLUE].green = 219;
+    Color_right[COLOR_BLUE].blue = 233;
+
+    Color_left[COLOR_BLACK].red = 173;
+    Color_left[COLOR_BLACK].green = 128;
+    Color_left[COLOR_BLACK].blue = 125;
+    Color_right[COLOR_BLACK].red = 200;
+    Color_right[COLOR_BLACK].green = 195;
+    Color_right[COLOR_BLACK].blue = 163;
+
+    Color_left[COLOR_GRAY].red = 323;
+    Color_left[COLOR_GRAY].green = 255;
+    Color_left[COLOR_GRAY].blue = 258;
+    Color_right[COLOR_GRAY].red = 418;
+    Color_right[COLOR_GRAY].green = 398;
+    Color_right[COLOR_GRAY].blue = 352;
+
+    Color_left[COLOR_WHITE].red = 427;
+    Color_left[COLOR_WHITE].green = 458;
+    Color_left[COLOR_WHITE].blue = 351;
+    Color_right[COLOR_WHITE].red = 500;
+    Color_right[COLOR_WHITE].green = 488;
+    Color_right[COLOR_WHITE].blue = 437;
 
 	ecrobot_init_nxtcolorsensor(COLOR_SENSOR);
 	ecrobot_init_sonar_sensor(SONAR_SENSOR);
