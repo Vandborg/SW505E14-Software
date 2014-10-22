@@ -40,7 +40,7 @@ CPU ATMEL_AT91SAM7S256
   TASK TASK_color_scan
   {
     AUTOSTART = FALSE;
-    PRIORITY = 3; /* Smaller value means lower priority */ 
+    PRIORITY = 1; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = FULL;
     STACKSIZE = 512; /* Stack size */ 
