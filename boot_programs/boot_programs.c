@@ -169,6 +169,9 @@ void select_mode(void)
                 lcd_display_line(LCD_LINE_TWO,   "================", false);
                 lcd_display_line(LCD_LINE_SEVEN, "================", false);
                 lcd_display_line(LCD_LINE_EIGHT, "  /   SLCT  NEXT", true);
+
+                // Increment the mode
+                mode = (mode + 1) % (boot_program_counter + 1);
             }
 
             // Increment mode correctly
