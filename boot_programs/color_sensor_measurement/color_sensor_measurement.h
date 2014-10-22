@@ -7,6 +7,6 @@
     /*
      * Scans and displays values from the color scanner
      */
-    void color_measurement(void);
+    void color_sensor_measurement(void);
 
 #endif

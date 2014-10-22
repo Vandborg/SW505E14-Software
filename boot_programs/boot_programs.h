@@ -2,7 +2,7 @@
     #define BOOT_PROGRAMS_H_
 
     #include "boot_programs/color_calibration/color_calibration.h"
-#include "boot_programs/color_measurement/color_measurement.h"
+    #include "boot_programs/color_sensor_measurement/color_sensor_measurement.h"
     #include "boot_programs/distance_measurement/distance_measurement.h"
     #include "boot_programs/fork_reset/fork_reset.h"
 
