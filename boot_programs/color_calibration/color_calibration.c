@@ -192,9 +192,6 @@ void color_calibration(void)
                 // Display the colors to the display
                 display_colors(color_left, color_right, get_color_name(i, buf));
 
-                // Go back to normal mode
-                enter_normal_mode();
-
                 // Notify that the scan is done
                 play_sound(SOUND_NOTIFICATION);
 
