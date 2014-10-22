@@ -22,8 +22,8 @@ void user_1ms_isr_type2(void)
 // On device initialization
 void ecrobot_device_initialize(void)
 {
-	ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT);
-    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT);
+	ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_COLORSENSOR);
+    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
 	ecrobot_init_sonar_sensor(SONAR_SENSOR);
 }
 
@@ -38,10 +38,10 @@ void ecrobot_device_terminate(void)
 // The boot task of the program
 TASK(TASK_boot) 
 {   
-    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_LEFT, COLORSENSOR);
-    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_RIGHT, LIGHTSENSOR_RED);
-
     // boot_device();
+    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
+    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_LIGHTSENSOR_RED);
+    ecrobot_process_bg_nxtcolorsensor();
 
 	TerminateTask();
 }
@@ -82,6 +82,7 @@ TASK(TASK_line_follow)
     int powerB = 0;
 
     // LOGIC TO CHECK WHICH SENSOR TO USE <-----------------
+    ecrobot_process_bg_nxtcolorsensor();
     int lightLevel = ecrobot_get_nxtcolorsensor_light(COLOR_SENSOR_RIGHT);
 
     //CALCULATE ERROR

@@ -146,8 +146,8 @@ void color_calibration(void)
     int run_button_released = true;
 
     // Set the mode for the color sensors
-    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_LEFT, COLORSENSOR);
-    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_RIGHT, COLORSENSOR);
+    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
+    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_COLORSENSOR);
 
     // Prepare the display
     display_clear(true);

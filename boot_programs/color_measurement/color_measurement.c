@@ -89,8 +89,8 @@ color measure_color(U8 sensor)
 void color_measurement(void)
 {
     // Set the mode for the color sensors
-    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_LEFT, COLORSENSOR);
-    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_RIGHT, COLORSENSOR);
+    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
+    ecrobot_set_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_COLORSENSOR);
 
     color color_left = { 0, 0, 0 };
     color color_right = { 0, 0, 0 };
