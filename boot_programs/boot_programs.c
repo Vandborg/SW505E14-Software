@@ -56,6 +56,7 @@ void boot_device(void)
     add_boot_program("COLORSENSOR TEST", &color_sensor_measurement);
     add_boot_program("MEASURE DISTANCE", &distance_measurement);
     add_boot_program("LIFT/LOWER FORK", &fork_reset);
+    add_boot_program("SONARSENSOR TEST", &sonar_sensor_measurement);
 
     // Wait until the user releases the finger from the run button
     while(ecrobot_is_RUN_button_pressed()) 
