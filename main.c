@@ -22,8 +22,8 @@ void user_1ms_isr_type2(void)
 // On device initialization
 void ecrobot_device_initialize(void)
 {
-	ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
-    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_COLORSENSOR);
+	ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_LIGHTSENSOR_NONE);
+    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_LIGHTSENSOR_NONE);
 	ecrobot_init_sonar_sensor(SONAR_SENSOR);
 }
 
@@ -35,8 +35,8 @@ void ecrobot_device_terminate(void)
 	ecrobot_term_sonar_sensor(SONAR_SENSOR);
 }
 
-int color_sensor = COLOR_SENSOR_LEFT;
-int light_sensor = COLOR_SENSOR_RIGHT;
+U8 color_sensor = COLOR_SENSOR_LEFT;
+U8 light_sensor = COLOR_SENSOR_RIGHT;
 
 // The boot task of the program
 TASK(TASK_boot) 
@@ -148,7 +148,7 @@ TASK(TASK_color_scan)
         nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
         nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
 
-        int temp = color_sensor;
+        U8 temp = color_sensor;
         color_sensor = light_sensor;
         light_sensor = temp;
 
