@@ -7,10 +7,9 @@
 // Own libraries
 #include "boot_programs/boot_programs.h"
 #include "utility/utility_definitions/utility_definitions.h"
+#include "utility/utility_bluetooth/utility_bluetooth.h"
 #include "utility/utility_lcd/utility_lcd.h"
-#include "utility/utility_sound/utility_sound.h"
-#include "utility/utility_string/utility_string.h"
- 
+
 // System clock
 void user_1ms_isr_type2(void) 
 { 
@@ -35,25 +34,30 @@ void ecrobot_device_terminate(void)
 TASK(TASK_boot) 
 {   
     boot_device();
-    
-    static U8 start_up_signal[1] = {'r'};
 
-    ecrobot_send_bt(start_up_signal, 0 , 1);
+    send_startup_bt();
 
+    bool toggle = true;
 
-
-    static U8 black_color_red[4] = "123";
     while(1)
     {
         if(ecrobot_is_RUN_button_pressed())
         {
-            ecrobot_send_bt(black_color_red, 0 , 3);
-            lcd_display_line(LCD_LINE_ONE, "Data sent", true);
-            break;
-        }    
-
+            send_startup_bt();
+            if(toggle)
+            {
+                lcd_display_line(LCD_LINE_ONE, "DATA SENT", true);
+                toggle = !toggle;    
+            }
+            else
+            {
+               lcd_display_line(LCD_LINE_ONE, "data sent", true);
+                toggle = !toggle;   
+            }
+            
+            systick_wait_ms(2000);
+        }
     }
-    
  
     TerminateTask();
 }
