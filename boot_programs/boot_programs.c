@@ -54,7 +54,6 @@ void boot_device(void)
     // Add all utility mode functions
     add_boot_program("CALIBRATE COLOR", &color_calibration);
     add_boot_program("COLORSENSOR TEST", &color_sensor_measurement);
-    add_boot_program("MEASURE DISTANCE", &distance_measurement);
     add_boot_program("LIFT/LOWER FORK", &fork_reset);
     add_boot_program("SONARSENSOR TEST", &sonar_sensor_measurement);
 
