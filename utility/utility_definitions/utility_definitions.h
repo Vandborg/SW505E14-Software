@@ -112,5 +112,11 @@
 
     #define AMOUNT_OF_COLORS    5
     
+    // Linefollow PID-controller definitions
+    #define TP 60
+    #define KP 27
+    #define KI  2
+    #define KD 30
+    
 
 #endif

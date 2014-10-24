@@ -22,7 +22,7 @@ CPU ATMEL_AT91SAM7S256
   TASK TASK_boot
   {
     AUTOSTART = TRUE { APPMODE = appmode1; };
-    PRIORITY = 10; /* Smaller value means lower priority */ 
+    PRIORITY = 2; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = FULL;
     STACKSIZE = 512; /* Stack size */ 
@@ -60,13 +60,9 @@ CPU ATMEL_AT91SAM7S256
     {
         TASK = TASK_line_follow;
     };
-    AUTOSTART = TRUE
-    {
-        ALARMTIME = 1;
-        CYCLETIME = 50;
-        APPMODE = appmode1;
-    };
+    AUTOSTART = FALSE;
   };
+
   ALARM cyclic_alarm_2
   {
     COUNTER = SysTimerCnt;
@@ -74,11 +70,6 @@ CPU ATMEL_AT91SAM7S256
     {
         TASK = TASK_color_scan;
     };
-    AUTOSTART = TRUE
-    {
-        ALARMTIME = 1;
-        CYCLETIME = 500;
-        APPMODE = appmode1;
-    };
+    AUTOSTART = FALSE;
   };
 };

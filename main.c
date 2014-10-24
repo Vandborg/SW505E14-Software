@@ -10,6 +10,10 @@
 #include "utility/utility_sound/utility_sound.h"
 
 DeclareCounter(SysTimerCnt);
+DeclareTask(TASK_line_follow);
+DeclareTask(TASK_color_scan);
+DeclareAlarm(cyclic_alarm);
+DeclareAlarm(cyclic_alarm_2);
 
 
 
@@ -19,11 +23,14 @@ void user_1ms_isr_type2(void)
     SignalCounter(SysTimerCnt);
 }
 
+U8 color_sensor = COLOR_SENSOR_LEFT;
+U8 light_sensor = COLOR_SENSOR_RIGHT;
+
 // On device initialization
 void ecrobot_device_initialize(void)
 {
-	ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_LIGHTSENSOR_NONE);
-    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_LIGHTSENSOR_NONE);
+	ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
+    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_LIGHTSENSOR_RED);
 	ecrobot_init_sonar_sensor(SONAR_SENSOR);
 }
 
@@ -35,73 +42,63 @@ void ecrobot_device_terminate(void)
 	ecrobot_term_sonar_sensor(SONAR_SENSOR);
 }
 
-U8 color_sensor = COLOR_SENSOR_LEFT;
-U8 light_sensor = COLOR_SENSOR_RIGHT;
-
 // The boot task of the program
 TASK(TASK_boot) 
 {   
-    // boot_device();
-    ecrobot_set_nxtcolorsensor(color_sensor, NXT_COLORSENSOR);
-    ecrobot_set_nxtcolorsensor(light_sensor, NXT_LIGHTSENSOR_RED);
-    ecrobot_process_bg_nxtcolorsensor();
+    boot_device();
+
+    if (false) // Set to true if line following should be activated
+    {
+        SetRelAlarm(cyclic_alarm, 1, 50);
+        SetRelAlarm(cyclic_alarm_2, 1, 300);
+    }
 
     TerminateTask();
 }
 
-S16 rgb[3];
-int Tp = 60;
-
-
-
-
-int Kp = 27;
-int Ki = 2;
-int Kd = 30;
-int offset = 360; 
+// Persistent variables for PID, and color_scan/swap
+int offset = 360;
 int integral = 0;
 int lastError = 0;
-
 int error = 0;
 int derivative = 0;
 int turn = 0;
+S16 rgb[3];
 
 TASK(TASK_line_follow)
 {
+    int powerA = 0;
+    int powerB = 0;
+
     error = 0;
     derivative = 0;
     turn = 0;
 
-    int powerA = 0;
-    int powerB = 0;
-
-    // LOGIC TO CHECK WHICH SENSOR TO USE <-----------------
     ecrobot_process_bg_nxtcolorsensor();
+
     int lightLevel = ecrobot_get_nxtcolorsensor_light(light_sensor);
 
-    //CALCULATE ERROR
-    error = lightLevel - offset;
-        
+    error = lightLevel - offset; 
     integral = integral + error;
-
     derivative = error - lastError;
 
-    turn = Kp * error + Ki * integral + Kd * derivative;
-    turn = turn / 100; // ---> This is only needed if the k's 
-                       //      are multiplied by a hundred
+    turn = KP * error + KI * integral + KD * derivative;
 
+    // This is needed because the k's are multiplied by a hundred
+    turn = turn / 100; 
+
+    // Changes the turn direction depending on which sensor is the lightsensor
     if (light_sensor == COLOR_SENSOR_LEFT)
     {
-        powerA = Tp + turn;
-        powerB = Tp - turn;
+        powerA = TP + turn;
+        powerB = TP - turn;
     }
     else 
     {
-        powerA = Tp - turn;
-        powerB = Tp + turn;        
+        powerA = TP - turn;
+        powerB = TP + turn;        
     }
 
-    // Make motors go... 
     nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
     nxt_motor_set_speed(RIGHT_MOTOR, powerB, 1);
 
@@ -110,18 +107,19 @@ TASK(TASK_line_follow)
     TerminateTask();
 }
 
-int last_color_red = 0;
+bool last_color_red = false;
 
-TASK(TASK_color_scan)
+TASK(TASK_color_scan) // NEEDS REWORK
 {
     ecrobot_get_nxtcolorsensor_rgb(color_sensor, rgb);
 
-       
+    // If read value is red
     if (rgb[0] > 300 && 
         rgb[1] < 350 && 
         rgb[2] < 350 && 
         !last_color_red)
     {
+        // Make device go closer to line 
         if(COLOR_SENSOR_LEFT == color_sensor)
         {
             nxt_motor_set_speed(RIGHT_MOTOR, 60, 1);
@@ -161,12 +159,11 @@ TASK(TASK_color_scan)
         lastError = 0;
         error = 0;
 
-        last_color_red = 1;
-        
+        last_color_red = true;
     }
     else 
     {
-        last_color_red = 0;
+        last_color_red = false;
     }
 
     TerminateTask();
