@@ -38,18 +38,11 @@ namespace BTCom
         // Reads the chars on the buffer untill buffer is empty
         static private byte[] ReadBytesOnBuffer(SerialPort BluetoothConnection)
         {
-            byte[] output = new byte[256];
+            int outputSize = BluetoothConnection.BytesToRead;
+            byte[] output = new byte[outputSize];
 
-            // DEBUG
-            if (BluetoothConnection.BytesToRead > 0)
+            for (int i = 0; outputSize > i; i++)
             {
-                Console.WriteLine("BTR: " + BluetoothConnection.BytesToRead);
-            }
-
-            
-            for (int i = 0; BluetoothConnection.BytesToRead > 0; i++ )
-            {
-                Console.WriteLine("I: " + i);
                 output[i] = (byte) BluetoothConnection.ReadByte();
             }
 
@@ -130,6 +123,35 @@ namespace BTCom
             return new string(requestCharArray);
         }
 
+        static private void StoreColor(string request, SQLiteConnection db)
+        {
+            string[] requestArray = request.Split(':');
+            
+            if(db.Table<Setting>().FirstOrDefault() == null)
+            {
+                Setting insertSetting = new Setting();
+                insertSetting.BlackRed = int.Parse(requestArray[2]);
+                insertSetting.BlackGreen = int.Parse(requestArray[3]);
+                insertSetting.BlackBlue = int.Parse(requestArray[4]);
+                db.Insert(insertSetting);
+            }
+            else
+            {
+                Setting updateSetting = db.Table<Setting>().FirstOrDefault();
+                updateSetting.BlackRed = int.Parse(requestArray[2]);
+                updateSetting.BlackGreen = int.Parse(requestArray[3]);
+                updateSetting.BlackBlue = int.Parse(requestArray[4]);
+                db.Update(updateSetting);
+            }
+            
+        }
+
+        static private Setting GetColor(SQLiteConnection db)
+        {
+            Setting getSetting = db.Table<Setting>().FirstOrDefault();
+            return getSetting;
+        }
+
         static void Main(string[] args)
         {
             // Opening database-connection
@@ -139,17 +161,48 @@ namespace BTCom
             db.CreateTable<Setting>();
 
             // Setup the BluetoothConnection
-            SerialPort BluetoothConnection = new SerialPort("COM5");
+            SerialPort BluetoothConnection = new SerialPort("COM3");
+            BluetoothConnection.ReadBufferSize = BluetoothConnection.ReadBufferSize * 2;
             BluetoothConnection.ReadTimeout = 20000;
+
             Console.WriteLine("Opening BT-connection");
             BluetoothConnection.Open();
             Console.WriteLine("Waiting for NXT to start");
 
-            
-            while (Requests.Count() == 0 || !Requests.First().Equals("RDY"))
+            while (true)
             {
                 QueueRequestFromBuffer(BluetoothConnection);
+                List<int> indexesToBeRemoved = new List<int>();
+                for (int count = 0; Requests.Count > count; count++)
+                {
+                    if(Requests[count].Contains("RDY"))
+                    {
+                        Console.WriteLine("Hello");
+                        indexesToBeRemoved.Add(count);
+                    }
+                    else if (Requests[count].Contains("STO:COLOR"))
+                    {
+                        // Save color
+                        StoreColor(Requests[count], db);
+                        indexesToBeRemoved.Add(count);
+                    }
+                    else if (Requests[count].Contains("GET:COLOR"))
+                    {
+                        // Get color
+                        Setting getSetting = GetColor(db);
+                        Console.WriteLine("COLOR: {" + getSetting.BlackRed + "," + getSetting.BlackGreen + "," + getSetting.BlackBlue + "}");
+                        indexesToBeRemoved.Add(count);
+                    }
+
+                    foreach (int i in indexesToBeRemoved)
+                    {
+                        Requests.RemoveAt(i);
+                    }
+
+                }                
             }
+
+            
             
 
 
