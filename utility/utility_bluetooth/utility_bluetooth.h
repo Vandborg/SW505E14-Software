@@ -9,4 +9,10 @@
     
     void send_startup_bt(void);
 
+    void send_hello_bt(void);
+
+    void send_store_color_bt(void);
+
+    void send_get_color_bt(void);
+
 #endif
