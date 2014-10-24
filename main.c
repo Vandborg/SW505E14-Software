@@ -36,26 +36,24 @@ TASK(TASK_boot)
     boot_device();
 
     send_startup_bt();
+    
 
-    bool toggle = true;
 
     while(1)
     {
         if(ecrobot_is_RUN_button_pressed())
         {
-            send_startup_bt();
-            if(toggle)
-            {
-                lcd_display_line(LCD_LINE_ONE, "DATA SENT", true);
-                toggle = !toggle;    
-            }
-            else
-            {
-               lcd_display_line(LCD_LINE_ONE, "data sent", true);
-                toggle = !toggle;   
-            }
-            
-            systick_wait_ms(2000);
+            send_hello_bt();
+            send_store_color_bt();
+            lcd_display_line(LCD_LINE_ONE, "STO:COLOR", true);
+            systick_wait_ms(1000);
+        }
+        if(ecrobot_is_ENTER_button_pressed())
+        {
+            send_hello_bt();
+            send_get_color_bt();
+            lcd_display_line(LCD_LINE_ONE, "GET:COLOR", true);
+            systick_wait_ms(1000);
         }
     }
  
