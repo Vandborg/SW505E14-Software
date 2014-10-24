@@ -27,8 +27,6 @@ void user_1ms_isr_type2(void)
     SignalCounter(SysTimerCnt);
 }
 
-U8 color_sensor = COLOR_SENSOR_LEFT;
-U8 light_sensor = COLOR_SENSOR_RIGHT;
 
 // On device initialization
 void ecrobot_device_initialize(void)
@@ -69,19 +67,22 @@ void ecrobot_device_initialize(void)
     Color_right[COLOR_WHITE].green = 488;
     Color_right[COLOR_WHITE].blue = 437;
 
-	
-	ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
+    
+    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
     ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_LIGHTSENSOR_RED);
-	ecrobot_init_sonar_sensor(SONAR_SENSOR);
+    ecrobot_init_sonar_sensor(SONAR_SENSOR);
 }
 
 // On device termination
 void ecrobot_device_terminate(void)
 {
-	ecrobot_term_nxtcolorsensor(COLOR_SENSOR_LEFT);
+    ecrobot_term_nxtcolorsensor(COLOR_SENSOR_LEFT);
     ecrobot_term_nxtcolorsensor(COLOR_SENSOR_RIGHT);
-	ecrobot_term_sonar_sensor(SONAR_SENSOR);
+    ecrobot_term_sonar_sensor(SONAR_SENSOR);
 }
+
+U8 color_sensor = COLOR_SENSOR_LEFT;
+U8 light_sensor = COLOR_SENSOR_RIGHT;
 
 // The boot task of the program
 TASK(TASK_boot) 
