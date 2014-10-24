@@ -90,6 +90,10 @@ TASK(TASK_boot)
 
     if (false) // Set to true if line following should be activated
     {
+        ecrobot_set_nxtcolorsensor(color_sensor, NXT_COLORSENSOR);
+        ecrobot_set_nxtcolorsensor(light_sensor, NXT_LIGHTSENSOR_RED);
+        ecrobot_process_bg_nxtcolorsensor();
+
         SetRelAlarm(cyclic_alarm, 1, 50);
         SetRelAlarm(cyclic_alarm_2, 1, 300);
     }
