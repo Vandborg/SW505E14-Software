@@ -1,5 +1,5 @@
-#ifndef COLOR_MEASUREMENT_H_
-    #define COLOR_MEASUREMENT_H_
+#ifndef SONAR_SENSOR_MEASUREMENT_H_
+    #define SONAR_SENSOR_MEASUREMENT_H_
 
     // Include definitions
     #include "utility/utility_definitions/utility_definitions.h"
@@ -7,6 +7,6 @@
     /*
      * Scans and displays values from the color scanner
      */
-    void color_measurement(void);
+    void sonar_sensor_measurement(void);
 
 #endif

@@ -95,6 +95,7 @@ color scan_color(U8 sensor)
     for(int i = 0; i < NUMBER_OF_COLOR_SCANS; i++)
     {
         // Get the color from the sensor
+        ecrobot_process_bg_nxtcolorsensor();
         ecrobot_get_nxtcolorsensor_rgb(sensor, buffer);
 
         // Increment the color values
@@ -148,6 +149,7 @@ void color_calibration(void)
     // Set the mode for the color sensors
     ecrobot_set_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
     ecrobot_set_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_COLORSENSOR);
+    ecrobot_process_bg_nxtcolorsensor();
 
     // Prepare the display
     display_clear(true);
@@ -191,9 +193,6 @@ void color_calibration(void)
 
                 // Display the colors to the display
                 display_colors(color_left, color_right, get_color_name(i, buf));
-
-                // Go back to normal mode
-                enter_normal_mode();
 
                 // Notify that the scan is done
                 play_sound(SOUND_NOTIFICATION);
