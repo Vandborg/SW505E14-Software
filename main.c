@@ -82,6 +82,9 @@ void ecrobot_device_terminate(void)
 TASK(TASK_boot) 
 {   
     boot_device();
+    // systick_wait_ms(500);
+    start_line_following();
+    
     TerminateTask();
 }
 
