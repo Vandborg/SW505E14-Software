@@ -115,10 +115,14 @@
     #define AMOUNT_OF_COLORS    5
     
     // Linefollow PID-controller definitions
-    #define TP 60
-    #define KP 27
-    #define KI  2
-    #define KD 30
-    
+    #define LINE_FOLLOW_SPEED  60
+
+    #define KP_LEFT            27
+    #define KI_LEFT             2
+    #define KD_LEFT            30
+
+    #define KP_RIGHT           27
+    #define KI_RIGHT            2
+    #define KD_RIGHT           30
 
 #endif

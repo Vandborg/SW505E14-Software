@@ -15,12 +15,13 @@ DeclareAlarm(cyclic_alarm_2);
 // Persistent variables for PID, and color_scan/swap
 U8 color_sensor = COLOR_SENSOR_LEFT;
 U8 light_sensor = COLOR_SENSOR_RIGHT;
-int offset = 360;
+
+int offset_left = 360;
+int offset_right = 360;
+
 int integral = 0;
 int lastError = 0;
-int error = 0;
-int derivative = 0;
-int turn = 0;
+
 S16 rgb[3];
 
 void start_line_following(void)
@@ -61,33 +62,41 @@ TASK(TASK_line_follow)
     int powerA = 0;
     int powerB = 0;
 
-    error = 0;
-    derivative = 0;
-    turn = 0;
+    int error = 0;
+    int derivative = 0;
+    int turn = 0;
 
     ecrobot_process_bg_nxtcolorsensor();
 
     int lightLevel = ecrobot_get_nxtcolorsensor_light(light_sensor);
 
-    error = lightLevel - offset; 
-    integral = integral + error;
-    derivative = error - lastError;
-
-    turn = KP * error + KI * integral + KD * derivative;
-
-    // This is needed because the k's are multiplied by a hundred
-    turn = turn / 100; 
-
-    // Changes the turn direction depending on which sensor is the lightsensor
     if (light_sensor == COLOR_SENSOR_LEFT)
     {
-        powerA = TP + turn;
-        powerB = TP - turn;
+        error = lightLevel - offset_left; 
+        integral = integral + error;
+        derivative = error - lastError;
+
+        turn = KP_LEFT * error + KI_LEFT * integral + KD_LEFT * derivative;
+        
+        // This is needed because the k's are multiplied by a hundred
+        turn = turn / 100; 
+
+        powerA = LINE_FOLLOW_SPEED + turn;
+        powerB = LINE_FOLLOW_SPEED - turn;
     }
-    else 
+    else
     {
-        powerA = TP - turn;
-        powerB = TP + turn;        
+        error = lightLevel - offset_right;
+        integral = integral + error;
+        derivative = error - lastError;
+        
+        turn = KP_RIGHT * error + KI_RIGHT * integral + KD_RIGHT * derivative;
+        
+        // This is needed because the k's are multiplied by a hundred
+        turn = turn / 100; 
+
+        powerA = LINE_FOLLOW_SPEED - turn;
+        powerB = LINE_FOLLOW_SPEED + turn;    
     }
 
     nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
@@ -145,10 +154,8 @@ TASK(TASK_color_scan) // NEEDS REWORK
         ecrobot_set_nxtcolorsensor(light_sensor, NXT_LIGHTSENSOR_RED);
         ecrobot_process_bg_nxtcolorsensor();
 
-        derivative = 0;
         integral = 0;
         lastError = 0;
-        error = 0;
 
         last_color_red = true;
     }
