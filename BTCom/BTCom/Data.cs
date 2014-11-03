@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using SQLite.Net.Interop;
 
 namespace BTCom
 {
@@ -30,11 +31,19 @@ namespace BTCom
                 Colors.Remove(color.ID());
                 Colors.Add(color.ID(), color);
             }
+            Database.Instance.Save();
         }
 
         public bool RemoveColor(Color color)
         {
-            return Colors.Remove(color.ID());
+            bool result = Colors.Remove(color.ID());
+            
+            if (result)
+            {
+                Database.Instance.Save();
+            }
+
+            return result;
         }
     }
 }

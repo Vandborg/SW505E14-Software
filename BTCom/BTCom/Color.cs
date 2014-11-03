@@ -22,6 +22,11 @@ namespace BTCom
             Identifier = id;
         }
 
+        public Color(string name, int id, int red, int green, int blue) : this(name, id)
+        {
+            Rgb(red, green, blue);
+        }
+
         public void Rgb(int red, int green, int blue)
         {
             Red = red;
