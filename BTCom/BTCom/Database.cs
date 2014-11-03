@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 
 namespace BTCom
@@ -12,10 +8,17 @@ namespace BTCom
     {
         static Database _instance = null;
         static readonly object padlock = new object();
+        static string Path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/PALL-E_database.json";
 
         static Database(){}
         private JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
-        public RootObject Data = new RootObject();
+        private Data _data = new Data();
+
+        public Data Data
+        {
+            get { return _data; }
+            set { _data = value; }
+        }
 
         public static Database Instance
         {
@@ -34,14 +37,17 @@ namespace BTCom
 
         public void Save()
         {
-            var json = jsonSerializer.Serialize(_instance);
+            var json = jsonSerializer.Serialize(Data);
+            System.IO.StreamWriter file = new System.IO.StreamWriter(Path);
+            file.Write(json);
+            file.Close();
             Debug.WriteLine(json);
         }
 
         public void Load()
         {
-            string json = "{\"Colors\":[{\"Id\":1,\"Name\":\"red\",\"Red\":20,\"Green\":20,\"Blue\":20}]}";
-            Data = jsonSerializer.Deserialize<RootObject>(json);
+            string json = System.IO.File.ReadAllText(Path);
+            Data = jsonSerializer.Deserialize<Data>(json);
             Debug.WriteLine(_instance.Data.Colors[0].Blue);
         }
     }

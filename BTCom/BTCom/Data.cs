@@ -8,11 +8,11 @@ using System.Web.Script.Serialization;
 
 namespace BTCom
 {
-    public class RootObject
+    public class Data
     {
         public List<Color> Colors = new List<Color>();
 
-        public RootObject()
+        public Data()
         { 
             
         }
