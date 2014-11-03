@@ -65,8 +65,8 @@
     #define SPEED_UNKNOW_ERROR          163
 
     // Motor port indentification
-    #define LEFT_MOTOR  NXT_PORT_A
-    #define RIGHT_MOTOR NXT_PORT_B
+    #define RIGHT_MOTOR  NXT_PORT_A
+    #define LEFT_MOTOR NXT_PORT_B
     #define FORK_MOTOR  NXT_PORT_C
 
     // Sensor port indentification
