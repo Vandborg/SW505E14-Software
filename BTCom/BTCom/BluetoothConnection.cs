@@ -12,7 +12,7 @@ namespace BTCom
         // Delimeter bytes
         private static byte START_BYTE = 0x2;
         private static byte END_BYTE = 0x3;
-
+        
         // Type bytes
         private static byte TYPE_READ_COLOR = 0x41;
         private static byte TYPE_UPDATE_COLOR = 0x42;
@@ -22,9 +22,16 @@ namespace BTCom
         private static byte TYPE_DELIVER_PALLET = 0x46;
         private static byte TYPE_SEND_COLOR = 0x47;
 
-        public int SendPackageBT(byte package_type, byte[] package_data)
+        public BluetoothConnection(string portName)
+            : base(portName)
         {
-	 
+            this.Open();
+            this.ReadTimeout = 10000;
+            this.WriteTimeout = 10000;
+        }
+
+        public int SendPackageBT(byte package_type, char[] package_data)
+        {
 	        // Calculate the size of package_data
             int package_data_size = package_data.Length;
 
@@ -50,7 +57,7 @@ namespace BTCom
 	        // Fill the package data into the array at the correct array index
 	        for(int i = 0; i < package_data_size; i++)
 	        {
-		        package_to_send[i+2] = package_data[i];
+		        package_to_send[i+2] = (byte) package_data[i];
 	        }
 
 	        // Send the request over BT
@@ -68,11 +75,6 @@ namespace BTCom
             this.Read(input, 0, this.BytesToRead);
 
             return input;
-        }
-
-        public BluetoothConnection(string portName) : base(portName)
-        {
-            this.Open();
         }
 
     }
