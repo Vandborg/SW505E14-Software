@@ -70,10 +70,12 @@
     #define FORK_MOTOR  NXT_PORT_C
 
     // Sensor port indentification
-    #define COLOR_SENSOR NXT_PORT_S3 // THIS SHOULD NOT BE USED... 
-    #define COLOR_SENSOR_RIGHT NXT_PORT_S2
-    #define COLOR_SENSOR_LEFT NXT_PORT_S1
-    #define SONAR_SENSOR NXT_PORT_S4
+    #define COLOR_SENSOR        NXT_PORT_S3 // THIS SHOULD NOT BE USED... 
+    #define COLOR_SENSOR_RIGHT  NXT_PORT_S2
+    #define COLOR_SENSOR_LEFT   NXT_PORT_S1
+    #define SONAR_SENSOR        NXT_PORT_S4 // THIS SHOULD NOT BE USED... 
+    #define SONAR_SENSOR_FRONT  NXT_PORT_S3
+    #define SONAR_SENSOR_REAR   NXT_PORT_S4
 
     // Time definitions
     #define ENTER_BUTTON_EXIT_TIMEOUT   2000
@@ -111,6 +113,12 @@
     #define COLOR_WHITE         4
 
     #define AMOUNT_OF_COLORS    5
+    
+    // Linefollow PID-controller definitions
+    #define TP 60
+    #define KP 27
+    #define KI  2
+    #define KD 30
     
 
 #endif

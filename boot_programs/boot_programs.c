@@ -53,9 +53,9 @@ void boot_device(void)
 
     // Add all utility mode functions
     add_boot_program("CALIBRATE COLOR", &color_calibration);
-    add_boot_program("MEASURE COLOR", &color_measurement);
-    add_boot_program("MEASURE DISTANCE", &distance_measurement);
+    add_boot_program("COLORSENSOR TEST", &color_sensor_measurement);
     add_boot_program("LIFT/LOWER FORK", &fork_reset);
+    add_boot_program("SONARSENSOR TEST", &sonar_sensor_measurement);
 
     // Wait until the user releases the finger from the run button
     while(ecrobot_is_RUN_button_pressed()) 
@@ -169,6 +169,9 @@ void select_mode(void)
                 lcd_display_line(LCD_LINE_TWO,   "================", false);
                 lcd_display_line(LCD_LINE_SEVEN, "================", false);
                 lcd_display_line(LCD_LINE_EIGHT, "  /   SLCT  NEXT", true);
+
+                // Increment the mode
+                mode = (mode + 1) % (boot_program_counter + 1);
             }
 
             // Increment mode correctly

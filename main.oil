@@ -22,9 +22,54 @@ CPU ATMEL_AT91SAM7S256
   TASK TASK_boot
   {
     AUTOSTART = TRUE { APPMODE = appmode1; };
-    PRIORITY = 1; /* Smaller value means lower priority */ 
+    PRIORITY = 2; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = FULL;
     STACKSIZE = 512; /* Stack size */ 
+  };
+
+  TASK TASK_line_follow
+  {
+    AUTOSTART = FALSE;
+    PRIORITY = 2; /* Smaller value means lower priority */ 
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 512; /* Stack size */ 
+  };
+
+  TASK TASK_color_scan
+  {
+    AUTOSTART = FALSE;
+    PRIORITY = 1; /* Smaller value means lower priority */ 
+    ACTIVATION = 1;
+    SCHEDULE = NON;
+    STACKSIZE = 512; /* Stack size */ 
+  };
+
+  COUNTER SysTimerCnt
+  {
+    MINCYCLE = 1;
+    MAXALLOWEDVALUE = 10000;
+    TICKSPERBASE = 1; /* One tick is equal to 1msec */
+  };
+
+  ALARM cyclic_alarm
+  {
+    COUNTER = SysTimerCnt;
+    ACTION = ACTIVATETASK
+    {
+        TASK = TASK_line_follow;
+    };
+    AUTOSTART = FALSE;
+  };
+
+  ALARM cyclic_alarm_2
+  {
+    COUNTER = SysTimerCnt;
+    ACTION = ACTIVATETASK
+    {
+        TASK = TASK_color_scan;
+    };
+    AUTOSTART = FALSE;
   };
 };

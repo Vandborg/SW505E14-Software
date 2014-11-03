@@ -1,6 +1,6 @@
 #!/bin/sh
 cd /nxtOSEK/SW505E14_Software/
-echo "Cleaing"
+echo "Cleaning"
 echo "------------------"
 
 rm -R build
