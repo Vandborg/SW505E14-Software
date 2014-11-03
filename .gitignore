@@ -15,85 +15,190 @@ SW505E14.sublime-workspace
 run.exe.stackdump
 sh.exe.stackdump
 Makefile
-BTCom/BTCom.psess
-BTCom/BTCom/bin/Debug/BTCom.exe.config
-BTCom/BTCom/bin/Debug/BTCom.vshost.exe.config
-BTCom/BTCom/bin/Debug/EntityFramework.SqlServer.xml
-BTCom/BTCom/bin/Debug/EntityFramework.xml
-BTCom/BTCom/bin/Debug/Newtonsoft.Json.xml
-BTCom/BTCom/bin/Debug/System.Data.SQLite.xml
-BTCom/BTCom/obj/Debug/BTCom.csproj.FileListAbsolute.txt
-BTCom/BTCom/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
-BTCom/BTCom/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
-BTCom/BTCom/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
-BTCom/BTCom141031.vsp
-BTCom/packages/EntityFramework.6.1.1/EntityFramework.6.1.1.nupkg
-BTCom/packages/EntityFramework.6.1.1/content/App.config.transform
-BTCom/packages/EntityFramework.6.1.1/content/Web.config.transform
-BTCom/packages/EntityFramework.6.1.1/lib/net40/EntityFramework.SqlServer.xml
-BTCom/packages/EntityFramework.6.1.1/lib/net40/EntityFramework.xml
-BTCom/packages/EntityFramework.6.1.1/lib/net45/EntityFramework.SqlServer.xml
-BTCom/packages/EntityFramework.6.1.1/lib/net45/EntityFramework.xml
-BTCom/packages/EntityFramework.6.1.1/tools/EntityFramework.psd1
-BTCom/packages/EntityFramework.6.1.1/tools/EntityFramework.psm1
-BTCom/packages/EntityFramework.6.1.1/tools/about_EntityFramework.help.txt
-BTCom/packages/EntityFramework.6.1.1/tools/init.ps1
-BTCom/packages/EntityFramework.6.1.1/tools/install.ps1
-BTCom/packages/Newtonsoft.Json.6.0.5/Newtonsoft.Json.6.0.5.nupkg
-BTCom/packages/Newtonsoft.Json.6.0.5/lib/net20/Newtonsoft.Json.xml
-BTCom/packages/Newtonsoft.Json.6.0.5/lib/net35/Newtonsoft.Json.xml
-BTCom/packages/Newtonsoft.Json.6.0.5/lib/net40/Newtonsoft.Json.xml
-BTCom/packages/Newtonsoft.Json.6.0.5/lib/net45/Newtonsoft.Json.xml
-BTCom/packages/Newtonsoft.Json.6.0.5/lib/netcore45/Newtonsoft.Json.xml
-BTCom/packages/Newtonsoft.Json.6.0.5/lib/portable-net40+sl5+wp80+win8+wpa81/Newtonsoft.Json.xml
-BTCom/packages/Newtonsoft.Json.6.0.5/lib/portable-net45+wp80+win8+wpa81/Newtonsoft.Json.xml
-BTCom/packages/Newtonsoft.Json.6.0.5/tools/install.ps1
-BTCom/packages/SQLite.Net-PCL.2.4.1/SQLite.Net-PCL.2.4.1.nupkg
-BTCom/packages/SQLiteNetExtensions.1.2.2/SQLiteNetExtensions.1.2.2.nupkg
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Attributes/CascadeOperation.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Attributes/ForeignKeyAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Attributes/ManyToManyAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Attributes/ManyToOneAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Attributes/OneToManyAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Attributes/OneToOneAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Attributes/RelationshipAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Attributes/TextBlobAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Exceptions/IncorrectRelationshipException.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Extensions/ReadOperations.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Extensions/ReflectionExtensions.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Extensions/TextBlob/ITextBlobSerializer.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Extensions/TextBlob/Serializers/JsonBlobSerializer.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Extensions/TextBlob/TextBlobOperations.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Extensions/WriteOperations.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/Properties/AssemblyInfo.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/obj/Debug/.NETPortable,Version=v4.0,Profile=Profile136.AssemblyAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/obj/Release/.NETPortable,Version=v4.0,Profile=Profile158.AssemblyAttribute.cs
-BTCom/packages/SQLiteNetExtensions.1.2.2/src/obj/Release/.NETPortable,Version=v4.5,Profile=Profile259.AssemblyAttribute.cs
-BTCom/packages/System.Data.SQLite.1.0.94.1/System.Data.SQLite.1.0.94.1.nupkg
-BTCom/packages/System.Data.SQLite.Core.1.0.94.0/System.Data.SQLite.Core.1.0.94.0.nupkg
-BTCom/packages/System.Data.SQLite.Core.1.0.94.0/lib/net20/System.Data.SQLite.xml
-BTCom/packages/System.Data.SQLite.Core.1.0.94.0/lib/net40/System.Data.SQLite.xml
-BTCom/packages/System.Data.SQLite.Core.1.0.94.0/lib/net45/System.Data.SQLite.xml
-BTCom/packages/System.Data.SQLite.Core.1.0.94.0/lib/net451/System.Data.SQLite.xml
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/System.Data.SQLite.EF6.1.0.94.0.nupkg
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/content/net40/app.config.transform
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/content/net40/web.config.transform
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/content/net45/app.config.transform
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/content/net45/web.config.transform
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/content/net451/app.config.transform
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/content/net451/web.config.transform
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/tools/net40/install.ps1
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/tools/net45/install.ps1
-BTCom/packages/System.Data.SQLite.EF6.1.0.94.0/tools/net451/install.ps1
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/System.Data.SQLite.Linq.1.0.94.1.nupkg
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/content/net20/app.config.transform
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/content/net20/web.config.transform
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/content/net40/app.config.transform
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/content/net40/web.config.transform
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/content/net45/app.config.transform
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/content/net45/web.config.transform
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/content/net451/app.config.transform
-BTCom/packages/System.Data.SQLite.Linq.1.0.94.1/content/net451/web.config.transform
-BTCom/packages/sqlite-net.1.0.8/content/SQLite.cs
-BTCom/packages/sqlite-net.1.0.8/content/SQLiteAsync.cs
-BTCom/packages/sqlite-net.1.0.8/sqlite-net.1.0.8.nupkg
+
+# -------- VISUAL STUDIO --------
+## Ignore Visual Studio temporary files, build results, and
+## files generated by popular Visual Studio add-ons.
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Roslyn cache directories
+*.ide/
+
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+#NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# Build Results of an ATL Project
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+*_i.c
+*_p.c
+*_i.h
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*.log
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# Chutzpah Test files
+_Chutzpah*
+
+# Visual C++ cache files
+ipch/
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+
+# Visual Studio profiler
+*.psess
+*.vsp
+*.vspx
+
+# TFS 2012 Local Workspace
+$tf/
+
+# Guidance Automation Toolkit
+*.gpState
+
+# ReSharper is a .NET coding add-in
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# JustCode is a .NET coding addin-in
+.JustCode
+
+# TeamCity is a build add-in
+_TeamCity*
+
+# DotCover is a Code Coverage Tool
+*.dotCover
+
+# NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+
+# MightyMoose
+*.mm.*
+AutoTest.Net/
+
+# Web workbench (sass)
+.sass-cache/
+
+# Installshield output folder
+[Ee]xpress/
+
+# DocProject is a documentation generator add-in
+DocProject/buildhelp/
+DocProject/Help/*.HxT
+DocProject/Help/*.HxC
+DocProject/Help/*.hhc
+DocProject/Help/*.hhk
+DocProject/Help/*.hhp
+DocProject/Help/Html2
+DocProject/Help/html
+
+# Click-Once directory
+publish/
+
+# Publish Web Output
+*.[Pp]ublish.xml
+*.azurePubxml
+# TODO: Comment the next line if you want to checkin your web deploy settings 
+# but database connection strings (with potential passwords) will be unencrypted
+*.pubxml
+*.publishproj
+
+# NuGet Packages
+*.nupkg
+# The packages folder can be ignored because of Package Restore
+**/packages/*
+# except build/, which is used as an MSBuild target.
+!**/packages/build/
+# If using the old MSBuild-Integrated Package Restore, uncomment this:
+#!**/packages/repositories.config
+
+# Windows Azure Build Output
+csx/
+*.build.csdef
+
+# Windows Store app package directory
+AppPackages/
+
+# Others
+sql/
+*.Cache
+ClientBin/
+[Ss]tyle[Cc]op.*
+~$*
+*~
+*.dbmdl
+*.dbproj.schemaview
+*.pfx
+*.publishsettings
+node_modules/
+
+# RIA/Silverlight projects
+Generated_Code/
+
+# Backup & report files from converting an old project file
+# to a newer Visual Studio version. Backup files are not needed,
+# because we have git ;-)
+_UpgradeReport_Files/
+Backup*/
+UpgradeLog*.XML
+UpgradeLog*.htm
+
+# SQL Server files
+*.mdf
+*.ldf
+
+# Business Intelligence projects
+*.rdl.data
+*.bim.layout
+*.bim_*.settings
+
+# Microsoft Fakes
+FakesAssemblies/
+
