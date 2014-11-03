@@ -13,6 +13,11 @@ DeclareAlarm(cyclic_alarm);
 DeclareAlarm(cyclic_alarm_2);
 
 
+
+int get_light_level(U8 sensor);
+void switch_sensors(void);
+
+
 // Persistent variables for PID, and color_scan/swap
 U8 color_sensor = COLOR_SENSOR_LEFT;
 U8 light_sensor = COLOR_SENSOR_RIGHT;
@@ -71,12 +76,7 @@ TASK(TASK_line_follow)
         int derivative = 0;
         int turn = 0;
 
-        ecrobot_process_bg_nxtcolorsensor();
-
-        S16 rgb2[3];
-        ecrobot_get_nxtcolorsensor_rgb(light_sensor, rgb2);
-
-        int lightLevel = (rgb2[0] + rgb2[1] + rgb2[2]) / 3;//ecrobot_get_nxtcolorsensor_light(light_sensor);
+        int lightLevel = get_light_level(light_sensor);
 
         if (light_sensor == COLOR_SENSOR_LEFT)
         {
@@ -107,12 +107,11 @@ TASK(TASK_line_follow)
             powerB = LINE_FOLLOW_SPEED + turn;    
         }
 
-        nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
-        nxt_motor_set_speed(RIGHT_MOTOR, powerB, 1);
+        nxt_motor_set_speed(RIGHT_MOTOR, powerA, 1);
+        nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
 
         lastError = error;
     }
-  
 
     TerminateTask();
 }
@@ -123,25 +122,78 @@ TASK(TASK_color_scan) // NEEDS REWORK
 {
     // ecrobot_get_nxtcolorsensor_rgb(color_sensor, rgb);
 
-    // // If read value is red
-    // if (rgb[0] > 300 && 
-    //     rgb[1] < 350 && 
-    //     rgb[2] < 350 && 
-    //     !last_color_red)
-    // {
-    //     U8 temp = color_sensor;
-    //     color_sensor = light_sensor;
-    //     light_sensor = temp;
-
-    //     integral = 0;
-    //     lastError = 0;
-    //     // stop_line_following();
-    //     last_color_red = true;
-    // }
-    // else 
-    // {
-    //     last_color_red = false;
-    // }
+    if (ecrobot_get_touch_sensor(NXT_PORT_S3))
+    {
+        switch_sensors();
+        
+        last_color_red = true;
+    }
+    else 
+    {
+        last_color_red = false;
+    }
 
     TerminateTask();
+}
+
+
+int get_light_level(U8 sensor) 
+{
+    ecrobot_process_bg_nxtcolorsensor();
+
+    S16 light_rgb[3];
+    ecrobot_get_nxtcolorsensor_rgb(light_sensor, light_rgb);
+
+    int light_level = (light_rgb[0] + light_rgb[1] + light_rgb[2]) / 3; 
+
+    return light_level;
+}
+
+void switch_sensors(void)
+{
+    U8 temp = color_sensor;
+    color_sensor = light_sensor;
+    light_sensor = temp;
+
+    line_follow = false;
+    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
+    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+
+    int offset = offset_right;
+    U8 light_motor = RIGHT_MOTOR;
+    U8 color_motor = LEFT_MOTOR;
+
+
+    if (light_sensor == COLOR_SENSOR_LEFT)
+    {
+        offset = offset_left;
+        light_motor = LEFT_MOTOR;
+        color_motor = RIGHT_MOTOR;
+    }
+
+    GetResource(RES_SCHEDULER);
+    nxt_motor_set_speed(LEFT_MOTOR, 0, 0);
+    nxt_motor_set_speed(RIGHT_MOTOR, 0, 0);
+
+    int light_level = get_light_level(light_sensor) - offset;
+
+    while(light_level < 0)
+    {
+
+        nxt_motor_set_speed(light_motor, 50 - light_level/4, 0);
+        nxt_motor_set_speed(color_motor, 35 - light_level/4, 0);
+
+        light_level = get_light_level(light_sensor) - offset;
+
+        systick_wait_ms(3);
+    }        
+
+    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
+    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+
+    ReleaseResource(RES_SCHEDULER);
+    integral = 0;
+    lastError = 0;
+
+    line_follow = true;
 }
