@@ -314,3 +314,17 @@ int lcd_clear_line(int line_number_id, bool update_display)
 
     return LCD_SUCCESS; // Everything went well
 }
+
+void lcd_display_string_with_linesplit(char* string)
+{
+    display_clear(false);
+    for (int i = 0; i < strlen(string); ++i)
+    {
+        int line_to_write_on = i / 16;
+        int column_to_write_on = i % 16;
+        display_goto_xy(column_to_write_on, line_to_write_on);
+        char print_string[2] = {string[i]};
+        display_string(print_string);
+    }
+    display_update();
+}

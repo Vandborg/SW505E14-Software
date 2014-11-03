@@ -42,4 +42,13 @@
                                    char* string, int clear_line, 
                                    bool update_display);
 
+    /*
+     * Will display a string on the required amount of lines. Automatically comp
+     * utes which lines and columns to write at. Also clears the display before
+     * writing anything. Returns nothing.
+     * string             String to be displayed
+     */
+    void lcd_display_string_with_linesplit(char* string);
+
 #endif
+
