@@ -7,55 +7,60 @@
 // Own header
 #include "utility_bluetooth.h"
 
-#define POST_REQUEST 1002
-#define GET_REQUEST  1003
-
-#define NOTIFY_REQUEST_BYTE 'P'
-#define POST_REQUEST_BYTE 'P'
-#define GET_REQUEST_BYTE 'G'
-
-
-void send_request_bt(U8 request[])
+int send_package_bt(U8 package_type, char* package_data)
 {
-	// Create tmp request array to hold startbyte, request and endbyte 
-	int request_size = sizeof(request)/sizeof(U8)+2;
-	U8 request_tosend[request_size];
+	 
+	// Calculate the size of package_data
+    int package_data_size = strlen(package_data);
 
-	request_tosend[request_size-1] = END_BYTE;
+    // Calculate the total package size, assuming the package data size and
+    // start, end, and type byte.
+    int package_total_size = package_data_size + 3;
+    
+    // Check whether total data size is bigger than 256 bytes.
+    if(package_total_size > 256)
+    {
+        // TODO: Send an error code for too big data array
+        return -1;  
+    }
 
-	// Fill the request array to send
-	for(int i = 1; i < request_size - 1; i++)
+    // Make an array that is as large as the total data size of the package.
+    U8 package_to_send[package_total_size];
+
+    // Putting the start, end, and type byte in the array.
+    package_to_send[0] = START_BYTE;
+	package_to_send[1] = package_type;
+    package_to_send[package_total_size-1] = END_BYTE;
+
+	// Fill the package data into the array at the correct array index
+	for(int i = 0; i < package_data_size; i++)
 	{
-		request_tosend[i] = request[i-1];
+		package_to_send[i+2] = package_data[i];
 	}
 
 	// Send the request over BT
-	ecrobot_send_bt(request_tosend, 0 , request_size);
+	int bytes_sent = ecrobot_send_bt(package_to_send, 0 , package_total_size);
 
-	// Wait to ensure that continous requests is possible
+    // Wait to ensure that continous requests is possible
 	systick_wait_ms(1);
+
+    return 1;
+
 }
 
-void send_startup_bt(void)
+char* read_package_bt(void)
 {
-	U8 request[] = {'R','D','Y'};
-	send_request_bt(request);
-}
+    // Buffer char array to write in.
+    char buffer[128];
 
-void send_hello_bt(void)
-{
-    static U8 write_buffer[] = {START_BYTE, 'O', 'O', 'O', END_BYTE};
-    ecrobot_send_bt(write_buffer, 0 , sizeof(write_buffer)/sizeof(U8));
-}
+    // Read from bluetooth and write it to the buffer array.
+    int bytes_received = ecrobot_read_bt(buffer, 0, 128);
 
-void send_store_color_bt(void)
-{
-    static U8 write_buffer[] = {START_BYTE, 'S', 'T', 'O', ':', 'C', 'O', 'L', 'O', 'R', ':', '1', '2', '3', ':', '4', '5', '6', ':', '7', '8', '9',  END_BYTE};
-    ecrobot_send_bt(write_buffer, 0 , sizeof(write_buffer)/sizeof(U8));
-}
+    // Create array that is only as big as the received data
+    char returndata[bytes_received];
 
-void send_get_color_bt(void)
-{
-    static U8 write_buffer[] = {START_BYTE, 'G', 'E', 'T', ':', 'C', 'O', 'L', 'O', 'R',  END_BYTE};
-    ecrobot_send_bt(write_buffer, 0 , sizeof(write_buffer)/sizeof(U8));
+    // Copy the received data from the buffer array to the returndata array
+    strcpy(returndata, buffer);
+
+    return returndata;
 }
