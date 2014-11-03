@@ -37,18 +37,16 @@ namespace BTCom
 
         public void Save()
         {
-            var json = jsonSerializer.Serialize(Data);
+            var json = JsonHelper.FormatJson(jsonSerializer.Serialize(Data));
             System.IO.StreamWriter file = new System.IO.StreamWriter(Path);
             file.Write(json);
             file.Close();
-            Debug.WriteLine(json);
         }
 
         public void Load()
         {
             string json = System.IO.File.ReadAllText(Path);
             Data = jsonSerializer.Deserialize<Data>(json);
-            Debug.WriteLine(_instance.Data.Colors[0].Blue);
         }
     }
 }
