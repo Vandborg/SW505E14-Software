@@ -22,6 +22,7 @@ namespace BTCom
         private static byte TYPE_DELIVER_PALLET = 0x46;
         private static byte TYPE_SEND_COLOR = 0x47;
 
+
         public BluetoothConnection(string portName)
             : base(portName)
         {
@@ -30,7 +31,46 @@ namespace BTCom
             this.WriteTimeout = 10000;
         }
 
-        public int SendPackageBT(byte package_type, char[] package_data)
+        public void ConsumePackages()
+        {
+            byte[] btInputBuffer = ReadBTBuffer(); // The input on the buffer
+            ConsumePackages(btInputBuffer); // Consume the buffer
+        }
+
+        private void ConsumePackages(byte[] btInputBuffer)
+        {   
+            int endIndexOfPackage = 0; // The index where the package ends
+
+            // Run through the array of bytes on the buffer
+            for (int i = 0; i < btInputBuffer.Length; i++)
+            {
+                if (btInputBuffer[i] == END_BYTE)
+                {
+                    byte[] package = new byte[i+1]; // Allocate space for a pacakge
+                    Array.Copy(btInputBuffer, package, i+1); // Copies a package out
+                    ConsumePackage(package); // Consume a package
+                    endIndexOfPackage = i; // Sets the lates index to be the one from where we want to 
+                    break;
+                }
+            }
+
+            // If the package was not the last
+            if (btInputBuffer.Length > endIndexOfPackage + 1)
+            {
+                // Allocate space for a new array to be splitted
+                int newInputLength = btInputBuffer.Length - endIndexOfPackage;
+                byte[] newBtInputBuffer = new byte[newInputLength];
+                
+                // Copies the rest of the array 
+                Array.Copy(btInputBuffer, endIndexOfPackage + 1, newBtInputBuffer, 0, newInputLength);
+
+                // Recursively splits this array
+                ConsumePackages(newBtInputBuffer);
+            }
+
+        }
+
+        private int SendPackageBT(byte package_type, char[] package_data)
         {
 	        // Calculate the size of package_data
             int package_data_size = package_data.Length;
@@ -69,13 +109,19 @@ namespace BTCom
             return 1;
         }
 
-        public byte[] ReadPackageBT()
+        private byte[] ReadBTBuffer()
         {
-            byte[] input = new byte[256];
+            int bytesToRead = this.BytesToRead;
+            byte[] input = new byte[bytesToRead];
             this.Read(input, 0, this.BytesToRead);
 
             return input;
         }
 
+        private void ConsumePackage(byte[] package)
+        {
+            // TODO: Consume a package
+            return;
+        }
     }
 }
