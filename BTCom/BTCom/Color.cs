@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -51,6 +52,11 @@ namespace BTCom
 
             // Check if all properties are the same
             return sameIdentifier && sameName && sameRed && sameGreen && sameBlue;
+        }
+
+        public override string ToString()
+        {
+            return base.ToString() + " - " + "Name: '" + Name + "'. Red: '" + Red + "'. Green: '" + Green + "'. Blue: '" + Blue + "'.";
         }
     }
 }
