@@ -65,7 +65,8 @@ void ecrobot_device_initialize(void)
     
     ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
     ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_LIGHTSENSOR_RED);
-    ecrobot_init_sonar_sensor(SONAR_SENSOR);
+    ecrobot_init_sonar_sensor(SONAR_SENSOR_FRONT);
+    ecrobot_init_sonar_sensor(SONAR_SENSOR_REAR);
 }
 
 // On device termination
@@ -73,7 +74,8 @@ void ecrobot_device_terminate(void)
 {
     ecrobot_term_nxtcolorsensor(COLOR_SENSOR_LEFT);
     ecrobot_term_nxtcolorsensor(COLOR_SENSOR_RIGHT);
-    ecrobot_term_sonar_sensor(SONAR_SENSOR);
+    ecrobot_term_sonar_sensor(SONAR_SENSOR_FRONT);
+    ecrobot_term_sonar_sensor(SONAR_SENSOR_REAR);
 }
 
 
