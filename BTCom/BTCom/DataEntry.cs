@@ -16,5 +16,10 @@ namespace BTCom
         }
 
         public abstract bool Equals(Object obj);
+
+        public override string ToString()
+        {
+            return base.ToString() + " - " +  "Identifier: '" + Identifier + "'.";
+        }
     }
 }
