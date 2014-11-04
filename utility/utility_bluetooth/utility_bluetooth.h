@@ -6,8 +6,8 @@
     #define END_BYTE 0x3
 
     // Type bytes
-    #define TYPE_READ_COLOR 0x41
-    #define TYPE_UPDATE_COLOR 0x42
+    #define TYPE_UPDATE_COLOR 0x41
+    #define TYPE_SAVE_COLOR 0x42
     #define TYPE_REPORT_OBSTACLE 0x43
     #define TYPE_UPDATE_STATUS 0x44
     #define TYPE_FETCH_PALLET 0x45
@@ -26,10 +26,17 @@
     int send_package_bt(U8 package_type, char* package);
     
     /*
-     * Function to receive data from the computer. Returns a char array. Max
-     * size possible to receive is 128 bytes. 
+     * Function to receive data from the computer. Returns an int defining the
+     * received amount of bytes. Max size possible to receive is 128 bytes. 
      */
-    char* read_package_bt(void);
+    int read_bt_buffer(char* returnbuffer);
+
+    void update_color_bt(int color_id, U8 color_sensor_id);
+    void save_color_bt(int color_id,
+                   U8 color_sensor_id,
+                   int red, 
+                   int green, 
+                   int blue);
    
 
 #endif
