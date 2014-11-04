@@ -3,7 +3,7 @@
 #include "kernel.h"
 #include "kernel_id.h"
 
-// Own header
+// Own libraries
 #include "utility_line_follow.h"
 #include "../utility_sound/utility_sound.h"
 
@@ -36,7 +36,6 @@ S16 rgb[3];
 
 void start_line_following(void)
 {
-    // line_recover();
     GetResource(RES_SCHEDULER);
 
     ecrobot_set_nxtcolorsensor(color_sensor, NXT_COLORSENSOR);
@@ -125,8 +124,8 @@ TASK(TASK_color_scan) // NEEDS REWORK
 
     if (ecrobot_get_touch_sensor(NXT_PORT_S3))
     {
-        cross_intersection();
-        // switch_sensors();
+        // cross_intersection();
+        switch_sensors();
         last_color_red = true;
     }
     else 
@@ -211,9 +210,6 @@ void cross_intersection(void)
         nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
     }
 
-    // integral = 0;
-    // last_error = 0;
-    // line_follow = true;
     line_recover();
 }
 
@@ -241,16 +237,10 @@ void line_recover(void)
         color_motor = LEFT_MOTOR;
     }
 
-    GetResource(RES_SCHEDULER);
-
-    nxt_motor_set_speed(LEFT_MOTOR, 0, 0);
-    nxt_motor_set_speed(RIGHT_MOTOR, 0, 0);
-
     int light_level = get_light_level(light_sensor) - offset;
 
     int left_init_count = nxt_motor_get_count(LEFT_MOTOR);
     int right_init_count = nxt_motor_get_count(RIGHT_MOTOR);
-
 
     while(light_level <= -3 || light_level >= 3)
     {
@@ -268,13 +258,9 @@ void line_recover(void)
         light_level = get_light_level(light_sensor) - offset;
     }        
 
-    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
-    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
-
     int right_count = nxt_motor_get_count(RIGHT_MOTOR) - right_init_count;
     int left_count = nxt_motor_get_count(LEFT_MOTOR) - left_init_count;
 
-    play_sound(SOUND_NOTIFICATION);
     while(!(left_count >= right_count - 5 && 
           left_count <= right_count + 5))
     {
@@ -292,11 +278,6 @@ void line_recover(void)
         right_count = nxt_motor_get_count(RIGHT_MOTOR) - right_init_count;
         left_count = nxt_motor_get_count(LEFT_MOTOR) - left_init_count;
     }
-
-    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
-    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
-
-    ReleaseResource(RES_SCHEDULER);
 
     integral = 0;
     lastError = 0;
