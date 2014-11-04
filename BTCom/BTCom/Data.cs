@@ -13,6 +13,7 @@ namespace BTCom
     {
         //Keys have to be strings in Dictionaries to be serializable to json
         public Dictionary<String, Color> Colors = new Dictionary<String, Color>();
+        public Dictionary<String, Light> Lights = new Dictionary<String, Light>();
 
         public Data()
         { 
@@ -37,6 +38,32 @@ namespace BTCom
         {
             bool result = Colors.Remove(color.ID());
             
+            if (result)
+            {
+                Database.Instance.Save();
+            }
+
+            return result;
+        }
+
+        public void AddLight(Light light)
+        {
+            try
+            {
+                Lights.Add(light.ID(), light);
+            }
+            catch (ArgumentException)
+            {
+                Lights.Remove(light.ID());
+                Lights.Add(light.ID(), light);
+            }
+            Database.Instance.Save();   
+        }
+
+        public bool RemoveLight(Light light)
+        {
+            bool result = Lights.Remove(light.ID());
+
             if (result)
             {
                 Database.Instance.Save();

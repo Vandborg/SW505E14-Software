@@ -84,6 +84,82 @@ namespace BTComTest
             Assert.IsTrue(expected.Equals(actual));
         }
 
+        [TestMethod]
+        public void AddLightToDataListEmptyConstructorTest()
+        {
+            var expected = new Light();
+
+            Database.Instance.Data.AddLight(expected);
+
+            var actual = Database.Instance.Data.Lights.First().Value;
+
+            Assert.AreEqual(actual, expected);
+        }
+
+        [TestMethod]
+        public void AddLightToDataListNameAndIdentifierConstructorTest()
+        {
+            var expected = new Light("testlight", 1);
+
+            Database.Instance.Data.AddLight(expected);
+
+            var actual = Database.Instance.Data.Lights.First().Value;
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+        [TestMethod]
+        public void AddLightToDataListFullConstructorTest()
+        {
+            var expected = new Light("testlight", 1, 255);
+
+            Database.Instance.Data.AddLight(expected);
+
+            var actual = Database.Instance.Data.Lights.First().Value;
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+        [TestMethod]
+        public void AddLightToDatabaseEmptyConstructorTest()
+        {
+            var expected = new Light();
+
+            Database.Instance.Data.AddLight(expected);
+            Database.Instance.Load();
+
+            var actual = Database.Instance.Data.Lights.First().Value;
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+        [TestMethod]
+        public void AddLightToDatabaseNameAndIdentifierConstructorTest()
+        {
+            var expected = new Light("testlight", 1);
+
+            Database.Instance.Data.AddLight(expected);
+            Database.Instance.Load();
+
+            var actual = Database.Instance.Data.Lights.First().Value;
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+        [TestMethod]
+        public void AddLightToDatabaseFullConstructorTest()
+        {
+            var expected = new Light("testlight", 1, 255);
+
+            Database.Instance.Data.AddLight(expected);
+            Database.Instance.Load();
+
+            var actual = Database.Instance.Data.Lights.First().Value;
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+
         [TestCleanup()]
         public void Cleanup()
         {
@@ -105,6 +181,7 @@ namespace BTComTest
         {
             // Clean the database after each test
             Database.Instance.Data.Colors = new Dictionary<string, Color>();
+            Database.Instance.Data.Lights = new Dictionary<string, Light>();
 
             // Save database
             Database.Instance.Save();
