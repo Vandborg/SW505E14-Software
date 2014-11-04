@@ -5,17 +5,18 @@
 #include "stdlib.h"
 #include "string.h"
 
-
 // Own header
-#include "utility_bluetooth.h"
+#include "utility/utility_bluetooth/utility_bluetooth.h"
+
+// Own libraries
 #include "utility/utility_lcd/utility_lcd.h"
+#include "utility/utility_variables/utility_variables.h"
 #include "utility/utility_string/utility_string.h"
 #include "utility/utility_structs/utility_structs.h"
 
 // Global variables to use
 color Color_left[AMOUNT_OF_COLORS];
 color Color_right[AMOUNT_OF_COLORS];
-
 
 DeclareTask(TASK_consume_bluetooth);
 
@@ -66,52 +67,12 @@ int read_bt_buffer(char* returnbuffer)
     return bytes_read;   
 }
 
-void update_color_bt(int color_id, U8 color_sensor_id)
+void update_color_bt(int color_id)
 {
-    // Switch case to choose which color sensor and which color you to request.
-    switch(color_sensor_id)
-    {
-        case COLOR_SENSOR_LEFT:
-            switch(color_id)
-            {
-            case COLOR_RED:
-                send_package_bt(TYPE_UPDATE_COLOR, "RED:L");
-                break;
-            case COLOR_BLUE:
-                send_package_bt(TYPE_UPDATE_COLOR, "BLUE:L");
-                break;
-            case COLOR_BLACK:
-                send_package_bt(TYPE_UPDATE_COLOR, "BLACK:L");
-                break;
-            case COLOR_GRAY:
-                send_package_bt(TYPE_UPDATE_COLOR, "GRAY:L");
-                break;
-            case COLOR_WHITE:
-                send_package_bt(TYPE_UPDATE_COLOR, "WHITE:L");
-                break;
-            }
-        break;
-        case COLOR_SENSOR_RIGHT:
-            switch(color_id)
-            {
-            case COLOR_RED:
-                send_package_bt(TYPE_UPDATE_COLOR, "RED:R");
-                break;
-            case COLOR_BLUE:
-                send_package_bt(TYPE_UPDATE_COLOR, "BLUE:R");
-                break;
-            case COLOR_BLACK:
-                send_package_bt(TYPE_UPDATE_COLOR, "BLACK:R");
-                break;
-            case COLOR_GRAY:
-                send_package_bt(TYPE_UPDATE_COLOR, "GRAY:R");
-                break;
-            case COLOR_WHITE:
-                send_package_bt(TYPE_UPDATE_COLOR, "WHITE:R");
-                break;
-            }
-        break;
-    }
+    // Tell the pc you want to update your color
+    char* color_id_str;
+
+    send_package_bt(TYPE_UPDATE_COLOR, int_to_string(color_id, color_id_str));
 
     // Create buffer array with 128 bytes of space
     char data[128] = {0};
@@ -129,16 +90,15 @@ void update_color_bt(int color_id, U8 color_sensor_id)
         // once it returns, return from our own call. 
         if (ecrobot_get_systick_ms() - start_time > 1000)
         {
-            update_color_bt(color_id, color_sensor_id);    
+            update_color_bt(color_id);    
             return;
         }
     }
 
-    // Check that the package type is of the SEND_COLOR type. If it is, compute
-    // the returned r, g and b values and insert them in the correct color
-    // sensor's global data. 
+    // Check that the package type is of the SEND_COLOR type.
     if(data[1] == TYPE_SEND_COLOR)
     {
+        // Compute the returned r, g and b values
         int r = char_to_int(data[2])*100 +
                 char_to_int(data[3])*10 + 
                 char_to_int(data[4]);
@@ -151,24 +111,32 @@ void update_color_bt(int color_id, U8 color_sensor_id)
                 char_to_int(data[9])*10 + 
                 char_to_int(data[10]);
 
-        if(color_sensor_id == COLOR_SENSOR_LEFT)
+        // Update the correct color
+        switch (color_id)
         {
-
-            Color_left[color_id].red = r;
-            Color_left[color_id].green = g;
-            Color_left[color_id].blue = b;
-        }
-        else if(color_sensor_id == COLOR_SENSOR_RIGHT)
-        {
-            Color_right[color_id].red = r;
-            Color_right[color_id].green = g;
-            Color_right[color_id].blue = b;
-        }
+            case COLOR_RED_LEFT :
+            case COLOR_BLUE_LEFT :
+            case COLOR_BLACK_LEFT :
+            case COLOR_GRAY_LEFT :
+            case COLOR_WHITE_LEFT :
+                Color_left[color_id].red = r;
+                Color_left[color_id].green = g;
+                Color_left[color_id].blue = b;
+                break;
+            case COLOR_RED_RIGHT :
+            case COLOR_BLUE_RIGHT :
+            case COLOR_BLACK_RIGHT :
+            case COLOR_GRAY_RIGHT :
+            case COLOR_WHITE_RIGHT :
+                Color_right[color_id].red = r;
+                Color_right[color_id].green = g;
+                Color_right[color_id].blue = b;
+                break;
+        }   
     }
 }
 
 void save_color_bt(int color_id,
-                   U8 color_sensor_id,
                    int red, 
                    int green, 
                    int blue)
@@ -181,13 +149,9 @@ void save_color_bt(int color_id,
     int missing_zeros = 3 - strlen(red_str);
     strcpy(red_str_with_pad + missing_zeros, red_str);
 
-
-
     char green_str_with_pad[3] = {'0', '0', '0'};
     missing_zeros = 3 - strlen(green_str);
     strcpy(green_str_with_pad + missing_zeros, green_str);
-
-
 
     char blue_str_with_pad[3] = {'0', '0', '0'};
     missing_zeros = 3 - strlen(blue_str);
@@ -198,17 +162,9 @@ void save_color_bt(int color_id,
     strcat(RGB_color_array, green_str_with_pad);
     strcat(RGB_color_array, blue_str_with_pad);
 
-
 }
 
 TASK(TASK_consume_bluetooth) 
 {   
-    //char data[128];
-    //read_bt_buffer(data);
-    //lcd_display_string_with_linesplit(data);
-
-    
-
-    //memset(&data[0], 0, sizeof(data));
     TerminateTask();
 }

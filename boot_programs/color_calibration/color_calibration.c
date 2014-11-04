@@ -117,19 +117,24 @@ char* get_color_name(int color_id, char* buffer)
 {
     switch(color_id)
     {
-        case COLOR_RED: 
+        case COLOR_RED_LEFT:
+        case COLOR_RED_RIGHT: 
             buffer = "RED"; 
             break;
-        case COLOR_BLUE: 
+        case COLOR_BLUE_LEFT: 
+        case COLOR_BLUE_RIGHT: 
             buffer = "BLUE"; 
             break;
-        case COLOR_BLACK: 
+        case COLOR_BLACK_LEFT:
+        case COLOR_BLACK_RIGHT: 
             buffer = "BLACK"; 
             break;
-        case COLOR_GRAY: 
+        case COLOR_GRAY_LEFT:
+        case COLOR_GRAY_RIGHT: 
             buffer = "GRAY"; 
             break;
-        case COLOR_WHITE: 
+        case COLOR_WHITE_LEFT:
+        case COLOR_WHITE_RIGHT:
             buffer = "WHITE"; 
             break;
     }

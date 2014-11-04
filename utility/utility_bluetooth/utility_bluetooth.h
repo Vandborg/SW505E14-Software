@@ -31,9 +31,20 @@
      */
     int read_bt_buffer(char* returnbuffer);
 
-    void update_color_bt(int color_id, U8 color_sensor_id);
+    /*
+     * Update the global variable color with the given id
+     * color_id     Identifier for a color
+     */ 
+    void update_color_bt(int color_id);
+
+    /*
+     * Saves the color on the PC using BT
+     * color_id     Identifier for a color
+     * red          Red-value of the color
+     * green        Green-value of the color
+     * blue         Blue-value of the color
+     */
     void save_color_bt(int color_id,
-                   U8 color_sensor_id,
                    int red, 
                    int green, 
                    int blue);

@@ -171,10 +171,10 @@ namespace BTCom
                      *  Tell the user that the color is being fetched 
                      *  dataString contains the id of the color
                      */
-                    Console.WriteLine("[BT]: Fetching color for \"" + dataString + "\"");
+                    Console.WriteLine("[BT]: Fetching color for with ID: " + dataString + "");
 
                     // Get the color from the database
-                    Color requestedColor = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Name == dataString).Value;
+                    Color requestedColor = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == int.Parse(dataString)).Value;
 
                     // Convert the RGB-values of the color to byte array
                     byte[] returnData = requestedColor.ToRGBBytes();
