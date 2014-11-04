@@ -14,5 +14,7 @@ namespace BTCom
         {
             return Identifier.ToString();
         }
+
+        public abstract bool Equals(Object obj);
     }
 }

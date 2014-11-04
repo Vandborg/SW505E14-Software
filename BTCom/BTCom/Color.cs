@@ -34,5 +34,17 @@ namespace BTCom
             Blue = blue;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (obj is Color)
+            {
+                
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
