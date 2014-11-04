@@ -8,7 +8,8 @@ namespace BTCom
     {
         static Database _instance = null;
         static readonly object padlock = new object();
-        static string Path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/PALL-E_database.json";
+        private string _databaseName = "PALL-E_database.json";
+        private string Path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/" + _databaseName;
 
         static Database(){}
         private JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
@@ -47,6 +48,12 @@ namespace BTCom
         {
             string json = System.IO.File.ReadAllText(Path);
             Data = jsonSerializer.Deserialize<Data>(json);
+        }
+
+        public void ChangeDB(string databaseName)
+        {
+            _databaseName = databaseName;
+            Path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/" + _databaseName; 
         }
     }
 }
