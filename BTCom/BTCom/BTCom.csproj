@@ -74,6 +74,7 @@
     <Compile Include="BluetoothConnection.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Light.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Database.cs" />
