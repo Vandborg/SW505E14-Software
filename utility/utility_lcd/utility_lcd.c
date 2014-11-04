@@ -315,10 +315,25 @@ int lcd_clear_line(int line_number_id, bool update_display)
     return LCD_SUCCESS; // Everything went well
 }
 
-void lcd_display_string_with_linesplit(char* string)
+int lcd_display_string_with_linesplit(char* string)
 {
+    // Clear the display
     display_clear(false);
-    for (int i = 0; i < strlen(string); ++i)
+
+    // Compute the length of the received string
+    int string_length = strlen(string);
+
+    // Verify that the string is small enough to fit on the display.
+    // If it isnt, return -1.
+    if(string_length > (16*8))
+    {
+        return -1; 
+    }
+
+    // Loop that computes the line and column to write on. 
+    // Writes one character at a time at the specified location.
+    // Also clears the display before writing anything.
+    for (int i = 0; i < string_length; ++i)
     {
         int line_to_write_on = i / 16;
         int column_to_write_on = i % 16;
@@ -326,5 +341,7 @@ void lcd_display_string_with_linesplit(char* string)
         char print_string[2] = {string[i]};
         display_string(print_string);
     }
+
     display_update();
+    return 1;
 }

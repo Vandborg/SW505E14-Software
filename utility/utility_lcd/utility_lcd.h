@@ -45,10 +45,10 @@
     /*
      * Will display a string on the required amount of lines. Automatically comp
      * utes which lines and columns to write at. Also clears the display before
-     * writing anything. Returns nothing.
+     * writing anything. Returns -1 if the string was too long. 
      * string             String to be displayed
      */
-    void lcd_display_string_with_linesplit(char* string);
+    int lcd_display_string_with_linesplit(char* string);
 
 #endif
 
