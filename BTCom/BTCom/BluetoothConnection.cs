@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BTCom
 {
-    class BluetoothConnection : SerialPort
+    public class BluetoothConnection : SerialPort
     {
         // Delimeter bytes
         const byte START_BYTE = 0x2;
@@ -167,27 +167,24 @@ namespace BTCom
             switch (byteType)
             {
                 case TYPE_UPDATE_COLOR:
-
-                    /*  Tell the user that the color is being fetched 
+                    /*  
+                     *  Tell the user that the color is being fetched 
                      *  dataString contains the id of the color
                      */
                     Console.WriteLine("[BT]: Fetching color for \"" + dataString + "\"");
 
-                    // TODO: Get the actual color
+                    // Get the color from the database
+                    Color requestedColor = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Name == dataString).Value;
 
-                    // Return the colors (three chars foreach color)
-                    string colorString = "255000000";
-
-                    // Convert the color string to byte array
-                    byte[] returnData = Encoding.ASCII.GetBytes(colorString);
+                    // Convert the RGB-values of the color to byte array
+                    byte[] returnData = requestedColor.ToRGBBytes();
 
                     // Send the package back to the NXT
                     SendPackageBT(TYPE_SEND_COLOR, returnData);
 
                     break;
                 case TYPE_SAVE_COLOR:
-                    // 
-
+                    // TODO
                     break;
                 case TYPE_REPORT_OBSTACLE:
                     // TODO
