@@ -121,4 +121,8 @@
     #define KI                  2
     #define KD                 30
 
+    // Turn directions
+    #define RIGHT_TURN          1
+    #define LEFT_TURN           0 
+
 #endif
