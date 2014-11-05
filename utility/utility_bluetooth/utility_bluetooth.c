@@ -14,9 +14,11 @@
 #include "utility/utility_string/utility_string.h"
 #include "utility/utility_structs/utility_structs.h"
 
+
 // Global variables to use
-color Color_left[AMOUNT_OF_COLORS];
-color Color_right[AMOUNT_OF_COLORS];
+// color Color_left[AMOUNT_OF_COLORS];
+// color Color_right[AMOUNT_OF_COLORS];
+color Colors[AMOUNT_OF_COLORS];
 
 DeclareTask(TASK_consume_bluetooth);
 
@@ -70,7 +72,9 @@ int read_bt_buffer(char* returnbuffer)
 void update_color_bt(int color_id)
 {
     // Tell the pc you want to update your color
-    char* color_id_str;
+    char color_id_str[4];
+    lcd_display_line(LCD_LINE_ONE, int_to_string(color_id, color_id_str), true);
+    systick_wait_ms(5000);
 
     send_package_bt(TYPE_UPDATE_COLOR, int_to_string(color_id, color_id_str));
 
@@ -112,27 +116,9 @@ void update_color_bt(int color_id)
                 char_to_int(data[10]);
 
         // Update the correct color
-        switch (color_id)
-        {
-            case COLOR_RED_LEFT :
-            case COLOR_BLUE_LEFT :
-            case COLOR_BLACK_LEFT :
-            case COLOR_GRAY_LEFT :
-            case COLOR_WHITE_LEFT :
-                Color_left[color_id].red = r;
-                Color_left[color_id].green = g;
-                Color_left[color_id].blue = b;
-                break;
-            case COLOR_RED_RIGHT :
-            case COLOR_BLUE_RIGHT :
-            case COLOR_BLACK_RIGHT :
-            case COLOR_GRAY_RIGHT :
-            case COLOR_WHITE_RIGHT :
-                Color_right[color_id].red = r;
-                Color_right[color_id].green = g;
-                Color_right[color_id].blue = b;
-                break;
-        }   
+        Colors[color_id].red = r;
+        Colors[color_id].green = g;
+        Colors[color_id].blue = b;
     }
 }
 
@@ -141,27 +127,40 @@ void save_color_bt(int color_id,
                    int green, 
                    int blue)
 {
-    char* red_str = int_to_string(red, red_str);
-    char* green_str = int_to_string(green, green_str);
-    char* blue_str = int_to_string(blue, blue_str);
 
-    char red_str_with_pad[3] = {'0', '0', '0'};
-    int missing_zeros = 3 - strlen(red_str);
+    char color_id_str[4];
+    char red_str[4];
+    char green_str[4];
+    char blue_str[4];
+
+    int_to_string(color_id, color_id_str);
+    int_to_string(red, red_str);
+    int_to_string(green, green_str);
+    int_to_string(blue, blue_str);
+    
+    char color_id_str_with_pad[4] = {'0', '0', '0'};
+    int missing_zeros = 3 - strlen(color_id_str);
+    strcpy(color_id_str_with_pad + missing_zeros, color_id_str);
+
+    char red_str_with_pad[4] = {'0', '0', '0'};
+    missing_zeros = 3 - strlen(red_str);
     strcpy(red_str_with_pad + missing_zeros, red_str);
 
-    char green_str_with_pad[3] = {'0', '0', '0'};
+    char green_str_with_pad[4] = {'0', '0', '0'};
     missing_zeros = 3 - strlen(green_str);
     strcpy(green_str_with_pad + missing_zeros, green_str);
 
-    char blue_str_with_pad[3] = {'0', '0', '0'};
+    char blue_str_with_pad[4] = {'0', '0', '0'};
     missing_zeros = 3 - strlen(blue_str);
     strcpy(blue_str_with_pad + missing_zeros, blue_str);
     
-    char RGB_color_array[9];
-    strcpy(RGB_color_array, red_str_with_pad);
-    strcat(RGB_color_array, green_str_with_pad);
-    strcat(RGB_color_array, blue_str_with_pad);
+    char RGB_color_data[13] = "";
+    strcpy(RGB_color_data, color_id_str_with_pad);
+    strcat(RGB_color_data, red_str_with_pad);
+    strcat(RGB_color_data, green_str_with_pad);
+    strcat(RGB_color_data, blue_str_with_pad);
 
+    send_package_bt(TYPE_SAVE_COLOR, RGB_color_data);
 }
 
 TASK(TASK_consume_bluetooth) 
