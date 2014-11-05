@@ -11,7 +11,6 @@ namespace BTCom
 {   
     class Program
     {
-
         const int COLOR_RED_LEFT = 1;
         const int COLOR_RED_RIGHT = 2;
         const int COLOR_BLUE_LEFT = 3;
@@ -26,16 +25,15 @@ namespace BTCom
         private static void Main(string[] args)
         {
             PopulateDatabase();
-            BluetoothConnection bt = new BluetoothConnection("COM6");
+            BluetoothConnection bt = new BluetoothConnection("COM3");
             while (true)
             {
                 bt.ConsumePackages();
-            }
-            
+            }   
         }
 
         private static void PopulateDatabase()
-        {               
+        {
             // The list of all colors when no database exists
             List<Color> colors = new List<Color> 
             { 
