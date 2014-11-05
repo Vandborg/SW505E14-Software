@@ -180,14 +180,37 @@ namespace BTCom
 
                     // Send the package back to the NXT
                     SendPackageBT(TYPE_SEND_COLOR, returnData);
+                    
+                    break;
 
-                    break;
                 case TYPE_SAVE_COLOR:
-                    // TODO
-                    break;
+                      
+                    // Split the data into to values that needs to be saved
+                    int colorId = int.Parse(dataString.Substring(0,3)); // Use the first char as color identifer
+                    int red = int.Parse(dataString.Substring(3,3)); // Use the first char as red value
+                    int green = int.Parse(dataString.Substring(6,3)); // Use the first char as green value
+                    int blue = int.Parse(dataString.Substring(9,3)); // Use the first char as blue value
+
+                    // Tell the user that the color is being saved 
+                    Console.WriteLine("[BT]: Saving the color with ID: \'" + colorId + "\' with values {" + red + ", " + green + ", " + blue + "}");
+
+                    // Find the old color
+                    Color color =
+                        Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == colorId).Value;
+
+                    // Update the values
+                    color.Red = red;
+                    color.Green = green;
+                    color.Blue = blue;
+
+                    // Save the updated color
+                    Database.Instance.Data.AddColor(color);
+;                    break;
+
                 case TYPE_REPORT_OBSTACLE:
                     // TODO
                     break;
+
                 case TYPE_UPDATE_STATUS:
                     // TODO
                     break;
