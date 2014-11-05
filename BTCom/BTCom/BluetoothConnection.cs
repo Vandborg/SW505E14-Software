@@ -20,7 +20,7 @@ namespace BTCom
         const byte TYPE_UPDATE_STATUS = 0x44;
         const byte TYPE_FETCH_PALLET = 0x45;
         const byte TYPE_DELIVER_PALLET = 0x46;
-        const byte TYPE_SEND_COLOR = 0x47;
+        const byte TYPE_FETCHED_COLOR = 0x47;
 
         public BluetoothConnection(string portName)
             : base(portName)
@@ -179,7 +179,7 @@ namespace BTCom
                     byte[] returnData = requestedColor.ToRGBBytes();
 
                     // Send the package back to the NXT
-                    SendPackageBT(TYPE_SEND_COLOR, returnData);
+                    SendPackageBT(TYPE_FETCHED_COLOR, returnData);
                     
                     break;
 
