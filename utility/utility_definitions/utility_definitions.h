@@ -106,18 +106,18 @@
     #define SIXTH_ROTATION      6
 
     // Color definitions (for both left and right sensor)
-    #define COLOR_RED_LEFT      1
-    #define COLOR_RED_RIGHT     2
-    #define COLOR_BLUE_LEFT     3
-    #define COLOR_BLUE_RIGHT    4
-    #define COLOR_BLACK_LEFT    5
-    #define COLOR_BLACK_RIGHT   6
-    #define COLOR_GRAY_LEFT     7
-    #define COLOR_GRAY_RIGHT    8
-    #define COLOR_WHITE_LEFT    9
-    #define COLOR_WHITE_RIGHT   10
+    #define COLOR_RED_LEFT       1
+    #define COLOR_RED_RIGHT      2
+    #define COLOR_BLUE_LEFT      3
+    #define COLOR_BLUE_RIGHT     4
+    #define COLOR_BLACK_LEFT     5
+    #define COLOR_BLACK_RIGHT    6
+    #define COLOR_GRAY_LEFT      7
+    #define COLOR_GRAY_RIGHT     8
+    #define COLOR_WHITE_LEFT     9
+    #define COLOR_WHITE_RIGHT   10 
 
-    #define AMOUNT_OF_COLORS    5
+    #define AMOUNT_OF_COLORS    10
     
     // Linefollow PID-controller definitions
     #define TP 60
