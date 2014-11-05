@@ -76,7 +76,7 @@ namespace BTCom
             if (btInputBuffer.Length > endIndexOfPackage + 1)
             {
                 // Allocate space for a new array to be splitted
-                int newInputLength = btInputBuffer.Length - endIndexOfPackage;
+                int newInputLength = btInputBuffer.Length - (endIndexOfPackage + 1);
                 byte[] newBtInputBuffer = new byte[newInputLength];
 
                 // Copies the rest of the array 
