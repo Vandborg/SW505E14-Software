@@ -166,11 +166,11 @@ namespace BTCom
             switch (byteType)
             {
                 case TYPE_UPDATE_COLOR:
-                    /*  
-                     *  Tell the user that the color is being fetched 
-                     *  dataString contains the id of the color
-                     */
-                    Console.WriteLine("[BT]: Fetching color for with ID: " + dataString + "");
+                     
+                     // Tell the user that the color is being fetched 
+                     // dataString contains the id of the color
+                     
+                    Console.WriteLine("[BT]: Fetching color with ID: \'" + dataString + "\'");
 
                     // Get the color from the database
                     Color requestedColor = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == int.Parse(dataString)).Value;
