@@ -169,7 +169,6 @@ namespace BTCom
                      
                      // Tell the user that the color is being fetched 
                      // dataString contains the id of the color
-                     
                     Console.WriteLine("[BT]: Fetching color with ID: \'" + dataString + "\'");
 
                     // Get the color from the database
