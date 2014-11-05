@@ -37,10 +37,9 @@ namespace BTCom
                 {
                     // Catched by retrying after sleep
                     Console.WriteLine("[BT]: Connection failed. Attempting to connect.");
-                    System.Threading.Thread.Sleep(500);
                 }
             }
-
+            
             // Tell the user that the connection was established
             Console.WriteLine("[BT]: Connection established.");
 
@@ -77,7 +76,7 @@ namespace BTCom
             if (btInputBuffer.Length > endIndexOfPackage + 1)
             {
                 // Allocate space for a new array to be splitted
-                int newInputLength = btInputBuffer.Length - endIndexOfPackage;
+                int newInputLength = btInputBuffer.Length - (endIndexOfPackage + 1);
                 byte[] newBtInputBuffer = new byte[newInputLength];
 
                 // Copies the rest of the array 
@@ -90,38 +89,38 @@ namespace BTCom
         }
 
         // Sends a package with a given type
-        public int SendPackageBT(byte package_type, byte[] package_data)
+        public int SendPackageBT(byte packageType, byte[] package_data)
         {
             // Calculate the size of package_data
-            int package_data_size = package_data.Length;
+            int packageDataSize = package_data.Length;
 
             // Calculate the total package size, assuming the package data size and
             // start, end, and type bytes.
-            int package_total_size = (package_data_size + 3);
+            int packageTotalSize = (packageDataSize + 3);
 
             // Check whether total data size is bigger than 256 bytes.
-            if (package_total_size > 256)
+            if (packageTotalSize > 256)
             {
                 // TODO: Send an error code for too big data array
                 return 0;
             }
 
             // Make an array that is as large as the total data size of the package.
-            byte[] package_to_send = new byte[package_total_size];
+            byte[] packageToSend = new byte[packageTotalSize];
 
             // Putting the start, end, and type byte in the array.
-            package_to_send[0] = START_BYTE;
-            package_to_send[1] = package_type;
-            package_to_send[package_total_size - 1] = END_BYTE;
+            packageToSend[0] = START_BYTE;
+            packageToSend[1] = packageType;
+            packageToSend[packageTotalSize - 1] = END_BYTE;
 
             // Fill the package data into the array at the correct array index
-            for (int i = 0; i < package_data_size; i++)
+            for (int i = 0; i < packageDataSize; i++)
             {
-                package_to_send[i + 2] = (byte)package_data[i];
+                packageToSend[i + 2] = (byte)package_data[i];
             }
 
             // Send the request over BT
-            this.Write(package_to_send, 0, package_total_size);
+            this.Write(packageToSend, 0, packageTotalSize);
 
             // Wait to ensure that continous requests is possible
             System.Threading.Thread.Sleep(1);
@@ -167,11 +166,11 @@ namespace BTCom
             switch (byteType)
             {
                 case TYPE_UPDATE_COLOR:
-                    /*  
-                     *  Tell the user that the color is being fetched 
-                     *  dataString contains the id of the color
-                     */
-                    Console.WriteLine("[BT]: Fetching color for with ID: " + dataString + "");
+                     
+                     // Tell the user that the color is being fetched 
+                     // dataString contains the id of the color
+                     
+                    Console.WriteLine("[BT]: Fetching color with ID: \'" + dataString + "\'");
 
                     // Get the color from the database
                     Color requestedColor = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == int.Parse(dataString)).Value;
@@ -181,14 +180,37 @@ namespace BTCom
 
                     // Send the package back to the NXT
                     SendPackageBT(TYPE_SEND_COLOR, returnData);
+                    
+                    break;
 
-                    break;
                 case TYPE_SAVE_COLOR:
-                    // TODO
-                    break;
+                      
+                    // Split the data into to values that needs to be saved
+                    int colorId = int.Parse(dataString.Substring(0,3)); // Use the first char as color identifer
+                    int red = int.Parse(dataString.Substring(3,3)); // Use the first char as red value
+                    int green = int.Parse(dataString.Substring(6,3)); // Use the first char as green value
+                    int blue = int.Parse(dataString.Substring(9,3)); // Use the first char as blue value
+
+                    // Tell the user that the color is being saved 
+                    Console.WriteLine("[BT]: Saving the color with ID: \'" + colorId + "\' with values {" + red + ", " + green + ", " + blue + "}");
+
+                    // Find the old color
+                    Color color =
+                        Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == colorId).Value;
+
+                    // Update the values
+                    color.Red = red;
+                    color.Green = green;
+                    color.Blue = blue;
+
+                    // Save the updated color
+                    Database.Instance.Data.AddColor(color);
+;                    break;
+
                 case TYPE_REPORT_OBSTACLE:
                     // TODO
                     break;
+
                 case TYPE_UPDATE_STATUS:
                     // TODO
                     break;

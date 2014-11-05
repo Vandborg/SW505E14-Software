@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Management.Instrumentation;
 using System.Web.Script.Serialization;
 
 namespace BTCom
@@ -36,6 +37,7 @@ namespace BTCom
                     if(_instance == null)
                     {
                         _instance = new Database();
+                        _instance.Load();
                     }
                     return _instance;   
                 }
@@ -52,8 +54,16 @@ namespace BTCom
 
         public void Load()
         {
-            string json = System.IO.File.ReadAllText(DatabaseName);
-            Data = jsonSerializer.Deserialize<Data>(json);
+            if (System.IO.File.Exists((DatabaseName)))
+            {
+                string json = System.IO.File.ReadAllText(DatabaseName);
+                Data = jsonSerializer.Deserialize<Data>(json);
+            }
+            else
+            {
+                this.Save();
+            }
+        
         }
     }
 }
