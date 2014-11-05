@@ -89,7 +89,7 @@ namespace BTCom
         }
 
         // Sends a package with a given type
-        public int SendPackageBT(byte packageType, byte[] package_data)
+        private int SendPackageBT(byte packageType, byte[] package_data)
         {
             // Calculate the size of package_data
             int packageDataSize = package_data.Length;
