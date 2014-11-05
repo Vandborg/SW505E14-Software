@@ -37,10 +37,9 @@ namespace BTCom
                 {
                     // Catched by retrying after sleep
                     Console.WriteLine("[BT]: Connection failed. Attempting to connect.");
-                    System.Threading.Thread.Sleep(500);
                 }
             }
-
+            
             // Tell the user that the connection was established
             Console.WriteLine("[BT]: Connection established.");
 
