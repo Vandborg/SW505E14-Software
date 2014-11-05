@@ -8,7 +8,6 @@
     #include "utility/utility_structs/utility_structs.h"
 
     // Color values for the sensors
-    extern color Color_left[AMOUNT_OF_COLORS];
-    extern color Color_right[AMOUNT_OF_COLORS];
+    extern color Colors[AMOUNT_OF_COLORS];
 
 #endif
