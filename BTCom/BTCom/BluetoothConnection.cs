@@ -89,38 +89,38 @@ namespace BTCom
         }
 
         // Sends a package with a given type
-        public int SendPackageBT(byte package_type, byte[] package_data)
+        public int SendPackageBT(byte packageType, byte[] package_data)
         {
             // Calculate the size of package_data
-            int package_data_size = package_data.Length;
+            int packageDataSize = package_data.Length;
 
             // Calculate the total package size, assuming the package data size and
             // start, end, and type bytes.
-            int package_total_size = (package_data_size + 3);
+            int packageTotalSize = (packageDataSize + 3);
 
             // Check whether total data size is bigger than 256 bytes.
-            if (package_total_size > 256)
+            if (packageTotalSize > 256)
             {
                 // TODO: Send an error code for too big data array
                 return 0;
             }
 
             // Make an array that is as large as the total data size of the package.
-            byte[] package_to_send = new byte[package_total_size];
+            byte[] packageToSend = new byte[packageTotalSize];
 
             // Putting the start, end, and type byte in the array.
-            package_to_send[0] = START_BYTE;
-            package_to_send[1] = package_type;
-            package_to_send[package_total_size - 1] = END_BYTE;
+            packageToSend[0] = START_BYTE;
+            packageToSend[1] = packageType;
+            packageToSend[packageTotalSize - 1] = END_BYTE;
 
             // Fill the package data into the array at the correct array index
-            for (int i = 0; i < package_data_size; i++)
+            for (int i = 0; i < packageDataSize; i++)
             {
-                package_to_send[i + 2] = (byte)package_data[i];
+                packageToSend[i + 2] = (byte)package_data[i];
             }
 
             // Send the request over BT
-            this.Write(package_to_send, 0, package_total_size);
+            this.Write(packageToSend, 0, packageTotalSize);
 
             // Wait to ensure that continous requests is possible
             System.Threading.Thread.Sleep(1);
