@@ -12,7 +12,7 @@
     #define TYPE_UPDATE_STATUS 0x44
     #define TYPE_FETCH_PALLET 0x45
     #define TYPE_DELIVER_PALLET 0x46
-    #define TYPE_SEND_COLOR 0x47
+    #define TYPE_FETCHED_COLOR 0x47
 
     // Include definitions
     #include "utility/utility_definitions/utility_definitions.h"

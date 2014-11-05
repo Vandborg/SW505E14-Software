@@ -100,7 +100,7 @@ void update_color_bt(int color_id)
     }
 
     // Check that the package type is of the SEND_COLOR type.
-    if(data[1] == TYPE_SEND_COLOR)
+    if(data[1] == TYPE_FETCHED_COLOR)
     {
         // Compute the returned r, g and b values
         int r = char_to_int(data[2])*100 +
