@@ -11,4 +11,10 @@
         int blue;
     } color;
 
+    typedef struct
+    {
+        char* directions;
+        int next;
+    } navigation;
+
 #endif

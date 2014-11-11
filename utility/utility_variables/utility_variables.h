@@ -9,5 +9,6 @@
 
     // Color values for the sensors
     extern color Colors[AMOUNT_OF_COLORS];
+    extern navigation Navigation;
 
 #endif
