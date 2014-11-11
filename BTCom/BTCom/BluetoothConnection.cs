@@ -30,7 +30,7 @@ namespace BTCom
         const char ERROR = 'E';
 
         // Joblist queue of package type and data
-        private Queue<Tuple<byte, byte[]>> JobList = new Queue<Tuple<byte,byte[]>>();
+        private List<Tuple<byte, byte[]>> JobList = new List<Tuple<byte,byte[]>>();
 
         // The current job 
         private Tuple<byte, byte[]> CurrentJob;
@@ -71,7 +71,7 @@ namespace BTCom
 
             Console.WriteLine("[BT]: Adding NavigateTo-job to JobList");
 
-            JobList.Enqueue(new Tuple<byte, byte[]>(TYPE_NAVIGATE_TO,directionArray));
+            JobList.Add(new Tuple<byte, byte[]>(TYPE_NAVIGATE_TO,directionArray));
         }
 
         // Make the NXT fetch a pallet at the end of the path
@@ -84,7 +84,7 @@ namespace BTCom
 
             Console.WriteLine("[BT]: Adding FetchPallet-job to JobList");
 
-            JobList.Enqueue(new Tuple<byte, byte[]>(TYPE_FETCH_PALLET, directionArray));
+            JobList.Add(new Tuple<byte, byte[]>(TYPE_FETCH_PALLET, directionArray));
         }
 
         // Make the NXT deliver a pallet at the end of the path
@@ -97,19 +97,73 @@ namespace BTCom
 
             Console.WriteLine("[BT]: Adding DeliverPallet-job to JobList");
 
-            JobList.Enqueue(new Tuple<byte, byte[]>(TYPE_DELIVER_PALLET, directionArray));
+            JobList.Add(new Tuple<byte, byte[]>(TYPE_DELIVER_PALLET, directionArray));
         }
 
         // Create a job based on string input (console input)
-        public void CreateJob(string job)
+        public void CreateJob(string input)
         {   
             // Split the input
-            string[] jobSplit = job.Split(' ');
-            string cmd = jobSplit[0];
+            string[] inputSplit = input.Split(' ');
+            string cmd = inputSplit[0];
 
             // Check if the input is 
             switch (cmd)
             {
+                case "joblist":
+                    if (inputSplit.Length == 1)
+                    {
+                        int c = 0;
+                        foreach(Tuple<byte,byte[]> job in JobList)
+                        {
+                            Console.WriteLine("[BT]: Job #" + c + " (" + ((char)job.Item1).ToString() + ", " + Encoding.UTF8.GetString(job.Item2, 0, job.Item2.Length) + ")");
+                            c++;
+                        }
+                    }
+                    else if (inputSplit.Length > 1)
+                    {
+                        if (inputSplit[1] == "remove")
+                        {
+                            if (inputSplit.Length > 2)
+                            {
+                                int index = -1;
+                                try
+                                {
+                                    index = int.Parse(inputSplit[2]);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine("[BT]: Invalid argument! Correct use => joblist [\"remove\"] [Index]");
+                                }
+
+                                if (index != -1)
+                                {
+                                    if (index < JobList.Count)
+                                    {
+                                        JobList.RemoveAt(index);
+                                        Console.WriteLine("[BT]: Removed job at index " + index + ".");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("[BT]: Cant remove the job on that index. There are only " + JobList.Count + " jobs in the list.");
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                Console.WriteLine("[BT]: Invalid use! Correct use => joblist [\"remove\"] [Index]");
+                            }
+                        }
+                        else if(inputSplit[1] == "clear")
+                        {
+                            JobList.RemoveRange(0, JobList.Count);
+                        }
+                        else
+                        {
+                            Console.WriteLine("[BT]: Correct use => joblist [\"remove\" Index]/[\"clear\"]");
+                        }
+                    }
+                    break;
                 case "navigate" :
                     // TODO: Use params to create path
                     NavigateNXTTo(new Path());
@@ -123,13 +177,42 @@ namespace BTCom
                     FetchPallet(new Path());
                     break;
                 case "help" :
-                    Console.WriteLine("[BT]: Here is a list of commands");
-                    Console.WriteLine("navigate \t: Navigates PALL-E to specific place.");
-                    Console.WriteLine("fetch    \t: PALL-E is sent to fetch a pallet at a given place.");
-                    Console.WriteLine("deliver  \t: PALL-E is sent to deliver a pallet at a given place.");
+                    if (inputSplit.Length > 1)
+                    {
+                        switch (inputSplit[1])
+                        {
+                            case "navigate":
+                                Console.WriteLine("[BT]: Correct use => navigate {StartNode} {EndNode}");
+                                break;
+                            case "fetch":
+                                Console.WriteLine("[BT]: Correct use => fetch {StartNode} {EndNode}");
+                                break;
+                            case "deliver":
+                                Console.WriteLine("[BT]: Correct use => deliver {StartNode} {EndNode}");
+                                break;
+                            case "joblist":
+                                Console.WriteLine("[BT]: Correct use => joblist [\"remove\" Index]/[\"clear\"]");
+                                break;
+                            default :
+                                Console.WriteLine("[BT]: Invalid parameter for help. Correct use => help [Command]");
+                                break;
+                        }
+                    }
+                    else if (inputSplit.Length == 1)
+                    {
+                        Console.WriteLine("[BT]: Here is a list of commands");
+                        Console.WriteLine("deliver  \t: PALL-E is sent to deliver a pallet at a given place.");
+                        Console.WriteLine("fetch    \t: PALL-E is sent to fetch a pallet at a given place.");
+                        Console.WriteLine("joblist  \t: Print the joblist for PALL-E.");
+                        Console.WriteLine("navigate \t: Navigates PALL-E to specific place.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("[BT]: Invalid parameter for help. Correct use => help [Command]");
+                    }
                     break;
                 default :
-                Console.WriteLine("[BT]: Invalid input, type help for all commands.");
+                    Console.WriteLine("[BT]: Invalid input, type help for all commands.");
                     break;
             }
 
@@ -316,7 +399,7 @@ namespace BTCom
                             if (JobList.Count > 0)
                             {
                                 // Peek in the queue
-                                Tuple<byte, byte[]> nextJob = JobList.Peek();
+                                Tuple<byte, byte[]> nextJob = JobList[0];
 
                                 // Convert the items to string in order to print them
                                 string itemOne = ((char)nextJob.Item1).ToString();
@@ -339,7 +422,8 @@ namespace BTCom
                             if (NXTStatus == IDLE)
                             {
                                 // Remove the job that is being executed currently
-                                CurrentJob = JobList.Dequeue();
+                                CurrentJob = JobList[0];
+                                JobList.RemoveAt(0);
                             }
 
                             // Update the internal status
