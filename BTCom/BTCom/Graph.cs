@@ -103,5 +103,118 @@ namespace BTCom
             // Check if all properties are the same
             return sameIdentifier && sameNodeLength;
         }
+
+        public Path ShortestPath(Node from, Node to)
+        {
+            // Make sure that the nodes are in the graph
+            if (!(Nodes.FindAll(x => x.Equals(from)).Count > 0 && Nodes.FindAll(x => x.Equals(to)).Count > 0))
+            {
+                throw new Exception("Either 'from'- or 'to'-node not in graph!");
+            }
+
+            List<Node> Q = new List<Node>();
+
+            List<KeyValuePair<Node, int>> distance = new List<KeyValuePair<Node, int>>();
+            List<KeyValuePair<Node, Node>> previous = new List<KeyValuePair<Node, Node>>();
+
+            foreach (Node node in Nodes)
+            {
+                if (!node.Equals(from))
+                {
+                    // Set the distance of all nodes to infinity
+                    distance.Add(new KeyValuePair<Node, int>(node, Int32.MaxValue));
+
+                    // Set the previous node for all nodes to null (undefined)
+                    previous.Add(new KeyValuePair<Node, Node>(node, null));
+                }
+
+                // Add the node to Q
+                Q.Add(node);
+            }
+
+            // The distance to the node "from" is always 0
+            distance.Add(new KeyValuePair<Node, int>(from, 0));
+
+            // While there are nodes to inspect
+            while (Q.Count > 0)
+            {
+                // Find the node with lowest distance in Q
+                Node selectedNode = Q.First();
+                int oldDistance = Int32.MaxValue;
+
+                foreach (Node node in Q)
+                {
+                    int newDistance = distance.Find(x => x.Key.Equals(node)).Value;
+
+                    if (selectedNode == null || newDistance < oldDistance)
+                    {
+                        selectedNode = node;
+                        oldDistance = newDistance;
+                    }
+                }
+
+                // Remove the node from u
+                Q.Remove(selectedNode);
+
+                foreach (KeyValuePair<Node, Edge> neighbour in selectedNode.Neighbours)
+                {
+                    // Find the distance to the selected
+                    int distanceToSelectedNode = distance.Find(x => x.Key.Equals(selectedNode)).Value;
+
+                    // Find the distance to the selected neighbour
+                    int distanceToNeighbour = selectedNode.Neighbours.Find(x => x.Key.Equals(neighbour.Key)).Value.Weight;
+
+                    // Add the two distances
+                    int alt = distanceToSelectedNode + distanceToNeighbour;
+
+                    KeyValuePair<Node, int> neighbourDistance = distance.Find(x => x.Key.Equals(neighbour.Key));
+                    KeyValuePair<Node, Node> neighbourPrevious = previous.Find(x => x.Key.Equals(neighbour.Key));
+
+                    // Check if this new distance (alt) is shorter than what we know
+                    if(alt < neighbourDistance.Value)
+                    {
+                        // Update the distance
+                        distance.Remove(neighbourDistance);
+                        distance.Add(new KeyValuePair<Node, int>(neighbour.Key, alt));
+
+                        // Set previous of neighbour to selectednode
+                        previous.Remove(neighbourPrevious);
+                        previous.Add(new KeyValuePair<Node, Node>(neighbour.Key, selectedNode));
+                    }
+                }
+            }
+
+            Path p = new Path();
+
+            Node lastNode = to;
+            bool previousNode = true;
+
+            p.Nodes.Add(lastNode);
+
+            while (previousNode)
+            {
+                KeyValuePair<Node, Node> newPreviousNode = previous.Find(x => x.Key.Equals(lastNode));
+
+                if (newPreviousNode.Key == null && newPreviousNode.Value == null)
+                {
+                    // There is a path, everything went well
+                    previousNode = false;
+                }
+                else if (newPreviousNode.Value != null)
+                {
+                    p.Nodes.Add(newPreviousNode.Value);
+                    lastNode = newPreviousNode.Value;
+                }
+                else
+                {
+                    // There is no path, no path possible!  
+                    previousNode = false;
+                }
+            }
+
+            p.Nodes.Reverse();
+
+            return p;
+        }
     }
 }
