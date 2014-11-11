@@ -32,5 +32,17 @@ namespace BTCom
             // Check if all properties are the same
             return sameIdentifier && samePathLength && samePathNodes;
         }
+
+        public override string ToString()
+        {
+            string s = "";
+
+            foreach (Node node in Nodes)
+            {
+                s += " -> " + node.Name;
+            }
+
+            return s;
+        }
     }
 }
