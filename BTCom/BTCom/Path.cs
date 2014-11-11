@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BTCom
 {
-    class Path
+    public class Path
     {
     }
 }
