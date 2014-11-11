@@ -207,8 +207,8 @@ namespace BTCom
                 }
                 else
                 {
-                    // There is no path, no path possible!  
-                    previousNode = false;
+                    // Gab in path, unable to create path!
+                    return null;
                 }
             }
 
