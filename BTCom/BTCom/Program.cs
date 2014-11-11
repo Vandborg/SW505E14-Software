@@ -3,36 +3,64 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 
 namespace BTCom
 {   
     class Program
     {
-        const int COLOR_RED_LEFT = 1;
-        const int COLOR_RED_RIGHT = 2;
-        const int COLOR_BLUE_LEFT = 3;
-        const int COLOR_BLUE_RIGHT = 4;
-        const int COLOR_BLACK_LEFT = 5;
-        const int COLOR_BLACK_RIGHT = 6;
-        const int COLOR_GRAY_LEFT = 7;
-        const int COLOR_GRAY_RIGHT = 8;
-        const int COLOR_WHITE_LEFT = 9;
-        const int COLOR_WHITE_RIGHT = 10;
-
+        // Main 
         private static void Main(string[] args)
         {
+            // Make sure the database is populated
             PopulateDatabase();
+
+            // Open the bt-connection
             BluetoothConnection bt = new BluetoothConnection("COM3");
+
+            // Instantiate threads
+            Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
+            Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
+
+            // Start the threads
+            ConsoleInputThread.Start();
+            ConsumeBTThread.Start();            
+        }
+
+        // Constantly checks console input
+        private static void CheckConsoleInput(BluetoothConnection bt)
+        {
+            while (true)
+            {
+                bt.CreateJob(Console.ReadLine());
+            }
+        }
+
+        // Constantly consumes the produces packages from the NXT
+        private static void ConsumeBT(BluetoothConnection bt)
+        {
             while (true)
             {
                 bt.ConsumePackages();
-            }   
+            }
         }
 
+        // Populates the database
         private static void PopulateDatabase()
         {
+            // Color defines
+            const int COLOR_RED_LEFT = 1;
+            const int COLOR_RED_RIGHT = 2;
+            const int COLOR_BLUE_LEFT = 3;
+            const int COLOR_BLUE_RIGHT = 4;
+            const int COLOR_BLACK_LEFT = 5;
+            const int COLOR_BLACK_RIGHT = 6;
+            const int COLOR_GRAY_LEFT = 7;
+            const int COLOR_GRAY_RIGHT = 8;
+            const int COLOR_WHITE_LEFT = 9;
+            const int COLOR_WHITE_RIGHT = 10;
+
             // The list of all colors when no database exists
             List<Color> colors = new List<Color> 
             { 
@@ -51,6 +79,7 @@ namespace BTCom
             // Check if the database contains all colors
             foreach (Color c in colors)
             {
+                // If the color was not found insert it
                 Color color = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == c.Identifier).Value;
                 if (color == null)
                 {
