@@ -17,7 +17,6 @@ namespace BTCom
             set { _databaseName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/" + value + ".json" ; }
         }
             
-     
         static Database(){}
         private JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
         private Data _data = new Data();
