@@ -23,6 +23,19 @@ namespace BTCom
         const byte TYPE_FETCHED_COLOR = 0x47;
         const byte TYPE_NAVIGATE_TO = 0x48;
 
+        // NXT statuses 
+        char NXTStatus = BUSY;
+        const char IDLE = 'I';
+        const char BUSY = 'B';
+        const char ERROR = 'E';
+
+        // Joblist queue of package type and data
+        private Queue<Tuple<byte, byte[]>> JobList = new Queue<Tuple<byte,byte[]>>();
+
+        // The current job 
+        private Tuple<byte, byte[]> CurrentJob;
+
+        // Constructor
         public BluetoothConnection(string portName)
             : base(portName)
         {
@@ -46,6 +59,80 @@ namespace BTCom
 
             this.ReadTimeout = 10000; // Wait 10 sec before timeout on readbuffer
             this.WriteTimeout = 10000; // Wait 10 sec before timeout on writebuffer
+        }
+
+        // Make the NXT navigate according to the path
+        public void NavigateNXTTo(Path path)
+        {
+            // TODO: Get the directions out of the path
+            // TODO: Conver that data to a string array
+            string direction = "LLRSRL";
+            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
+
+            Console.WriteLine("[BT]: Adding NavigateTo-job to JobList");
+
+            JobList.Enqueue(new Tuple<byte, byte[]>(TYPE_NAVIGATE_TO,directionArray));
+        }
+
+        // Make the NXT fetch a pallet at the end of the path
+        public void FetchPallet(Path path)
+        {
+            // TODO: Get the directions out of the path
+            // TODO: Conver that data to a string array
+            string direction = "LLRSRL";
+            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
+
+            Console.WriteLine("[BT]: Adding FetchPallet-job to JobList");
+
+            JobList.Enqueue(new Tuple<byte, byte[]>(TYPE_FETCH_PALLET, directionArray));
+        }
+
+        // Make the NXT deliver a pallet at the end of the path
+        public void DeliverPallet(Path path)
+        {
+            // TODO: Get the directions out of the path
+            // TODO: Conver that data to a string array
+            string direction = "LLRSRL";
+            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
+
+            Console.WriteLine("[BT]: Adding DeliverPallet-job to JobList");
+
+            JobList.Enqueue(new Tuple<byte, byte[]>(TYPE_DELIVER_PALLET, directionArray));
+        }
+
+        // Create a job based on string input (console input)
+        public void CreateJob(string job)
+        {   
+            // Split the input
+            string[] jobSplit = job.Split(' ');
+            string cmd = jobSplit[0];
+
+            // Check if the input is 
+            switch (cmd)
+            {
+                case "navigate" :
+                    // TODO: Use params to create path
+                    NavigateNXTTo(new Path());
+                    break;
+                case "deliver" :
+                    // TODO: Use params to create path
+                    DeliverPallet(new Path());
+                    break;
+                case "fetch" :
+                    // TODO: Use params to create path
+                    FetchPallet(new Path());
+                    break;
+                case "help" :
+                    Console.WriteLine("[BT]: Here is a list of commands");
+                    Console.WriteLine("navigate \t: Navigates PALL-E to specific place.");
+                    Console.WriteLine("fetch    \t: PALL-E is sent to fetch a pallet at a given place.");
+                    Console.WriteLine("deliver  \t: PALL-E is sent to deliver a pallet at a given place.");
+                    break;
+                default :
+                Console.WriteLine("[BT]: Invalid input, type help for all commands.");
+                    break;
+            }
+
         }
 
         // Consumes all packages on the buffer one at the time
@@ -211,9 +298,62 @@ namespace BTCom
                     // TODO
                     break;
 
+                // Check if the NXT updated its status
                 case TYPE_UPDATE_STATUS:
-                    // TODO
+                {
+                    if (dataString[0] != NXTStatus)
+                    {
+                        // Tell the user what the status the NXT updated to
+                        Console.WriteLine("[BT]: NXT-Status: " + dataString);
+                    }
+
+                    // Check what status the NXT told us
+                    switch (dataString[0])
+                    {
+                        // The NXT was idle
+                        case IDLE:
+                            // Check if there is any jobs to be performed
+                            if (JobList.Count > 0)
+                            {
+                                // Peek in the queue
+                                Tuple<byte, byte[]> nextJob = JobList.Peek();
+
+                                // Convert the items to string in order to print them
+                                string itemOne = ((char)nextJob.Item1).ToString();
+                                string itemTwo = Encoding.UTF8.GetString(nextJob.Item2, 0, nextJob.Item2.Length);
+
+                                // Tell the user what job was sent
+                                Console.WriteLine("[BT]: Sending the next job in the JobList (" + itemOne + "," + itemTwo + ") " + (JobList.Count-1) + " jobs left in the JobList");
+
+                                // Send the job to the NXT
+                                SendPackageBT(nextJob.Item1, nextJob.Item2);
+                            }
+                            // Update the internal status
+                            NXTStatus = IDLE;
+                            break;
+
+                        // The NXT was busy
+                        case BUSY:
+
+                            // If the NXT was just idle, you know you have given it a job
+                            if (NXTStatus == IDLE)
+                            {
+                                // Remove the job that is being executed currently
+                                CurrentJob = JobList.Dequeue();
+                            }
+
+                            // Update the internal status
+                            NXTStatus = BUSY;
+                            break;
+
+                        // The NXT encoutered an error
+                        case ERROR:
+                            // Tell the suer that the NXT encountered an error
+                            Console.WriteLine("[BT]: The NXT has encountered an error!");
+                            break;
+                    }
                     break;
+                }
             }
             return;
         }
