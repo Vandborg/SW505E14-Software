@@ -27,7 +27,7 @@ namespace BTCom
             // Compare properties of both objects
             var sameIdentifier = this.Identifier == other.Identifier;
             var samePathLength = this.Nodes.Count == other.Nodes.Count;
-            var samePathNodes = Nodes.All(node => node != other.Nodes[this.Nodes.IndexOf(node)]);
+            var samePathNodes = Nodes.All(node => node.Equals(other.Nodes[this.Nodes.IndexOf(node)]));
 
             // Check if all properties are the same
             return sameIdentifier && samePathLength && samePathNodes;
