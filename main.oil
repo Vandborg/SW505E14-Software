@@ -24,7 +24,7 @@ CPU ATMEL_AT91SAM7S256
     AUTOSTART = TRUE { APPMODE = appmode1; };
     PRIORITY = 2; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
-    SCHEDULE = FULL;
+    SCHEDULE = NON;
     STACKSIZE = 512; /* Stack size */ 
   };
 

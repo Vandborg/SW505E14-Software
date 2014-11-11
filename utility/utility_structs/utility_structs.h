@@ -11,4 +11,11 @@
         int blue;
     } color;
 
+    typedef struct
+    {
+        char directions[128];
+        int next;
+        int type_of_task;
+    } navigation;
+
 #endif
