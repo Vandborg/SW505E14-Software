@@ -30,7 +30,7 @@
      * Function to receive data from the computer. Returns an int defining the
      * received amount of bytes. Max size possible to receive is 128 bytes. 
      */
-    int read_bt_buffer(char* returnbuffer);
+    int read_buffer_bt(char* returnbuffer);
 
     /*
      * Update the global variable color with the given id
@@ -49,6 +49,19 @@
                    int red, 
                    int green, 
                    int blue);
+
+    /* 
+     * Receives an entire BT package and inputs the correct path, the amount of
+     * steps and which type of task is being done into global var.
+     * package     Contains the entire data package received from pc.
+     */
+    void create_path_bt(char* package);
+
+    /*
+     * Tells the pc what the current status is. Can either be idle, busy or 
+     * error. 
+     */
+    void update_status_bt(void);
    
 
 #endif
