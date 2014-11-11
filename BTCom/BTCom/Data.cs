@@ -12,8 +12,9 @@ namespace BTCom
     public class Data
     {
         //Keys have to be strings in Dictionaries to be serializable to json
-        public Dictionary<String, Color> Colors = new Dictionary<String, Color>();
-        public Dictionary<String, Light> Lights = new Dictionary<String, Light>();
+        public Dictionary<int, Color> Colors = new Dictionary<int, Color>();
+        public Dictionary<int, Light> Lights = new Dictionary<int, Light>();
+        public Dictionary<int, Graph> Graphs = new Dictionary<int, Graph>();
 
         public Data()
         { 
@@ -24,19 +25,19 @@ namespace BTCom
         {
             try
             {
-                Colors.Add(color.ID(), color);
+                Colors.Add(color.Identifier, color);
             }
             catch (ArgumentException)
             {
-                Colors.Remove(color.ID());
-                Colors.Add(color.ID(), color);
+                Colors.Remove(color.Identifier);
+                Colors.Add(color.Identifier, color);
             }
             Database.Instance.Save();
         }
 
         public bool RemoveColor(Color color)
         {
-            bool result = Colors.Remove(color.ID());
+            bool result = Colors.Remove(color.Identifier);
             
             if (result)
             {
@@ -50,19 +51,45 @@ namespace BTCom
         {
             try
             {
-                Lights.Add(light.ID(), light);
+                Lights.Add(light.Identifier, light);
             }
             catch (ArgumentException)
             {
-                Lights.Remove(light.ID());
-                Lights.Add(light.ID(), light);
+                Lights.Remove(light.Identifier);
+                Lights.Add(light.Identifier, light);
             }
             Database.Instance.Save();   
         }
 
         public bool RemoveLight(Light light)
         {
-            bool result = Lights.Remove(light.ID());
+            bool result = Lights.Remove(light.Identifier);
+
+            if (result)
+            {
+                Database.Instance.Save();
+            }
+
+            return result;
+        }
+
+        public void AddGraph(Graph graph)
+        {
+            try
+            {
+                Graphs.Add(graph.Identifier, graph);
+            }
+            catch (ArgumentException)
+            {
+                Graphs.Remove(graph.Identifier);
+                Graphs.Add(graph.Identifier, graph);
+            }
+            Database.Instance.Save();
+        }
+
+        public bool RemoveGraph(Graph graph)
+        {
+            bool result = Graphs.Remove(graph.Identifier);
 
             if (result)
             {

@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 
- 
 namespace BTCom
 {   
     class Program

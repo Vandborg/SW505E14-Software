@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
-using System.Management.Instrumentation;
 using System.Web.Script.Serialization;
 
 namespace BTCom
@@ -11,13 +11,20 @@ namespace BTCom
         static readonly object padlock = new object();
         private string _databaseName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/PALL-E_database.json";
 
+        private bool _debugMode = false;
+        public bool DebugMode
+        {
+            get { return _debugMode; }
+            set { _debugMode = value; }
+        }
+
         public string DatabaseName
         {
             get { return _databaseName; }
-            set { _databaseName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/" + value + ".json" ; }
+            set { _databaseName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/" + value + ".json"; }
         }
-            
-        static Database(){}
+
+        static Database() { }
         private JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
         private Data _data = new Data();
 
@@ -33,19 +40,25 @@ namespace BTCom
             {
                 lock (padlock)
                 {
-                    if(_instance == null)
+                    if (_instance == null)
                     {
                         _instance = new Database();
                         _instance.Load();
                     }
-                    return _instance;   
+                    return _instance;
                 }
             }
         }
 
         public void Save()
         {
-            var json = JsonHelper.FormatJson(jsonSerializer.Serialize(Data));
+            var json = JsonConvert.SerializeObject(Data, Formatting.None, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+
+            if (DebugMode)
+            {
+                json = JsonHelper.FormatJson(json);
+            }
+
             System.IO.StreamWriter file = new System.IO.StreamWriter(DatabaseName);
             file.Write(json);
             file.Close();
@@ -53,16 +66,20 @@ namespace BTCom
 
         public void Load()
         {
-            if (System.IO.File.Exists((DatabaseName)))
-            {
-                string json = System.IO.File.ReadAllText(DatabaseName);
-                Data = jsonSerializer.Deserialize<Data>(json);
-            }
-            else
+            // Make sure that the file exists
+            if (!System.IO.File.Exists((DatabaseName)))
             {
                 this.Save();
             }
-        
+
+            string json = System.IO.File.ReadAllText(DatabaseName);
+
+            if (DebugMode)
+            {
+                Data = jsonSerializer.Deserialize<Data>(json); 
+            }
+            
+            Data = JsonConvert.DeserializeObject<Data>(json);
         }
     }
 }
