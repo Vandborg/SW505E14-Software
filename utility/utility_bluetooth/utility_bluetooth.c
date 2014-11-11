@@ -15,12 +15,15 @@
 #include "utility/utility_structs/utility_structs.h"
 
 
-// Global variables to use
-// color Color_left[AMOUNT_OF_COLORS];
-// color Color_right[AMOUNT_OF_COLORS];
-color Colors[AMOUNT_OF_COLORS];
 
+// Global variables to use
+color Colors[AMOUNT_OF_COLORS];
+navigation Navigation;
+char Status;
+
+// Declaration of the task to consume bluetooth packages. 
 DeclareTask(TASK_consume_bluetooth);
+
 
 int send_package_bt(U8 package_type, char* package_data)
 {
@@ -34,7 +37,7 @@ int send_package_bt(U8 package_type, char* package_data)
     // Check whether total data size is bigger than 256 bytes.
     if(package_total_size > 256)
     {
-        // TODO: Send an error code for too big data array
+        lcd_display_string_with_linesplit("Error: Array too big");
         return -1;  
     }
 
@@ -61,7 +64,7 @@ int send_package_bt(U8 package_type, char* package_data)
     return 1;
 }
 
-int read_bt_buffer(char* returnbuffer)
+int read_buffer_bt(char* returnbuffer)
 {
     // Read from bluetooth and write it to the buffer array.
     int bytes_read = (int)ecrobot_read_bt(returnbuffer, 0, 128);
@@ -73,8 +76,6 @@ void update_color_bt(int color_id)
 {
     // Tell the pc you want to update your color
     char color_id_str[4];
-    lcd_display_line(LCD_LINE_ONE, int_to_string(color_id, color_id_str), true);
-    systick_wait_ms(5000);
 
     send_package_bt(TYPE_UPDATE_COLOR, int_to_string(color_id, color_id_str));
 
@@ -85,9 +86,9 @@ void update_color_bt(int color_id)
     U32 start_time = ecrobot_get_systick_ms();
     
     // Read the BT buffer to verify that the that the returned BT data is 12
-    // bytes (because a color bt packet is 12 bytes: Start, type, 3x colors of 
+    // bytes (because a color bt package is 12 bytes: Start, type, 3x colors of 
     // 3 byte, end byte). 
-    while(read_bt_buffer(data) != 12) 
+    while(read_buffer_bt(data) != 12) 
     { 
         // If more than 1000 seconds have passed and we havent exited the bt 
         // buffer read, send another bluetooth request and wait for it to return
@@ -122,22 +123,28 @@ void update_color_bt(int color_id)
     }
 }
 
+// Saves a color to the database
 void save_color_bt(int color_id,
                    int red, 
                    int green, 
                    int blue)
 {
 
+    // Create 4 strings. Needed to construct the data package.
     char color_id_str[4];
     char red_str[4];
     char green_str[4];
     char blue_str[4];
 
+    // Convert all int parameters to strings
     int_to_string(color_id, color_id_str);
     int_to_string(red, red_str);
     int_to_string(green, green_str);
     int_to_string(blue, blue_str);
     
+    // Create an array filled with zeros. Compute how many zeros paddings are 
+    // needed to create an int with 3 digits. Copy the correct string in with
+    // the correct amount of zeros.
     char color_id_str_with_pad[4] = {'0', '0', '0'};
     int missing_zeros = 3 - strlen(color_id_str);
     strcpy(color_id_str_with_pad + missing_zeros, color_id_str);
@@ -154,16 +161,75 @@ void save_color_bt(int color_id,
     missing_zeros = 3 - strlen(blue_str);
     strcpy(blue_str_with_pad + missing_zeros, blue_str);
     
+    // Put all four digits of 3 digits into one string so we can send it to
+    // the computer.
     char RGB_color_data[13] = "";
     strcpy(RGB_color_data, color_id_str_with_pad);
     strcat(RGB_color_data, red_str_with_pad);
     strcat(RGB_color_data, green_str_with_pad);
     strcat(RGB_color_data, blue_str_with_pad);
 
+    // Send package.
     send_package_bt(TYPE_SAVE_COLOR, RGB_color_data);
 }
 
+void create_path_bt(char* package)
+{
+    // Compute how many directions we have. This is total length - start, type 
+    // and end
+    int direction_count = strlen(package)-3;
+
+    // Fill the Navigation struct with the correct directions
+    for (int i = 0; i < direction_count; ++i)
+    {
+        Navigation.directions[i] = package[i+2];
+    }
+
+    // Fill navigation with location of next direction and which type of task
+    // we are currently doing. 
+    Navigation.next = direction_count-1;
+    Navigation.type_of_task = package[1];
+    Status = BUSY;
+    update_status_bt();
+}
+
+void update_status_bt(void)
+{
+    // Array to contain the status so it can be sent
+    char status_str[2];
+    
+    // Put the status variable into the status array
+    status_str[0] = Status;
+
+    // Send update status package with the status to the pc.
+    send_package_bt(TYPE_UPDATE_STATUS, status_str);
+}
+
+
+
 TASK(TASK_consume_bluetooth) 
 {   
+    // If the NXT is idling, tell the pc and get a new task. 
+    if(Status == IDLE)
+    {
+        update_status_bt();
+
+        // random wait for stuff to work
+        systick_wait_ms(100);
+
+        // Array containing new task from PC
+        char new_task[128] = {0};
+        if(read_buffer_bt(new_task) != 0)
+        {
+            // If a new task has been fetched, call function to compute path.
+            create_path_bt(new_task);
+        }
+    }
+    // If the status is error, tell the pc. 
+    else if(Status == ERROR)
+    {
+        update_status_bt();
+    }
+
     TerminateTask();
 }
