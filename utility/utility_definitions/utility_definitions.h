@@ -124,6 +124,12 @@
     #define KP 27
     #define KI  2
     #define KD 30
+
+
+    // Device statuses
+    #define IDLE 'I'
+    #define BUSY 'B'
+    #define ERROR 'E'
     
 
 #endif
