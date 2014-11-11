@@ -158,5 +158,29 @@ namespace BTComTest
             Assert.IsFalse(g1.Equals(g2));
         }
 
+        [TestMethod]
+        public void ShortestPathTwoNodes()
+        {
+            Graph g = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            Edge ab = new Edge(10);
+
+            g.AddNode(a);
+            g.AddNode(b);
+
+            g.AddUndirectedEdge(a, b, ab);
+
+            Path actual = g.ShortestPath(a, b);
+
+            Path expected = new Path();
+            expected.Nodes.Add(a);
+            expected.Nodes.Add(b);
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
     }
 }
