@@ -8,6 +8,14 @@ namespace BTCom
 {
     public class Path : DataEntry
     {
+        private List<Node> _path = new List<Node>();
+
+        public List<Node> Nodes
+        {
+            get { return _path; }
+            set { _path = value; }
+        } 
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;   // Compare reference to null
@@ -18,9 +26,11 @@ namespace BTCom
 
             // Compare properties of both objects
             var sameIdentifier = this.Identifier == other.Identifier;
+            var samePathLength = this.Nodes.Count == other.Nodes.Count;
+            var samePathNodes = Nodes.All(node => node != other.Nodes[this.Nodes.IndexOf(node)]);
 
             // Check if all properties are the same
-            return sameIdentifier;
+            return sameIdentifier && samePathLength && samePathNodes;
         }
     }
 }
