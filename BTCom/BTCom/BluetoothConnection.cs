@@ -21,6 +21,7 @@ namespace BTCom
         const byte TYPE_FETCH_PALLET = 0x45;
         const byte TYPE_DELIVER_PALLET = 0x46;
         const byte TYPE_FETCHED_COLOR = 0x47;
+        const byte TYPE_NAVIGATE_TO = 0x48;
 
         public BluetoothConnection(string portName)
             : base(portName)
