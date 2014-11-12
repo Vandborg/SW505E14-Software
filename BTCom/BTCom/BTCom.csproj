@@ -71,6 +71,7 @@
     <Compile Include="Color.cs" />
     <Compile Include="DataEntry.cs" />
     <Compile Include="Edge.cs" />
+    <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="BluetoothConnection.cs">
