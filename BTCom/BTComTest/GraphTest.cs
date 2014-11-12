@@ -158,5 +158,105 @@ namespace BTComTest
             Assert.IsFalse(g1.Equals(g2));
         }
 
+        [TestMethod]
+        public void ShortestPathTwoNodes()
+        {
+            Graph g = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            Edge ab = new Edge(10);
+
+            g.AddNode(a);
+            g.AddNode(b);
+
+            g.AddUndirectedEdge(a, b, ab);
+
+            Path actual = g.ShortestPath(a, b);
+
+            Path expected = new Path();
+            expected.Nodes.Add(a);
+            expected.Nodes.Add(b);
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
+        [TestMethod]
+        public void ShortestPathThreeNodes()
+        {
+            Graph g = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+            Node c = new Node("c");
+
+            Edge ab = new Edge(10);
+            Edge bc = new Edge(10);
+
+            g.AddNode(a);
+            g.AddNode(b);
+            g.AddNode(c);
+
+            g.AddUndirectedEdge(a, b, ab);
+            g.AddUndirectedEdge(b, c, bc);
+
+            Path actual = g.ShortestPath(a, c);
+
+            Path expected = new Path();
+            expected.Nodes.Add(a);
+            expected.Nodes.Add(b);
+            expected.Nodes.Add(c);
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
+        [TestMethod]
+        public void ShortestPathThreeNodesTwoPaths()
+        {
+            Graph g = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+            Node c = new Node("c");
+
+            Edge ab = new Edge(20);
+            Edge ac = new Edge(10);
+            Edge cb = new Edge(5);
+
+            g.AddNode(a);
+            g.AddNode(b);
+            g.AddNode(c);
+
+            g.AddUndirectedEdge(a, b, ab);
+            g.AddUndirectedEdge(a, c, ac);
+            g.AddUndirectedEdge(c, b, cb);
+
+            Path actual = g.ShortestPath(a, b);
+
+            Path expected = new Path();
+            expected.Nodes.Add(a);
+            expected.Nodes.Add(c);
+            expected.Nodes.Add(b);
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
+        [TestMethod]
+        public void ShortestPathTwoNodesNoPaths()
+        {
+            Graph g = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            g.AddNode(a);
+            g.AddNode(b);
+
+            Path actual = g.ShortestPath(a, b);
+
+            Assert.IsNull(actual);
+        }
+
     }
 }

@@ -15,6 +15,7 @@ namespace BTCom
         public Dictionary<int, Color> Colors = new Dictionary<int, Color>();
         public Dictionary<int, Light> Lights = new Dictionary<int, Light>();
         public Dictionary<int, Graph> Graphs = new Dictionary<int, Graph>();
+        public Dictionary<int, Path> Paths = new Dictionary<int, Path>();
 
         public Data()
         { 
@@ -90,6 +91,32 @@ namespace BTCom
         public bool RemoveGraph(Graph graph)
         {
             bool result = Graphs.Remove(graph.Identifier);
+
+            if (result)
+            {
+                Database.Instance.Save();
+            }
+
+            return result;
+        }
+
+        public void AddPath(Path path)
+        {
+            try
+            {
+                Paths.Add(path.Identifier, path);
+            }
+            catch (ArgumentException)
+            {
+                Paths.Remove(path.Identifier);
+                Paths.Add(path.Identifier, path);
+            }
+            Database.Instance.Save();
+        }
+
+        public bool RemovePath(Path path)
+        {
+            bool result = Paths.Remove(path.Identifier);
 
             if (result)
             {
