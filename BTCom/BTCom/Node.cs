@@ -59,5 +59,17 @@ namespace BTCom
 
             return true;
         }
+
+        public override string ToString()
+        {
+            string result = "";
+            string neighbours = "";
+            foreach (var node in Neighbours)
+            {
+                neighbours += node.Key.Name + ", ";
+            }
+            result = String.Format("Name: {0} - {1}", Name, neighbours);
+            return result;
+        }
     }
 }

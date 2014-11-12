@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
-using System.Web.Script.Serialization;
+//using System.Web.Script.Serialization;
 
 namespace BTCom
 {
@@ -25,7 +25,6 @@ namespace BTCom
         }
 
         static Database() { }
-        private JavaScriptSerializer jsonSerializer = new JavaScriptSerializer();
         private Data _data = new Data();
 
         public Data Data
@@ -73,11 +72,6 @@ namespace BTCom
             }
 
             string json = System.IO.File.ReadAllText(DatabaseName);
-
-            if (DebugMode)
-            {
-                Data = jsonSerializer.Deserialize<Data>(json); 
-            }
             
             Data = JsonConvert.DeserializeObject<Data>(json);
         }
