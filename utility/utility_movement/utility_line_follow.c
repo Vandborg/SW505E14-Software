@@ -118,22 +118,10 @@ TASK(TASK_line_follow)
 
 bool last_color_red = false;
 
-TASK(TASK_color_scan) // NEEDS REWORK
+TASK(TASK_color_scan)
 {
-    // ecrobot_get_nxtcolorsensor_rgb(color_sensor, rgb);
-
-    if (ecrobot_get_touch_sensor(NXT_PORT_S3))
-    {
-        // cross_intersection();
-        switch_sensors();
-        last_color_red = true;
-    }
-    else 
-    {
-        last_color_red = false;
-    }
-
-    TerminateTask();
+    // Implement code for color scanner here... 
+    // And what to do when scanning a color
 }
 
 void turn_direction(U8 direction) 
