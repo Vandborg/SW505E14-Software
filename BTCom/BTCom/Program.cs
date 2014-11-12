@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -13,8 +14,86 @@ namespace BTCom
         // Main 
         private static void Main(string[] args)
         {
+            Database.Instance.DebugMode = true;
             // Make sure the database is populated
             PopulateDatabase();
+
+            // Check if there is a graph else create a graph
+            if (Database.Instance.Data.Graphs.Count <= 0)
+            {
+                Graph warehouse = new Graph(1);
+                Node A = new Node("A");
+                Node B = new Node("B");
+                Node C = new Node("C");
+                Node D = new Node("D");
+                Node E = new Node("E");
+                Node F = new Node("F");
+                Node G = new Node("G");
+                Node H = new Node("H");
+                Node I = new Node("I");
+                Node J = new Node("J");
+                Node K = new Node("K");
+                Node L = new Node("L");
+                Node M = new Node("M");
+                Node N = new Node("N");
+                Node O = new Node("O");
+                Node P = new Node("P");
+                Node Q = new Node("Q");
+
+                warehouse.AddNode(A);
+                warehouse.AddNode(B);
+                warehouse.AddNode(C);
+                warehouse.AddNode(D);
+                warehouse.AddNode(E);
+                warehouse.AddNode(F);
+                warehouse.AddNode(G);
+                warehouse.AddNode(H);
+                warehouse.AddNode(I);
+                warehouse.AddNode(J);
+                warehouse.AddNode(K);
+                warehouse.AddNode(L);
+                warehouse.AddNode(M);
+                warehouse.AddNode(N);
+                warehouse.AddNode(O);
+                warehouse.AddNode(P);
+                warehouse.AddNode(Q);
+
+                warehouse.AddUndirectedEdge(A, B, 1);
+                warehouse.AddUndirectedEdge(A, P, 1);
+                warehouse.AddUndirectedEdge(A, N, 1);
+
+                warehouse.AddUndirectedEdge(B, C, 1);
+                warehouse.AddUndirectedEdge(B, H, 1);
+
+                warehouse.AddUndirectedEdge(C, D, 1);
+                warehouse.AddUndirectedEdge(C, F, 1);
+
+                warehouse.AddUndirectedEdge(E, F, 1);
+
+                warehouse.AddUndirectedEdge(F, G, 1);
+
+                warehouse.AddUndirectedEdge(G, H, 1);
+                warehouse.AddUndirectedEdge(G, Q, 1);
+
+                warehouse.AddUndirectedEdge(H, J, 1);
+
+                warehouse.AddUndirectedEdge(I, J, 1);
+
+                warehouse.AddUndirectedEdge(J, L, 1);
+                warehouse.AddUndirectedEdge(J, Q, 1);
+
+                warehouse.AddUndirectedEdge(K, L, 1);
+
+                warehouse.AddUndirectedEdge(L, M, 1);
+                warehouse.AddUndirectedEdge(L, N, 1);
+
+                warehouse.AddUndirectedEdge(N, O, 1);
+                warehouse.AddUndirectedEdge(N, P, 1);
+
+                warehouse.AddUndirectedEdge(P, Q, 1);
+
+                Database.Instance.Data.AddGraph(warehouse);
+            }
 
             // Open the bt-connection
             BluetoothConnection bt = new BluetoothConnection("COM3");
@@ -49,6 +128,7 @@ namespace BTCom
         // Populates the database
         private static void PopulateDatabase()
         {
+            Database.Instance.Load();
             // Color defines
             const int COLOR_RED_LEFT = 1;
             const int COLOR_RED_RIGHT = 2;

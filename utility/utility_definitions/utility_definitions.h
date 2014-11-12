@@ -65,8 +65,8 @@
     #define SPEED_UNKNOW_ERROR          163
 
     // Motor port indentification
-    #define LEFT_MOTOR  NXT_PORT_A
-    #define RIGHT_MOTOR NXT_PORT_B
+    #define RIGHT_MOTOR NXT_PORT_A
+    #define LEFT_MOTOR  NXT_PORT_B
     #define FORK_MOTOR  NXT_PORT_C
 
     // Sensor port indentification
@@ -120,11 +120,15 @@
     #define AMOUNT_OF_COLORS    10
     
     // Linefollow PID-controller definitions
-    #define TP 60
-    #define KP 27
-    #define KI  2
-    #define KD 30
+    #define LINE_FOLLOW_SPEED  60
 
+    #define KP                 27
+    #define KI                  2
+    #define KD                 30
+
+    // Turn directions
+    #define RIGHT_TURN          1
+    #define LEFT_TURN           0 
 
     // Device statuses
     #define IDLE 'I'
