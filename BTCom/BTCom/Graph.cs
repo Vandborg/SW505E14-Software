@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BTCom.Exceptions;
 
 namespace BTCom
 {
@@ -130,6 +131,35 @@ namespace BTCom
 
             // Check if all properties are the same
             return sameIdentifier && sameNodeLength;
+        }
+
+        public Node getNode(string name)
+        {
+            List<Node> nodesWithName = Nodes.FindAll(x => x.Name.ToLower().Equals(name.ToLower()));
+
+            // Check if no nodes were found
+            if (nodesWithName.Count == 0)
+            {
+                throw new NodeException("Node with name '" + name.ToLower() + "' not found.");
+            }
+            // Check if multiple nodes were found
+            else if(nodesWithName.Count > 1)
+            {
+                throw new NodeException("Multiple nodes with same name: '" + name.ToLower() + "'.");
+            }
+            // Found exactly one node
+            else
+            {
+                return nodesWithName.FirstOrDefault();
+            }
+        }
+
+        public Path ShortestPath(String from, String to)
+        {
+            Node a = getNode(from);
+            Node b = getNode(to);
+
+            return ShortestPath(a, b);
         }
 
         public Path ShortestPath(Node from, Node to)

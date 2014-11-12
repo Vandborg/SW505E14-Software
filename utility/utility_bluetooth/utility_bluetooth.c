@@ -68,6 +68,14 @@ int read_buffer_bt(char* returnbuffer)
 {
     // Read from bluetooth and write it to the buffer array.
     int bytes_read = (int)ecrobot_read_bt(returnbuffer, 0, 128);
+    for (int i = 0; i < 128; ++i)
+    {
+        if (returnbuffer[i-1] == 0x03)
+        {
+            returnbuffer[i] = '\0';
+            break;
+        }
+    }
     systick_wait_ms(5);
     return bytes_read;   
 }
@@ -161,8 +169,8 @@ void save_color_bt(int color_id,
     missing_zeros = 3 - strlen(blue_str);
     strcpy(blue_str_with_pad + missing_zeros, blue_str);
     
-    // Put all four digits of 3 digits into one string so we can send it to
-    // the computer.
+    // Put all four padded strings containing 3 digits into one string so we can
+    // send it to the computer.
     char RGB_color_data[13] = "";
     strcpy(RGB_color_data, color_id_str_with_pad);
     strcat(RGB_color_data, red_str_with_pad);
@@ -185,6 +193,7 @@ void create_path_bt(char* package)
         Navigation.directions[i] = package[i+2];
     }
 
+    Navigation.directions[direction_count] = '\0';
     // Fill navigation with location of next direction and which type of task
     // we are currently doing. 
     Navigation.next = direction_count-1;
