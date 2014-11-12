@@ -7,11 +7,18 @@
 #include "utility_line_follow.h"
 #include "../utility_sound/utility_sound.h"
 
+#define COLOR_THRESHOLD 20
+
+// Used to navigate
+navigation Navigation;
+
+// The status of the NXT
+char Status;
+
 DeclareTask(TASK_line_follow);
 DeclareTask(TASK_color_scan);
 DeclareAlarm(cyclic_alarm);
 DeclareAlarm(cyclic_alarm_2);
-
 
 // Prototypes
 int get_light_level(U8 sensor);
@@ -118,8 +125,66 @@ TASK(TASK_line_follow)
 
 bool last_color_red = false;
 
+bool on_edge = true;
+S16 color_scan_rgb[3] = {-1,-1,-1};
+
+bool is_red_color_colorsensor()
+{
+    ecrobot_get_nxtcolorsensor_rgb(color_sensor, color_scan_rgb);
+    color red_color;
+    if(color_sensor == COLOR_SENSOR_LEFT)
+    {
+        red_color = Colors[COLOR_RED_LEFT];
+    }
+    else if (color_sensor == COLOR_SENSOR_RIGHT)
+    {
+        red_color = Colors[COLOR_RED_RIGHT];
+    }
+
+    r_diff = red_color.red - color_scan_rgb[0];
+    r_diff = r_diff > 0 ? r_diff : -r_diff;
+    g_diff = red_color.green - color_scan[1];
+    g_diff = g_diff > 0 ? g_diff : -g_diff;
+    b_diff = red_color.blue - color_scan[2];
+    b_diff = b_diff > 0 ? b_diff : -b_diff;
+
+    if(r_diff < COLOR_THRESHOLD && g_diff < COLOR_THRESHOLD && b_diff < COLOR_THRESHOLD)
+    {
+        if(on_edge)
+        {
+            char next_direction = Navigation.directions[Navigation.next];
+            // TODO: Follow instruction
+            switch(next_direction)
+            {
+                case 'L':
+                    if(color_sensor == COLOR_SENSOR_RIGHT)
+                    {
+                        switch_sensors();
+                    }
+                    break;
+                case 'R':
+                    if(color_sensor == COLOR_SENSOR_LEFT)
+                    {
+                        switch_sensors();
+                    }
+                    break;
+                case 'S':
+                    // TODO: Make it cross the intersection -> remember to enable the line follower when hit second tape.
+                    break;
+                default :
+                    Status = ERROR;
+            }
+        }
+
+        on_edge = !on_edge;
+    }
+}
+
+
 TASK(TASK_color_scan)
 {
+    
+    
     // Implement code for color scanner here... 
     // And what to do when scanning a color
 }
