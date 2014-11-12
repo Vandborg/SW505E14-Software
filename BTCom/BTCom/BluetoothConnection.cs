@@ -13,15 +13,18 @@ namespace BTCom
         const byte START_BYTE = 0x2;
         const byte END_BYTE = 0x3;
 
-        // Type bytes
+        // Type bytes to recieve
         const byte TYPE_UPDATE_COLOR = 0x41;
         const byte TYPE_SAVE_COLOR = 0x42;
         const byte TYPE_REPORT_OBSTACLE = 0x43;
-        const byte TYPE_UPDATE_STATUS = 0x44;
-        const byte TYPE_FETCH_PALLET = 0x45;
-        const byte TYPE_DELIVER_PALLET = 0x46;
+        const byte TYPE_UPDATE_STATUS = 0x45;
+        
+        //Type bytes to send
         const byte TYPE_FETCHED_COLOR = 0x47;
-        const byte TYPE_NAVIGATE_TO = 0x48;
+
+        const byte TYPE_DELIVER_PALLET = 0x44;
+        const byte TYPE_FETCH_PALLET = 0x46;
+        const byte TYPE_NAVIGATE_TO = 0x4E;
 
         // NXT statuses 
         char NXTStatus = BUSY;
@@ -40,7 +43,7 @@ namespace BTCom
             : base(portName)
         {
             // If the connection is not established try to connect.
-            Console.WriteLine("[BT]: Attempting to connect.");
+            Console.WriteLine("Attempting to connect to NXT via BT.");
             while (!this.IsOpen)
             {
                 try
@@ -50,12 +53,12 @@ namespace BTCom
                 catch
                 {
                     // Catched by retrying after sleep
-                    Console.WriteLine("[BT]: Connection failed. Attempting to connect.");
+                    Console.WriteLine("Connection failed. Attempting to connect to NXT via BT.");
                 }
             }
             
             // Tell the user that the connection was established
-            Console.WriteLine("[BT]: Connection established.");
+            Console.WriteLine("Connection established.");
 
             this.ReadTimeout = 10000; // Wait 10 sec before timeout on readbuffer
             this.WriteTimeout = 10000; // Wait 10 sec before timeout on writebuffer
@@ -69,7 +72,7 @@ namespace BTCom
             string direction = "LLRSRL";
             byte[] directionArray = Encoding.ASCII.GetBytes(direction);
 
-            Console.WriteLine("[BT]: Adding NavigateTo-job to JobList");
+            Console.WriteLine("Adding NavigateTo-job to JobList");
 
             JobList.Add(new Tuple<byte, byte[]>(TYPE_NAVIGATE_TO,directionArray));
         }
@@ -82,7 +85,7 @@ namespace BTCom
             string direction = "LLRSRL";
             byte[] directionArray = Encoding.ASCII.GetBytes(direction);
 
-            Console.WriteLine("[BT]: Adding FetchPallet-job to JobList");
+            Console.WriteLine("Adding FetchPallet-job to JobList");
 
             JobList.Add(new Tuple<byte, byte[]>(TYPE_FETCH_PALLET, directionArray));
         }
@@ -95,7 +98,7 @@ namespace BTCom
             string direction = "LLRSRL";
             byte[] directionArray = Encoding.ASCII.GetBytes(direction);
 
-            Console.WriteLine("[BT]: Adding DeliverPallet-job to JobList");
+            Console.WriteLine("Adding DeliverPallet-job to JobList");
 
             JobList.Add(new Tuple<byte, byte[]>(TYPE_DELIVER_PALLET, directionArray));
         }
@@ -113,10 +116,20 @@ namespace BTCom
                 case "joblist":
                     if (inputSplit.Length == 1)
                     {
+
+                        if (JobList.Count > 0)
+                        {
+                            Console.WriteLine("------------------------------ Joblist of PALL-E ------------------------------");
+                        }
+                        else
+                        {
+                            Console.WriteLine("The joblist of PALL-E is empty");
+                        }
+
                         int c = 0;
                         foreach(Tuple<byte,byte[]> job in JobList)
-                        {
-                            Console.WriteLine("[BT]: Job #" + c + " (" + ((char)job.Item1).ToString() + ", " + Encoding.UTF8.GetString(job.Item2, 0, job.Item2.Length) + ")");
+                        {   
+                            Console.WriteLine("Job #" + c + " (" + ((char)job.Item1).ToString() + ", " + Encoding.UTF8.GetString(job.Item2, 0, job.Item2.Length) + ")");
                             c++;
                         }
                     }
@@ -133,7 +146,7 @@ namespace BTCom
                                 }
                                 catch (Exception e)
                                 {
-                                    Console.WriteLine("[BT]: Invalid argument! Correct use => joblist [\"remove\"] [Index]");
+                                    Console.WriteLine("Invalid argument! Correct use => joblist [\"remove\"] [Index]");
                                 }
 
                                 if (index != -1)
@@ -141,17 +154,17 @@ namespace BTCom
                                     if (index < JobList.Count)
                                     {
                                         JobList.RemoveAt(index);
-                                        Console.WriteLine("[BT]: Removed job at index " + index + ".");
+                                        Console.WriteLine("Removed job at index " + index + ".");
                                     }
                                     else
                                     {
-                                        Console.WriteLine("[BT]: Cant remove the job on that index. There are only " + JobList.Count + " jobs in the list.");
+                                        Console.WriteLine("Cant remove the job on that index. There are only " + JobList.Count + " jobs in the list.");
                                     }
                                 }
                             }
                             else
                             {
-                                Console.WriteLine("[BT]: Invalid use! Correct use => joblist [\"remove\"] [Index]");
+                                Console.WriteLine("Invalid use! Correct use => joblist [\"remove\"] [Index]");
                             }
                         }
                         else if(inputSplit[1] == "clear")
@@ -160,7 +173,7 @@ namespace BTCom
                         }
                         else
                         {
-                            Console.WriteLine("[BT]: Correct use => joblist [\"remove\" Index]/[\"clear\"]");
+                            Console.WriteLine("Correct use => joblist [\"remove\" Index]/[\"clear\"]");
                         }
                     }
                     break;
@@ -182,25 +195,25 @@ namespace BTCom
                         switch (inputSplit[1])
                         {
                             case "navigate":
-                                Console.WriteLine("[BT]: Correct use => navigate {StartNode} {EndNode}");
+                                Console.WriteLine("Correct use => navigate {StartNode} {EndNode}");
                                 break;
                             case "fetch":
-                                Console.WriteLine("[BT]: Correct use => fetch {StartNode} {EndNode}");
+                                Console.WriteLine("Correct use => fetch {StartNode} {EndNode}");
                                 break;
                             case "deliver":
-                                Console.WriteLine("[BT]: Correct use => deliver {StartNode} {EndNode}");
+                                Console.WriteLine("Correct use => deliver {StartNode} {EndNode}");
                                 break;
                             case "joblist":
-                                Console.WriteLine("[BT]: Correct use => joblist [\"remove\" Index]/[\"clear\"]");
+                                Console.WriteLine("Correct use => joblist [\"remove\" Index]/[\"clear\"]");
                                 break;
                             default :
-                                Console.WriteLine("[BT]: Invalid parameter for help. Correct use => help [Command]");
+                                Console.WriteLine("Invalid parameter for help. Correct use => help [Command]");
                                 break;
                         }
                     }
                     else if (inputSplit.Length == 1)
                     {
-                        Console.WriteLine("[BT]: Here is a list of commands");
+                        Console.WriteLine("----------------------------- Commands for PALL-E -----------------------------");
                         Console.WriteLine("deliver  \t: PALL-E is sent to deliver a pallet at a given place.");
                         Console.WriteLine("fetch    \t: PALL-E is sent to fetch a pallet at a given place.");
                         Console.WriteLine("joblist  \t: Print the joblist for PALL-E.");
@@ -208,11 +221,11 @@ namespace BTCom
                     }
                     else
                     {
-                        Console.WriteLine("[BT]: Invalid parameter for help. Correct use => help [Command]");
+                        Console.WriteLine("Invalid parameter for help. Correct use => help [Command]");
                     }
                     break;
                 default :
-                    Console.WriteLine("[BT]: Invalid input, type help for all commands.");
+                    Console.WriteLine("Invalid input, type help for all commands.");
                     break;
             }
 
@@ -340,7 +353,7 @@ namespace BTCom
                      
                      // Tell the user that the color is being fetched 
                      // dataString contains the id of the color
-                    Console.WriteLine("[BT]: Fetching color with ID: \'" + dataString + "\'");
+                    Console.WriteLine("Fetching color with ID: \'" + dataString + "\'");
 
                     // Get the color from the database
                     Color requestedColor = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == int.Parse(dataString)).Value;
@@ -362,7 +375,7 @@ namespace BTCom
                     int blue = int.Parse(dataString.Substring(9,3)); // Use the first char as blue value
 
                     // Tell the user that the color is being saved 
-                    Console.WriteLine("[BT]: Saving the color with ID: \'" + colorId + "\' with values {" + red + ", " + green + ", " + blue + "}");
+                    Console.WriteLine("Saving the color with ID: \'" + colorId + "\' with values {" + red + ", " + green + ", " + blue + "}");
 
                     // Find the old color
                     Color color =
@@ -387,7 +400,7 @@ namespace BTCom
                     if (dataString[0] != NXTStatus)
                     {
                         // Tell the user what the status the NXT updated to
-                        Console.WriteLine("[BT]: NXT-Status: " + dataString);
+                        Console.WriteLine("NXT-Status: " + dataString);
                     }
 
                     // Check what status the NXT told us
@@ -406,7 +419,7 @@ namespace BTCom
                                 string itemTwo = Encoding.UTF8.GetString(nextJob.Item2, 0, nextJob.Item2.Length);
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("[BT]: Sending the next job in the JobList (" + itemOne + "," + itemTwo + ") " + (JobList.Count-1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending Job -> NXT (" + itemOne + "," + itemTwo + "). " + (JobList.Count-1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
                                 SendPackageBT(nextJob.Item1, nextJob.Item2);
@@ -433,7 +446,7 @@ namespace BTCom
                         // The NXT encoutered an error
                         case ERROR:
                             // Tell the suer that the NXT encountered an error
-                            Console.WriteLine("[BT]: The NXT has encountered an error!");
+                            Console.WriteLine("The NXT has encountered an error!");
                             break;
                     }
                     break;

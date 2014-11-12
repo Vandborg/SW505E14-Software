@@ -14,14 +14,56 @@ namespace BTCom
         // Main 
         private static void Main(string[] args)
         {
-            Database.Instance.DebugMode = true;
             // Make sure the database is populated
             PopulateDatabase();
 
+            // Open the bt-connection
+            BluetoothConnection bt = new BluetoothConnection("COM3");
+
+            // Instantiate threads
+            Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
+            Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
+
+            // Start the threads
+            ConsoleInputThread.Start();
+            ConsumeBTThread.Start();            
+        }
+
+        // Constantly checks console input
+        private static void CheckConsoleInput(BluetoothConnection bt)
+        {
+            while (true)
+            {
+                bt.CreateJob(Console.ReadLine());
+            }
+        }
+
+        // Constantly consumes the produces packages from the NXT
+        private static void ConsumeBT(BluetoothConnection bt)
+        {
+            while (true)
+            {
+                bt.ConsumePackages();
+            }
+        }
+
+        // Populates the database and ensures all the needed data exists
+        private static void PopulateDatabase()
+        {
+            PopulateDatabaseWithColors();
+            PopulateDatabaseWithGraph();
+        }
+
+        // Populates the database with the graph
+        private static void PopulateDatabaseWithGraph()
+        {
             // Check if there is a graph else create a graph
             if (Database.Instance.Data.Graphs.Count <= 0)
             {
+                // Instanciate graph
                 Graph warehouse = new Graph(1);
+
+                // Instanciate all nodes
                 Node A = new Node("A");
                 Node B = new Node("B");
                 Node C = new Node("C");
@@ -40,6 +82,7 @@ namespace BTCom
                 Node P = new Node("P");
                 Node Q = new Node("Q");
 
+                // Add the nodes to the graph
                 warehouse.AddNode(A);
                 warehouse.AddNode(B);
                 warehouse.AddNode(C);
@@ -58,6 +101,7 @@ namespace BTCom
                 warehouse.AddNode(P);
                 warehouse.AddNode(Q);
 
+                // Add all the edges to the graph
                 warehouse.AddUndirectedEdge(A, B, 1);
                 warehouse.AddUndirectedEdge(A, P, 1);
                 warehouse.AddUndirectedEdge(A, N, 1);
@@ -92,41 +136,13 @@ namespace BTCom
 
                 warehouse.AddUndirectedEdge(P, Q, 1);
 
+                // Save it to the database
                 Database.Instance.Data.AddGraph(warehouse);
             }
-
-            // Open the bt-connection
-            BluetoothConnection bt = new BluetoothConnection("COM3");
-
-            // Instantiate threads
-            Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
-            Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
-
-            // Start the threads
-            ConsoleInputThread.Start();
-            ConsumeBTThread.Start();            
         }
 
-        // Constantly checks console input
-        private static void CheckConsoleInput(BluetoothConnection bt)
-        {
-            while (true)
-            {
-                bt.CreateJob(Console.ReadLine());
-            }
-        }
-
-        // Constantly consumes the produces packages from the NXT
-        private static void ConsumeBT(BluetoothConnection bt)
-        {
-            while (true)
-            {
-                bt.ConsumePackages();
-            }
-        }
-
-        // Populates the database
-        private static void PopulateDatabase()
+        // Populates the database with colors
+        private static void PopulateDatabaseWithColors()
         {
             Database.Instance.Load();
             // Color defines
