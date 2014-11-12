@@ -68,6 +68,14 @@ int read_buffer_bt(char* returnbuffer)
 {
     // Read from bluetooth and write it to the buffer array.
     int bytes_read = (int)ecrobot_read_bt(returnbuffer, 0, 128);
+    for (int i = 0; i < 128; ++i)
+    {
+        if (returnbuffer[i-1] == 0x03)
+        {
+            returnbuffer[i] = '\0';
+            break;
+        }
+    }
     systick_wait_ms(5);
     return bytes_read;   
 }
