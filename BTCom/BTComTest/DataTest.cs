@@ -49,7 +49,7 @@ namespace BTComTest
         public void AddColorToDatabaseEmptyConstructorTest()
         {
             var expected = new Color();
-
+            
             Database.Instance.Data.AddColor(expected);
             Database.Instance.Load();
 
@@ -180,8 +180,9 @@ namespace BTComTest
         private void cleanDatabase()
         {
             // Clean the database after each test
-            Database.Instance.Data.Colors = new Dictionary<string, Color>();
-            Database.Instance.Data.Lights = new Dictionary<string, Light>();
+            Database.Instance.Data.Colors = new Dictionary<int, Color>();
+            Database.Instance.Data.Lights = new Dictionary<int, Light>();
+            Database.Instance.Data.Graphs = new Dictionary<int, Graph>();
 
             // Save database
             Database.Instance.Save();

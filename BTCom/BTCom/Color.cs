@@ -58,5 +58,13 @@ namespace BTCom
         {
             return base.ToString() + " - " + "Name: '" + Name + "'. Red: '" + Red + "'. Green: '" + Green + "'. Blue: '" + Blue + "'.";
         }
+
+        public byte[] ToRGBBytes()
+        {
+            string red = this.Red.ToString().PadLeft(3,'0');
+            string green = this.Green.ToString().PadLeft(3, '0');
+            string blue = this.Blue.ToString().PadLeft(3, '0');
+            return Encoding.ASCII.GetBytes(red + green + blue);
+        }
     }
 }

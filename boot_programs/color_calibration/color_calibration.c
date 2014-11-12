@@ -24,8 +24,7 @@
 #define DISTANCE_BETWEEN_MEASUREMENTS 6
 
 // Global variables to use
-color Color_left[AMOUNT_OF_COLORS];
-color Color_right[AMOUNT_OF_COLORS];
+color Colors[AMOUNT_OF_COLORS];
 
 void enter_scanning_mode(void)
 {
@@ -117,19 +116,24 @@ char* get_color_name(int color_id, char* buffer)
 {
     switch(color_id)
     {
-        case COLOR_RED: 
+        case COLOR_RED_LEFT:
+        case COLOR_RED_RIGHT: 
             buffer = "RED"; 
             break;
-        case COLOR_BLUE: 
+        case COLOR_BLUE_LEFT: 
+        case COLOR_BLUE_RIGHT: 
             buffer = "BLUE"; 
             break;
-        case COLOR_BLACK: 
+        case COLOR_BLACK_LEFT:
+        case COLOR_BLACK_RIGHT: 
             buffer = "BLACK"; 
             break;
-        case COLOR_GRAY: 
+        case COLOR_GRAY_LEFT:
+        case COLOR_GRAY_RIGHT: 
             buffer = "GRAY"; 
             break;
-        case COLOR_WHITE: 
+        case COLOR_WHITE_LEFT:
+        case COLOR_WHITE_RIGHT:
             buffer = "WHITE"; 
             break;
     }
@@ -172,7 +176,7 @@ void color_calibration(void)
             char buf[17];
 
             // Go through all colors
-            for(int i = 0; i < AMOUNT_OF_COLORS; i++)
+            for(int i = 0; i < AMOUNT_OF_COLORS; i += 2)
             {
                 // Reset the menu 
                 reset_menu();
@@ -188,8 +192,8 @@ void color_calibration(void)
                 color_right = scan_color(COLOR_SENSOR_RIGHT);
 
                 // Update global variables
-                Color_left[i] = color_left;
-                Color_right[i] = color_right;
+                Colors[i] = color_left;
+                Colors[i+1] = color_right;
 
                 // Display the colors to the display
                 display_colors(color_left, color_right, get_color_name(i, buf));
