@@ -25,6 +25,12 @@ namespace BTCom
             Identifier = id;
         }
 
+        public bool AddUndirectedEdge(Node nodeOne, Node nodeTwo, int weight)
+        {
+            Edge edge = new Edge(weight);
+            return AddUndirectedEdge(nodeOne, nodeTwo, edge);
+        }
+
         public bool AddUndirectedEdge(Node nodeOne, Node nodeTwo, Edge edge)
         {
             // Check if the nodes exists in the graph
