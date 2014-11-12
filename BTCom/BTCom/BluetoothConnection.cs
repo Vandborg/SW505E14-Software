@@ -107,19 +107,29 @@ namespace BTCom
         public void CreateJob(string input)
         {   
             // Split the input
-            string[] inputSplit = input.Split(' ');
-            string cmd = inputSplit[0];
+            List<string> inputSplit = input.Split(' ').ToList();
+
+            inputSplit.RemoveAll(s => s == "");
+
+            string cmd = "";
+            if (inputSplit.Count > 0)
+            {
+                cmd = inputSplit[0];
+            }
 
             // Check if the input is 
             switch (cmd)
             {
                 case "joblist":
-                    if (inputSplit.Length == 1)
+                    if (inputSplit.Count == 1)
                     {
-
-                        if (JobList.Count > 0)
+                        if (JobList.Count > 0 || CurrentJob != null)
                         {
                             Console.WriteLine("------------------------------ Joblist of PALL-E ------------------------------");
+                            if (CurrentJob != null)
+                            {
+                                Console.WriteLine("Current job: (" + ((char)CurrentJob.Item1).ToString() + ", " + Encoding.UTF8.GetString(CurrentJob.Item2, 0, CurrentJob.Item2.Length) + ")");
+                            }
                         }
                         else
                         {
@@ -133,11 +143,11 @@ namespace BTCom
                             c++;
                         }
                     }
-                    else if (inputSplit.Length > 1)
+                    else if (inputSplit.Count > 1)
                     {
                         if (inputSplit[1] == "remove")
                         {
-                            if (inputSplit.Length > 2)
+                            if (inputSplit.Count > 2)
                             {
                                 int index = -1;
                                 try
@@ -170,6 +180,7 @@ namespace BTCom
                         else if(inputSplit[1] == "clear")
                         {
                             JobList.RemoveRange(0, JobList.Count);
+                            Console.WriteLine("The joblist for PALL-E was cleared.");
                         }
                         else
                         {
@@ -177,20 +188,45 @@ namespace BTCom
                         }
                     }
                     break;
+
                 case "navigate" :
-                    // TODO: Use params to create path
-                    NavigateNXTTo(new Path());
+                    if(inputSplit.Count == 3)
+                    {
+                        // TODO: Use params to create path
+                        NavigateNXTTo(new Path());
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong use of \'navigate\'. Correct use => navigate {StartNode} {EndNode}");
+                    }
                     break;
+
                 case "deliver" :
-                    // TODO: Use params to create path
-                    DeliverPallet(new Path());
+                    if (inputSplit.Count == 3)
+                    {
+                        // TODO: Use params to create path
+                        DeliverPallet(new Path());
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong use of \'deliver\'. Correct use => deliver {StartNode} {EndNode}");
+                    }
                     break;
+
                 case "fetch" :
-                    // TODO: Use params to create path
-                    FetchPallet(new Path());
+                    if (inputSplit.Count == 3)
+                    {
+                        // TODO: Use params to create path
+                        FetchPallet(new Path());
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong use of \'fetch\'. Correct use => fetch {StartNode} {EndNode}");
+                    }
                     break;
+
                 case "help" :
-                    if (inputSplit.Length > 1)
+                    if (inputSplit.Count > 1)
                     {
                         switch (inputSplit[1])
                         {
@@ -211,7 +247,7 @@ namespace BTCom
                                 break;
                         }
                     }
-                    else if (inputSplit.Length == 1)
+                    else if (inputSplit.Count == 1)
                     {
                         Console.WriteLine("----------------------------- Commands for PALL-E -----------------------------");
                         Console.WriteLine("deliver  \t: PALL-E is sent to deliver a pallet at a given place.");
