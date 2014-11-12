@@ -9,11 +9,11 @@
     #define TYPE_UPDATE_COLOR 0x41
     #define TYPE_SAVE_COLOR 0x42
     #define TYPE_REPORT_OBSTACLE 0x43
-    #define TYPE_UPDATE_STATUS 0x44
-    #define TYPE_FETCH_PALLET 0x45
-    #define TYPE_DELIVER_PALLET 0x46
+    #define TYPE_DELIVER_PALLET 0x44
+    #define TYPE_UPDATE_STATUS 0x45
+    #define TYPE_FETCH_PALLET 0x46
     #define TYPE_FETCHED_COLOR 0x47
-    #define TYPE_NAVIGATE_TO 0x48
+    #define TYPE_NAVIGATE_TO 0x4E
 
     // Include definitions
     #include "utility/utility_definitions/utility_definitions.h"
