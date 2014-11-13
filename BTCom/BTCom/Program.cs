@@ -17,16 +17,25 @@ namespace BTCom
             // Make sure the database is populated
             PopulateDatabase();
 
+           // var path = Database.Instance.Data.Graphs.First().Value.ShortestPath("A", "E");
+
+            var graph = Database.Instance.Data.Graphs.First().Value;
+
+                Path p = graph.ShortestPath("A", "G");
+                Console.WriteLine(p.ToString());
+            
+            Console.ReadLine();
+
             // Open the bt-connection
-            BluetoothConnection bt = new BluetoothConnection("COM3");
+            //BluetoothConnection bt = new BluetoothConnection("COM3");
 
             // Instantiate threads
-            Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
-            Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
+            //Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
+            //Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
 
             // Start the threads
-            ConsoleInputThread.Start();
-            ConsumeBTThread.Start();            
+            //ConsoleInputThread.Start();
+            //ConsumeBTThread.Start();            
         }
 
         // Constantly checks console input
@@ -101,11 +110,11 @@ namespace BTCom
                 warehouse.AddNode(P);
                 warehouse.AddNode(Q);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 1), new Tuple<Node, int>(B, 3), 1);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 3), new Tuple<Node, int>(P, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 1), new Tuple<Node, int>(B, 3), 4);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 3), new Tuple<Node, int>(P, 0), 2);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 2), new Tuple<Node, int>(N, 0), 1);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 1), new Tuple<Node, int>(C, 1), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 1), new Tuple<Node, int>(C, 1), 2);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 2), new Tuple<Node, int>(H, 0), 1);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 1), new Tuple<Node,int>(D, 3), 1);
@@ -113,7 +122,7 @@ namespace BTCom
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(E, 3), new Tuple<Node, int>(F, 1), 1);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(F, 3), new Tuple<Node, int>(G, 1), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(F, 3), new Tuple<Node, int>(G, 1), 2);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 0), new Tuple<Node, int>(H, 2), 1);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 3), new Tuple<Node, int>(Q, 1), 1);
@@ -133,7 +142,7 @@ namespace BTCom
                 warehouse.AddUndirectedEdge(new Tuple<Node,int>(N, 2), new Tuple<Node,int>(O, 0), 1);
                 warehouse.AddUndirectedEdge(new Tuple<Node,int>(N, 3), new Tuple<Node,int>(P, 1), 1);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(P, 2), new Tuple<Node, int>(Q, 3), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(P, 2), new Tuple<Node, int>(Q, 3), 4);
 
                 // Save it to the database
                 Database.Instance.Data.AddGraph(warehouse);

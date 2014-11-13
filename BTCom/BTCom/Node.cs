@@ -47,22 +47,9 @@ namespace BTCom
             // Compare properties of both objects
             var sameName = this.Name == other.Name;
             var sameNeighboursAmount = this.Neighbours.Count == other.Neighbours.Count;
-            var sameBlockedNeighboursAmount = this.BlockedNeighbours.Count == other.BlockedNeighbours.Count;
 
             // Check if all properties are the same
-            if (!sameName || !sameNeighboursAmount || !sameBlockedNeighboursAmount)
-            {
-                return false;
-            }
-
-            // Check if all neighbours is in the other aswell
-            if (this.Neighbours.Any(neighbour => !other.Neighbours.Contains(neighbour)))
-            {
-                return false;
-            }
-
-            // Check if all blocked neighbours is in the other aswell
-            if (this.BlockedNeighbours.Any(neighbour => !other.BlockedNeighbours.Contains(neighbour)))
+            if (!sameName || !sameNeighboursAmount)
             {
                 return false;
             }
@@ -76,7 +63,8 @@ namespace BTCom
             string neighbours = "";
             foreach (var node in Neighbours)
             {
-                neighbours += node.Key.Name + ", ";
+                if (node.Key == null) continue;
+                neighbours += Neighbours.IndexOf(node) + ": " + node.Key.Name + ", ";
             }
             result = String.Format("Name: {0} - {1}", Name, neighbours);
             return result;

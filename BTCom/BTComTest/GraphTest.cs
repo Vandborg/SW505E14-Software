@@ -239,7 +239,7 @@ namespace BTComTest
             expected.Nodes.Add(c);
             expected.Nodes.Add(b);
 
-            Assert.IsTrue(actual.Equals(expected));
+            Assert.IsTrue(expected.Equals(actual));
         }
 
         [TestMethod]

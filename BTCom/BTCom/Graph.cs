@@ -177,6 +177,11 @@ namespace BTCom
 
             foreach (Node node in Nodes)
             {
+                if (node == null)
+                {
+                    continue;
+                }
+
                 if (!node.Equals(from))
                 {
                     // Set the distance of all nodes to infinity
@@ -202,9 +207,14 @@ namespace BTCom
 
                 foreach (Node node in Q)
                 {
+                    if (node == null)
+                    {
+                        continue;
+                    }
+
                     int newDistance = distance.Find(x => x.Key.Equals(node)).Value;
 
-                    if (selectedNode == null || newDistance < oldDistance)
+                    if (newDistance < oldDistance)
                     {
                         selectedNode = node;
                         oldDistance = newDistance;
@@ -227,18 +237,18 @@ namespace BTCom
                     // Add the two distances
                     int alt = distanceToSelectedNode + distanceToNeighbour;
 
-                    KeyValuePair<Node, int> neighbourDistance = distance.Find(x => x.Key != null && x.Key.Equals(neighbour.Key));
-                    KeyValuePair<Node, Node> neighbourPrevious = previous.Find(x => x.Key != null && x.Key.Equals(neighbour.Key));
+                    KeyValuePair<Node, int> neighbourDistance = distance.Find(x => x.Key.Equals(neighbour.Key));
+                    KeyValuePair<Node, Node> neighbourPrevious = previous.Find(x => x.Key.Equals(neighbour.Key));
 
                     // Check if this new distance (alt) is shorter than what we know
                     if(alt < neighbourDistance.Value)
                     {
                         // Update the distance
-                        distance.Remove(neighbourDistance);
+                        distance.RemoveAll(x => x.Key.Equals(neighbour.Key));
                         distance.Add(new KeyValuePair<Node, int>(neighbour.Key, alt));
 
                         // Set previous of neighbour to selectednode
-                        previous.Remove(neighbourPrevious);
+                        previous.RemoveAll(x => x.Key.Equals(neighbour.Key));
                         previous.Add(new KeyValuePair<Node, Node>(neighbour.Key, selectedNode));
                     }
                 }
@@ -253,9 +263,9 @@ namespace BTCom
 
             while (previousNode)
             {
-                KeyValuePair<Node, Node> newPreviousNode = previous.Find(x => x.Key.Equals(lastNode));
+                KeyValuePair<Node, Node> newPreviousNode = previous.Find(x => x.Key != null && x.Key.Equals(lastNode));
 
-                if (newPreviousNode.Key == null && newPreviousNode.Value == null)
+                if (lastNode.Equals(from))
                 {
                     // There is a path, everything went well
                     previousNode = false;
