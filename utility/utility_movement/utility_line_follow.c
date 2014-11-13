@@ -5,7 +5,8 @@
 
 // Own libraries
 #include "utility_line_follow.h"
-#include "../utility_sound/utility_sound.h"
+#include "utility/utility_sound/utility_sound.h"
+#include "utility/utility_structs/utility_structs.h"
 
 #define COLOR_THRESHOLD 20
 
@@ -24,7 +25,8 @@ DeclareAlarm(cyclic_alarm_2);
 int get_light_level(U8 sensor);
 void turn_direction(U8 direction);
 void switch_sensors(void);
-void cross_intersection(void);
+void cross_intersection(int line_follow_timeout);
+bool is_red_color_colorsensor(void);
 void line_recover(void);
 
 // Persistent variables for PID, and color_scan/swap
@@ -40,6 +42,15 @@ int lastError = 0;
 bool line_follow = true;
 
 S16 rgb[3];
+
+// The global pereption of colors
+color Colors[AMOUNT_OF_COLORS]; 
+
+// Used to store the output from the color_scanner in the color_scan task
+S16 color_scan_rgb[3] = {-1,-1,-1};
+
+// Indidcates wether the NXT is on an edge or inside a node (intersection)
+bool on_edge = true; 
 
 void start_line_following(void)
 {
@@ -123,15 +134,15 @@ TASK(TASK_line_follow)
     TerminateTask();
 }
 
-bool last_color_red = false;
-
-bool on_edge = true;
-S16 color_scan_rgb[3] = {-1,-1,-1};
-
 bool is_red_color_colorsensor()
 {
+    // Read the color from the current color_sensor
     ecrobot_get_nxtcolorsensor_rgb(color_sensor, color_scan_rgb);
-    color red_color;
+
+    // Declare the red color
+    color red_color = {-1, -1, -1};
+
+    // Store the correct red color
     if(color_sensor == COLOR_SENSOR_LEFT)
     {
         red_color = Colors[COLOR_RED_LEFT];
@@ -141,14 +152,29 @@ bool is_red_color_colorsensor()
         red_color = Colors[COLOR_RED_RIGHT];
     }
 
-    r_diff = red_color.red - color_scan_rgb[0];
+    // Calculate differences from the measured scan and the percepted color
+    int r_diff = red_color.red - color_scan_rgb[0];
     r_diff = r_diff > 0 ? r_diff : -r_diff;
-    g_diff = red_color.green - color_scan[1];
+    int g_diff = red_color.green - color_scan_rgb[1];
     g_diff = g_diff > 0 ? g_diff : -g_diff;
-    b_diff = red_color.blue - color_scan[2];
+    int b_diff = red_color.blue - color_scan_rgb[2];
     b_diff = b_diff > 0 ? b_diff : -b_diff;
 
-    if(r_diff < COLOR_THRESHOLD && g_diff < COLOR_THRESHOLD && b_diff < COLOR_THRESHOLD)
+    // Check if the measured color is within 
+    // acceptable threshold of the percepted color
+    if(r_diff < COLOR_THRESHOLD && 
+       g_diff < COLOR_THRESHOLD && 
+       b_diff < COLOR_THRESHOLD)
+    {
+        return true;
+    }
+
+    return false;
+}
+
+TASK(TASK_color_scan)
+{
+    if(is_red_color_colorsensor())
     {
         if(on_edge)
         {
@@ -157,34 +183,27 @@ bool is_red_color_colorsensor()
             switch(next_direction)
             {
                 case 'L':
-                    if(color_sensor == COLOR_SENSOR_RIGHT)
+                    if(light_sensor == COLOR_SENSOR_RIGHT)
                     {
                         switch_sensors();
                     }
                     break;
                 case 'R':
-                    if(color_sensor == COLOR_SENSOR_LEFT)
+                    if(light_sensor == COLOR_SENSOR_LEFT)
                     {
                         switch_sensors();
                     }
                     break;
                 case 'S':
-                    // TODO: Make it cross the intersection -> remember to enable the line follower when hit second tape.
+                    cross_intersection(1000);
                     break;
                 default :
                     Status = ERROR;
             }
         }
-
+        
         on_edge = !on_edge;
     }
-}
-
-
-TASK(TASK_color_scan)
-{
-    
-    
     // Implement code for color scanner here... 
     // And what to do when scanning a color
 }
@@ -217,10 +236,9 @@ void switch_sensors(void)
     light_sensor = temp;
 
     line_recover();
-
 }
 
-void cross_intersection(void)
+void cross_intersection(int line_follow_timeout)
 {
     line_follow = false;
     int Kp = 10;
@@ -243,7 +261,8 @@ void cross_intersection(void)
     int powerA = 0;
     int powerB = 0;
 
-    while(ecrobot_get_touch_sensor(NXT_PORT_S3))
+    int time_stamp = systick_get_ms();
+    while(systick_get_ms() - time_stamp < line_follow_timeout)
     {
         current_count_right = 
             nxt_motor_get_count(RIGHT_MOTOR) - init_motor_count_right;
