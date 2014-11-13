@@ -18,7 +18,8 @@ namespace BTCom
             PopulateDatabase();
 
             // Open the bt-connection
-            BluetoothConnection bt = new BluetoothConnection("COM3");
+            BluetoothConnection bt = new BluetoothConnection("COM6");
+            bt.FetchPallet(new Path());
 
             // Instantiate threads
             Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));

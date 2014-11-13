@@ -3,10 +3,14 @@
 #include "kernel.h"
 #include "kernel_id.h"
 
-// Own libraries
+// Own header
 #include "utility_line_follow.h"
+
+// Own libraries
+#include "utility/utility_lcd/utility_lcd.h"
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_structs/utility_structs.h"
+
 
 #define COLOR_THRESHOLD 20
 
@@ -60,7 +64,7 @@ void start_line_following(void)
     ecrobot_set_nxtcolorsensor(light_sensor, NXT_COLORSENSOR);
     ecrobot_process_bg_nxtcolorsensor();
 
-    SetRelAlarm(cyclic_alarm, 1, 50);
+    SetRelAlarm(cyclic_alarm, 1, 100);
     SetRelAlarm(cyclic_alarm_2, 1, 300);
 
     ReleaseResource(RES_SCHEDULER);
@@ -85,6 +89,7 @@ void stop_line_following(void)
 
 TASK(TASK_line_follow)
 {   
+    // lcd_display_line(LCD_LINE_ONE, "TASK_line_follow", true);
     if (line_follow)
     {
         int powerA = 0;
@@ -136,6 +141,9 @@ TASK(TASK_line_follow)
 
 bool is_red_color_colorsensor()
 {
+    // Update the color sensor
+    // ecrobot_process_bg_nxtcolorsensor();
+
     // Read the color from the current color_sensor
     ecrobot_get_nxtcolorsensor_rgb(color_sensor, color_scan_rgb);
 
@@ -174,6 +182,7 @@ bool is_red_color_colorsensor()
 
 TASK(TASK_color_scan)
 {
+    // lcd_display_line(LCD_LINE_ONE, "TASK_color_scan", true);
     if(is_red_color_colorsensor())
     {
         if(on_edge)
@@ -204,8 +213,8 @@ TASK(TASK_color_scan)
         
         on_edge = !on_edge;
     }
-    // Implement code for color scanner here... 
-    // And what to do when scanning a color
+    
+    TerminateTask();
 }
 
 void turn_direction(U8 direction) 
@@ -231,6 +240,7 @@ int get_light_level(U8 sensor)
 
 void switch_sensors(void)
 {
+    line_follow = false;
     U8 temp = color_sensor;
     color_sensor = light_sensor;
     light_sensor = temp;
