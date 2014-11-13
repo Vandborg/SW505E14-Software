@@ -64,7 +64,7 @@ void start_line_following(void)
     ecrobot_set_nxtcolorsensor(light_sensor, NXT_COLORSENSOR);
     ecrobot_process_bg_nxtcolorsensor();
 
-    SetRelAlarm(cyclic_alarm, 1, 100);
+    SetRelAlarm(cyclic_alarm, 1, 50);
     SetRelAlarm(cyclic_alarm_2, 1, 300);
 
     ReleaseResource(RES_SCHEDULER);
@@ -187,20 +187,21 @@ TASK(TASK_color_scan)
     {
         if(on_edge)
         {
-            char next_direction = Navigation.directions[Navigation.next];
+            //char next_direction = Navigation.directions[Navigation.next];
+
             // TODO: Follow instruction
-            switch(next_direction)
+            switch('S')
             {
                 case 'L':
                     if(light_sensor == COLOR_SENSOR_RIGHT)
                     {
-                        switch_sensors();
+                        // switch_sensors();
                     }
                     break;
                 case 'R':
                     if(light_sensor == COLOR_SENSOR_LEFT)
                     {
-                        switch_sensors();
+                        // switch_sensors();
                     }
                     break;
                 case 'S':
@@ -272,6 +273,7 @@ void cross_intersection(int line_follow_timeout)
     int powerB = 0;
 
     int time_stamp = systick_get_ms();
+
     while(systick_get_ms() - time_stamp < line_follow_timeout)
     {
         current_count_right = 
