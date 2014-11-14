@@ -154,15 +154,22 @@ namespace BTCom
             }
         }
 
-        public Path ShortestPath(String from, String to)
+        public Path ShortestPath(String from, String to, String ignore = null)
         {
             Node a = getNode(from);
             Node b = getNode(to);
 
-            return ShortestPath(a, b);
+            Node ignoreNode = null;
+
+            if (ignore != null)
+            {
+                ignoreNode = getNode(ignore);
+            }
+
+            return ShortestPath(a, b, ignoreNode);
         }
 
-        public Path ShortestPath(Node from, Node to)
+        public Path ShortestPath(Node from, Node to, Node ignore = null)
         {
             // Make sure that the nodes are in the graph
             if (!(Nodes.FindAll(x => x.Equals(from)).Count > 0 && Nodes.FindAll(x => x.Equals(to)).Count > 0))
@@ -226,8 +233,17 @@ namespace BTCom
 
                 foreach (KeyValuePair<Node, Edge> neighbour in selectedNode.Neighbours)
                 {
-                    if (neighbour.Key == null) continue;
+                    if (neighbour.Key == null)
+                    {
+                        continue;
+                    }
 
+                    // If selected the from node, ignore the ignore node
+                    if (ignore != null && selectedNode.Equals(from) && neighbour.Key.Equals(ignore))
+                    {
+                        continue;
+                    }
+                    
                     // Find the distance to the selected
                     int distanceToSelectedNode = distance.Find(x => x.Key.Equals(selectedNode)).Value;
 

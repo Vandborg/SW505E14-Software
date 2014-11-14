@@ -10,8 +10,8 @@ namespace BTCom
     {
         private List<Node> _path = new List<Node>();
 
-        private static string[,] navigationTable = new string[4, 4] { {"","L","F","R"}, {"R","","L","F"},
-                                                                      {"F","R","","L"}, {"L","F","R",""} };
+        private static char[,] navigationTable = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
+                                                                      {'S','R','#','L'}, {'L','S','R','#'} };
         public List<Node> Nodes
         {
             get { return _path; }
@@ -35,40 +35,31 @@ namespace BTCom
             return sameIdentifier && samePathLength && samePathNodes;
         }
 
-        public string[] convertToCarPath()
+        public string convertToCarPath(Node initialNode)
         {
-            var carPath = new string[Nodes.Count];
-            //This is not working, but got the gist of it.
-            /*KeyValuePair<Node, Edge> previousNodeKeyvalue = new KeyValuePair<Node, Edge>();
+            int initialIndex = Nodes[0].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
+            
+            List <Char> carPath = new List<Char>();
 
-            for (int i = 0; i < Nodes.Count-1; i++)
+            int fromIndex = initialIndex;
+            int toIndex = -1;
+
+            for (int i = 0; i < Nodes.Count - 1; i++)
             {
-                int comingFromNodeIndex;
-                var nodeOne = Nodes[i];
-                var nodeTwo = Nodes[i+1];
-                //Console.WriteLine(nodeOne);
-                //Console.WriteLine(nodeTwo);
-                var nodeOneKeyvalue = nodeOne.Neighbours.Single(x => nodeTwo.Equals(x.Key));
-                var nodeTwoKeyvalue = nodeTwo.Neighbours.Single(x => nodeOne.Equals(x.Key));
+                Node fromNode = Nodes[i];
+                Node toNode = Nodes[i+1];
 
-                if (previousNodeKeyvalue.Key == null)
-                {
-                    comingFromNodeIndex = nodeOne.Neighbours.IndexOf(nodeOneKeyvalue);
-                }
-                else
-                {
-                    comingFromNodeIndex = nodeOne.Neighbours.IndexOf(previousNodeKeyvalue);
-                }
+                // Find the index of the edge from fromNode to toNode
+                toIndex = fromNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(toNode));
 
-                previousNodeKeyvalue = nodeOneKeyvalue;
+                carPath.Add(navigationTable[fromIndex, toIndex]);
 
-                Console.WriteLine(nodeOne.Neighbours.IndexOf(nodeOneKeyvalue) + ", " + nodeTwo.Neighbours.IndexOf(nodeTwoKeyvalue));
-                carPath[i] =
-                    navigationTable[
-                        comingFromNodeIndex, nodeTwo.Neighbours.IndexOf(nodeTwoKeyvalue)];
-            }*/
+                fromIndex = toNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(fromNode));
+            }
 
-            return carPath;
+            // carPath.Reverse();
+
+            return new String(carPath.ToArray());
         }
 
         public override string ToString()
