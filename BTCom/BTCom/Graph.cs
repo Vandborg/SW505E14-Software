@@ -237,11 +237,10 @@ namespace BTCom
                     // Add the two distances
                     int alt = distanceToSelectedNode + distanceToNeighbour;
 
-                    KeyValuePair<Node, int> neighbourDistance = distance.Find(x => x.Key.Equals(neighbour.Key));
-                    KeyValuePair<Node, Node> neighbourPrevious = previous.Find(x => x.Key.Equals(neighbour.Key));
+                    int neighbourDistance = distance.Find(x => x.Key.Equals(neighbour.Key)).Value;
 
                     // Check if this new distance (alt) is shorter than what we know
-                    if(alt < neighbourDistance.Value)
+                    if(alt < neighbourDistance)
                     {
                         // Update the distance
                         distance.RemoveAll(x => x.Key.Equals(neighbour.Key));
@@ -254,34 +253,44 @@ namespace BTCom
                 }
             }
 
+            // Create a new path
             Path p = new Path();
 
+            // Start the path from the target (Path will later be inverted)
             Node lastNode = to;
             bool previousNode = true;
 
+            // Add the last node to path
             p.Nodes.Add(lastNode);
 
+            // Continue the loop as long as there are a previous node
             while (previousNode)
             {
+                // Find the previous node
                 KeyValuePair<Node, Node> newPreviousNode = previous.Find(x => x.Key != null && x.Key.Equals(lastNode));
 
+                // Check if the last node is the start
+                // There is a path, everything went well
                 if (lastNode.Equals(from))
                 {
-                    // There is a path, everything went well
                     previousNode = false;
                 }
+                // The last node has a previous node, everything is good
+                // However, the path is still not finished, so continue the loop
                 else if (newPreviousNode.Value != null)
                 {
                     p.Nodes.Add(newPreviousNode.Value);
                     lastNode = newPreviousNode.Value;
                 }
+                // We are not at the start node, and not at a valid node,
+                // hence, there must be a gab in the path. Error!
                 else
                 {
-                    // Gab in path, unable to create path!
                     return null;
                 }
             }
 
+            // Reserve the graph
             p.Nodes.Reverse();
 
             return p;
