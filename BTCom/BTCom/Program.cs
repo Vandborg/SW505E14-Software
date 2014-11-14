@@ -15,27 +15,22 @@ namespace BTCom
         private static void Main(string[] args)
         {
             // Make sure the database is populated
-            PopulateDatabase();
+            PopulateDatabase();            
 
-           // var path = Database.Instance.Data.Graphs.First().Value.ShortestPath("A", "E");
+            if(true) // Set to false if you want to communication with NXT 
+            {
+                // Open the bt-connection
+                BluetoothConnection bt = new BluetoothConnection("COM6");
+                bt.FetchPallet(new Path());
 
-            var graph = Database.Instance.Data.Graphs.First().Value;
+                // Instantiate threads
+                Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
+                Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
 
-                Path p = graph.ShortestPath("A", "G");
-                Console.WriteLine(p.ToString());
-            
-            Console.ReadLine();
-
-            // Open the bt-connection
-            //BluetoothConnection bt = new BluetoothConnection("COM3");
-
-            // Instantiate threads
-            //Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
-            //Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
-
-            // Start the threads
-            //ConsoleInputThread.Start();
-            //ConsumeBTThread.Start();            
+                // Start the threads
+                ConsoleInputThread.Start();
+                ConsumeBTThread.Start();            
+            }
         }
 
         // Constantly checks console input

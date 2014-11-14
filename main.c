@@ -9,6 +9,9 @@
 #include "utility/utility_definitions/utility_definitions.h"
 #include "utility/utility_movement/utility_movement.h"
 #include "utility/utility_sound/utility_sound.h"
+#include "utility/utility_structs/utility_structs.h"
+
+navigation Navigation;
 
 DeclareCounter(SysTimerCnt);
 
@@ -56,6 +59,7 @@ TASK(TASK_boot)
 {   
     initialize_colors();
     boot_device();
+    start_line_following();
     TerminateTask();
 }
 

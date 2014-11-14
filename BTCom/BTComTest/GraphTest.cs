@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BTCom;
+using BTCom.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BTComTest
@@ -159,6 +160,30 @@ namespace BTComTest
         }
 
         [TestMethod]
+        public void ShortestPathTwoNodesByName()
+        {
+            Graph g = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            Edge ab = new Edge(10);
+
+            g.AddNode(a);
+            g.AddNode(b);
+
+            g.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
+
+            Path actual = g.ShortestPath("a", "b");
+
+            Path expected = new Path();
+            expected.Nodes.Add(a);
+            expected.Nodes.Add(b);
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
+        [TestMethod]
         public void ShortestPathTwoNodes()
         {
             Graph g = new Graph(1);
@@ -256,6 +281,140 @@ namespace BTComTest
             Path actual = g.ShortestPath(a, b);
 
             Assert.IsNull(actual);
+        }
+
+        [TestMethod]
+        public void FindNodeInGraphByNameBothLowercase()
+        {
+            Graph g = new Graph();
+
+            Node expected = new Node("a");
+
+            g.AddNode(expected);
+
+            Node actual = g.getNode("a"); 
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+        [TestMethod]
+        public void FindNodeInGraphByNameBothUppercase()
+        {
+            Graph g = new Graph();
+
+            Node expected = new Node("A");
+
+            g.AddNode(expected);
+
+            Node actual = g.getNode("A");
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+        [TestMethod]
+        public void FindNodeInGraphByNameDifferentLettercaseOne()
+        {
+            Graph g = new Graph();
+
+            Node expected = new Node("a");
+
+            g.AddNode(expected);
+
+            Node actual = g.getNode("A");
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+        [TestMethod]
+        public void FindNodeInGraphByNameDifferentLettercaseTwo()
+        {
+            Graph g = new Graph();
+
+            Node expected = new Node("A");
+
+            g.AddNode(expected);
+
+            Node actual = g.getNode("a");
+
+            Assert.IsTrue(expected.Equals(actual));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NodeException))]
+        public void TryFindNotExistingNodeInGraph()
+        {
+            Graph g = new Graph();
+
+            Node searchNode = g.getNode("a");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(NodeException))]
+        public void TryFindNodeInGraphWithMultipleSameNode()
+        {
+            Graph g = new Graph();
+
+            Node sameNodeOne = new Node("a");
+            Node sameNodeTwo = new Node("A");
+
+            g.AddNode(sameNodeOne);
+            g.AddNode(sameNodeTwo);
+
+            Node searchNode = g.getNode("a");
+        }
+
+        [TestMethod]
+        public void RemoveNodeInGraphFromGraph()
+        {
+            Graph actual = new Graph(1);
+            Graph expected = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            actual.AddNode(a);
+            actual.AddNode(b);
+            actual.RemoveNode(b);
+
+            expected.AddNode(a);
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
+        [TestMethod]
+        public void RemoveNodeWithEdgesInGraphFromGraph()
+        {
+            Graph actual = new Graph(1);
+            Graph expected = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            Edge ab = new Edge(2);
+
+            actual.AddNode(a);
+            actual.AddNode(b);
+
+            actual.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
+
+            actual.RemoveNode(b);
+
+            expected.AddNode(a);
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
+        [TestMethod]
+        public void RemoveNodeNotInGraphFromGraph()
+        {
+            Graph graph = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            graph.AddNode(a);
+            
+            Assert.IsFalse(graph.RemoveNode(b));
         }
 
     }
