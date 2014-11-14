@@ -13,11 +13,13 @@ namespace BTCom
 
         private readonly List<Char> forkliftPath = new List<Char>();
 
-        private Path path = new Path();
+        private Path path = null;
+        private Node initialNode = null;
 
         public ForkliftPath(Path path, Node initialNode)
         {
             this.path = path;
+            this.initialNode = initialNode;
 
             int initialIndex = path.Nodes[0].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
 
@@ -50,7 +52,21 @@ namespace BTCom
 
         public override string ToString()
         {
-            return "";
+            String s = "";
+
+            s += "Initial node:\t'" + initialNode.Name + "'\n";
+
+            int i = 0;
+            for (i = 0; i < path.Nodes.Count - 1; i++)
+            {
+                Node node = path.Nodes[i];
+
+                s += "Action in node:\t'" + node.Name + "':\t" + forkliftPath[i] + "\n";
+            }
+
+            s += "Arrive in node:\t'" + path.Nodes[i].Name + "'.";
+
+            return s;
         }
     }
 }
