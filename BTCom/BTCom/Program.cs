@@ -21,7 +21,7 @@ namespace BTCom
             {
                 // Open the bt-connection
                 BluetoothConnection bt = new BluetoothConnection("COM6");
-                bt.FetchPallet(new Path());
+                //bt.FetchPallet(new Path());
 
                 // Instantiate threads
                 Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
@@ -163,7 +163,7 @@ namespace BTCom
             // The list of all colors when no database exists
             List<Color> colors = new List<Color> 
             { 
-                new Color("RED:LEFT", COLOR_RED_LEFT, 315, 115, 117), 
+                new Color("RED:LEFT", COLOR_RED_LEFT, 366, 115, 117), // fixed
                 new Color("RED:RIGHT", COLOR_RED_RIGHT, 365, 200, 178),
                 new Color("BLUE:LEFT", COLOR_BLUE_LEFT, 175, 138, 172), 
                 new Color("BLUE:RIGHT", COLOR_BLUE_RIGHT, 207, 219, 233), 

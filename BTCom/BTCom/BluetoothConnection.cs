@@ -78,12 +78,12 @@ namespace BTCom
         }
 
         // Make the NXT fetch a pallet at the end of the path
-        public void FetchPallet(Path path)
+        public void FetchPallet(string s)
         {
             // TODO: Get the directions out of the path
             // TODO: Conver that data to a string array
-            string direction = "RRRL";
-            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
+            
+            byte[] directionArray = Encoding.ASCII.GetBytes(s);
 
             Console.WriteLine("Adding FetchPallet-job to JobList");
 
@@ -217,7 +217,7 @@ namespace BTCom
                     if (inputSplit.Count == 3)
                     {
                         // TODO: Use params to create path
-                        FetchPallet(new Path());
+                        FetchPallet(inputSplit[1]);
                     }
                     else
                     {
