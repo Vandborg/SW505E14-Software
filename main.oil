@@ -22,31 +22,49 @@ CPU ATMEL_AT91SAM7S256
   TASK TASK_boot
   {
     AUTOSTART = TRUE { APPMODE = appmode1; };
-    PRIORITY = 4; /* Smaller value means lower priority */ 
+    PRIORITY = 6; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = NON;
-    STACKSIZE = 512; /* Stack size */ 
+    STACKSIZE = 1024; /* Stack size */ 
   };
 
   TASK TASK_line_follow
   {
     AUTOSTART = FALSE;
-    PRIORITY = 3; /* Smaller value means lower priority */ 
+    PRIORITY = 5; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = FULL;
-    STACKSIZE = 512; /* Stack size */ 
+    STACKSIZE = 1024; /* Stack size */ 
   };
 
   TASK TASK_color_scan
   {
     AUTOSTART = FALSE;
-    PRIORITY = 2; /* Smaller value means lower priority */ 
+    PRIORITY = 4; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = FULL;
-    STACKSIZE = 512; /* Stack size */ 
+    STACKSIZE = 1024; /* Stack size */ 
+  };
+
+  TASK TASK_cross_intersection
+  {
+    AUTOSTART = FALSE;
+    PRIORITY = 3; /* Smaller value means lower priority */ 
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 1024; /* Stack size */ 
   };
 
   TASK TASK_consume_bluetooth
+  {
+    AUTOSTART = FALSE;
+    PRIORITY = 2; /* Smaller value means lower priority */ 
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 1024; /* Stack size */ 
+  };
+
+  TASK TASK_check_navigation
   {
     AUTOSTART = FALSE;
     PRIORITY = 1; /* Smaller value means lower priority */ 
@@ -54,6 +72,9 @@ CPU ATMEL_AT91SAM7S256
     SCHEDULE = FULL;
     STACKSIZE = 1024; /* Stack size */ 
   };
+
+
+  
 
   COUNTER SysTimerCnt
   {
@@ -95,5 +116,30 @@ CPU ATMEL_AT91SAM7S256
       CYCLETIME = 1000;
       APPMODE   = appmode1;
     };
+  };
+
+  ALARM cyclic_alarm_4
+  {
+    COUNTER = SysTimerCnt;
+    ACTION = ACTIVATETASK
+    {
+        TASK = TASK_check_navigation;
+    };
+    AUTOSTART = TRUE
+    {
+      ALARMTIME = 1;
+      CYCLETIME = 1000;
+      APPMODE   = appmode1;
+    };
+  };
+
+  ALARM cyclic_alarm_5
+  {
+    COUNTER = SysTimerCnt;
+    ACTION = ACTIVATETASK
+    {
+        TASK = TASK_cross_intersection;
+    };
+    AUTOSTART = FALSE;
   };
 };

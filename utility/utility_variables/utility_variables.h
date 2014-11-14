@@ -9,7 +9,7 @@
 
     // Color values for the sensors
     extern color Colors[AMOUNT_OF_COLORS];
-    extern navigation Navigation = {"LLLLLLLLLL", -1, 0};
+    extern navigation Navigation = {"", -1, 0};
     extern char Status = IDLE; 
 
 #endif

@@ -59,7 +59,6 @@ TASK(TASK_boot)
 {   
     initialize_colors();
     boot_device();
-    start_line_following();
     TerminateTask();
 }
 
