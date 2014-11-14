@@ -15,19 +15,22 @@ namespace BTCom
         private static void Main(string[] args)
         {
             // Make sure the database is populated
-            PopulateDatabase();
+            PopulateDatabase();            
 
-            // Open the bt-connection
-            BluetoothConnection bt = new BluetoothConnection("COM6");
-            bt.FetchPallet(new Path());
+            if(true) // Set to false if you want to communication with NXT 
+            {
+                // Open the bt-connection
+                BluetoothConnection bt = new BluetoothConnection("COM6");
+                bt.FetchPallet(new Path());
 
-            // Instantiate threads
-            Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
-            Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
+                // Instantiate threads
+                Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
+                Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
 
-            // Start the threads
-            ConsoleInputThread.Start();
-            ConsumeBTThread.Start();            
+                // Start the threads
+                ConsoleInputThread.Start();
+                ConsumeBTThread.Start();            
+            }
         }
 
         // Constantly checks console input
@@ -102,40 +105,39 @@ namespace BTCom
                 warehouse.AddNode(P);
                 warehouse.AddNode(Q);
 
-                // Add all the edges to the graph
-                warehouse.AddUndirectedEdge(A, B, 1);
-                warehouse.AddUndirectedEdge(A, P, 1);
-                warehouse.AddUndirectedEdge(A, N, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 1), new Tuple<Node, int>(B, 3), 4);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 3), new Tuple<Node, int>(P, 0), 2);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 2), new Tuple<Node, int>(N, 0), 1);
 
-                warehouse.AddUndirectedEdge(B, C, 1);
-                warehouse.AddUndirectedEdge(B, H, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 1), new Tuple<Node, int>(C, 1), 2);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 2), new Tuple<Node, int>(H, 0), 1);
 
-                warehouse.AddUndirectedEdge(C, D, 1);
-                warehouse.AddUndirectedEdge(C, F, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 1), new Tuple<Node,int>(D, 3), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 2), new Tuple<Node, int>(F, 0), 1);
 
-                warehouse.AddUndirectedEdge(E, F, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(E, 3), new Tuple<Node, int>(F, 1), 1);
 
-                warehouse.AddUndirectedEdge(F, G, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(F, 3), new Tuple<Node, int>(G, 1), 2);
 
-                warehouse.AddUndirectedEdge(G, H, 1);
-                warehouse.AddUndirectedEdge(G, Q, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 0), new Tuple<Node, int>(H, 2), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 3), new Tuple<Node, int>(Q, 1), 1);
 
-                warehouse.AddUndirectedEdge(H, J, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(H, 3), new Tuple<Node, int>(J, 1), 1);
 
-                warehouse.AddUndirectedEdge(I, J, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(I, 2), new Tuple<Node,int>(J, 0), 1);
 
-                warehouse.AddUndirectedEdge(J, L, 1);
-                warehouse.AddUndirectedEdge(J, Q, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 3), new Tuple<Node, int>(L, 1), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node,int>(J, 2), new Tuple<Node,int>(Q, 0), 1);
 
-                warehouse.AddUndirectedEdge(K, L, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node,int>(K, 2), new Tuple<Node,int>(L, 0), 1);
 
-                warehouse.AddUndirectedEdge(L, M, 1);
-                warehouse.AddUndirectedEdge(L, N, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node,int>(L, 2), new Tuple<Node,int>(M, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node,int>(L, 3), new Tuple<Node,int>(N, 1), 1);
 
-                warehouse.AddUndirectedEdge(N, O, 1);
-                warehouse.AddUndirectedEdge(N, P, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node,int>(N, 2), new Tuple<Node,int>(O, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node,int>(N, 3), new Tuple<Node,int>(P, 1), 1);
 
-                warehouse.AddUndirectedEdge(P, Q, 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(P, 2), new Tuple<Node, int>(Q, 3), 4);
 
                 // Save it to the database
                 Database.Instance.Data.AddGraph(warehouse);

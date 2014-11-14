@@ -96,11 +96,11 @@ namespace BTComTest
 
             g1.AddNode(a);
             g1.AddNode(b);
-            g1.AddUndirectedEdge(a, b, ab);
+            g1.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
 
             g2.AddNode(a);
             g2.AddNode(b);
-            g2.AddUndirectedEdge(a, b, ab);
+            g2.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
 
             Assert.IsFalse(g1.Equals(g2));
         }
@@ -121,15 +121,15 @@ namespace BTComTest
             g1.AddNode(a);
             g1.AddNode(b);
             g1.AddNode(c);
-            g1.AddUndirectedEdge(a, b, ab);
-            g1.AddUndirectedEdge(b, c, bc);
+            g1.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
+            g1.AddUndirectedEdge(new Tuple<Node, int>(b, 1), new Tuple<Node, int>(c, 0), bc);
             g1.RemoveUndirectedEdge(b, c);
 
             g2.AddNode(a);
             g2.AddNode(b);
             g2.AddNode(c);
-            g2.AddUndirectedEdge(a, b, ab);
-            g2.AddUndirectedEdge(b, c, bc);
+            g1.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
+            g1.AddUndirectedEdge(new Tuple<Node, int>(b, 1), new Tuple<Node, int>(c, 0), bc);
             g2.RemoveUndirectedEdge(b, c);
 
             Assert.IsFalse(g1.Equals(g2));
@@ -171,7 +171,7 @@ namespace BTComTest
             g.AddNode(a);
             g.AddNode(b);
 
-            g.AddUndirectedEdge(a, b, ab);
+            g.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
 
             Path actual = g.ShortestPath(a, b);
 
@@ -198,8 +198,8 @@ namespace BTComTest
             g.AddNode(b);
             g.AddNode(c);
 
-            g.AddUndirectedEdge(a, b, ab);
-            g.AddUndirectedEdge(b, c, bc);
+            g.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
+            g.AddUndirectedEdge(new Tuple<Node, int>(b, 1), new Tuple<Node, int>(c, 0), bc);
 
             Path actual = g.ShortestPath(a, c);
 
@@ -228,9 +228,9 @@ namespace BTComTest
             g.AddNode(b);
             g.AddNode(c);
 
-            g.AddUndirectedEdge(a, b, ab);
-            g.AddUndirectedEdge(a, c, ac);
-            g.AddUndirectedEdge(c, b, cb);
+            g.AddUndirectedEdge(new Tuple<Node, int>(a, 0), new Tuple<Node, int>(b, 0), ab);
+            g.AddUndirectedEdge(new Tuple<Node, int>(a, 1), new Tuple<Node, int>(c, 0), ac);
+            g.AddUndirectedEdge(new Tuple<Node, int>(c, 1), new Tuple<Node, int>(b, 1), cb);
 
             Path actual = g.ShortestPath(a, b);
 
@@ -239,7 +239,7 @@ namespace BTComTest
             expected.Nodes.Add(c);
             expected.Nodes.Add(b);
 
-            Assert.IsTrue(actual.Equals(expected));
+            Assert.IsTrue(expected.Equals(actual));
         }
 
         [TestMethod]

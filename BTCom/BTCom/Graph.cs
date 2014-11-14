@@ -26,26 +26,26 @@ namespace BTCom
             Identifier = id;
         }
 
-        public bool AddUndirectedEdge(Node nodeOne, Node nodeTwo, int weight)
+        public bool AddUndirectedEdge(Tuple<Node, int> nodeOne, Tuple<Node, int> nodeTwo, int weight)
         {
             Edge edge = new Edge(weight);
             return AddUndirectedEdge(nodeOne, nodeTwo, edge);
         }
 
-        public bool AddUndirectedEdge(Node nodeOne, Node nodeTwo, Edge edge)
+        public bool AddUndirectedEdge(Tuple<Node, int> nodeOne, Tuple<Node, int> nodeTwo, Edge edge)
         {
             // Check if the nodes exists in the graph
-            var containsNodeOne = Nodes.Contains(nodeOne);
-            var containsNodeTwo = Nodes.Contains(nodeTwo);
+            var containsNodeOne = Nodes.Contains(nodeOne.Item1);
+            var containsNodeTwo = Nodes.Contains(nodeTwo.Item1);
             if (!containsNodeOne || !containsNodeTwo) return false;
 
             // Check if the edge already exists
-            var nodeOneHasEdge = nodeOne.Neighbours.FindAll(x => x.Key == nodeTwo).Count > 0;
-            var nodeTwoHasEdge = nodeOne.Neighbours.FindAll(x => x.Key == nodeOne).Count > 0;
+            var nodeOneHasEdge = nodeOne.Item1.Neighbours.FindAll(x => x.Key == nodeTwo.Item1).Count > 0;
+            var nodeTwoHasEdge = nodeOne.Item1.Neighbours.FindAll(x => x.Key == nodeOne.Item1).Count > 0;
             if (nodeOneHasEdge || nodeTwoHasEdge) return false;
 
-            nodeOne.Neighbours.Add(new KeyValuePair<Node, Edge>(nodeTwo, edge));
-            nodeTwo.Neighbours.Add(new KeyValuePair<Node, Edge>(nodeOne, edge));
+            nodeOne.Item1.Neighbours[nodeOne.Item2] = new KeyValuePair<Node, Edge>(nodeTwo.Item1, edge);
+            nodeTwo.Item1.Neighbours[nodeTwo.Item2] = new KeyValuePair<Node, Edge>(nodeOne.Item1, edge);
 
             return true;
         }
@@ -58,8 +58,15 @@ namespace BTCom
             if (!containsNodeOne || !containsNodeTwo) return false;
 
             // Remove edges from both nodes
-            nodeOne.Neighbours.RemoveAll(x => x.Key == nodeTwo);
-            nodeTwo.Neighbours.RemoveAll(x => x.Key == nodeOne);
+            var keyvalue = nodeOne.Neighbours.Single(x => x.Key == nodeTwo);
+            int index = nodeOne.Neighbours.IndexOf(keyvalue);
+
+            nodeOne.Neighbours[index] = new KeyValuePair<Node,Edge>();
+
+            keyvalue = nodeTwo.Neighbours.Single(x => x.Key == nodeOne);
+            index = nodeTwo.Neighbours.IndexOf(keyvalue);
+
+            nodeTwo.Neighbours[index] = new KeyValuePair<Node, Edge>();
 
             return true;
         }
@@ -83,10 +90,25 @@ namespace BTCom
             if (!containsNode) return false;
 
             // Remove all egdes to the node removed
-            foreach (Node checkNode in Nodes)
+            foreach (var checkNodePair in node.Neighbours)
             {
-                checkNode.Neighbours.RemoveAll(x => x.Key == node);
-                checkNode.BlockedNeighbours.RemoveAll(x => x.Key == node);
+                Node checkNode = checkNodePair.Key;
+
+                if (checkNode == null)
+                {
+                    continue;
+                }
+                // Remove edges from both nodes
+                var keyvalue = checkNode.Neighbours.SingleOrDefault(x => x.Key == node);
+                
+                if (keyvalue.Key != null)
+                {
+                    int index = checkNode.Neighbours.IndexOf(keyvalue);
+
+                    checkNode.Neighbours[index] = new KeyValuePair<Node, Edge>();
+                    checkNode.BlockedNeighbours[index] = new KeyValuePair<Node, Edge>();
+                }
+                
             }
 
             // Remove the node
@@ -155,6 +177,11 @@ namespace BTCom
 
             foreach (Node node in Nodes)
             {
+                if (node == null)
+                {
+                    continue;
+                }
+
                 if (!node.Equals(from))
                 {
                     // Set the distance of all nodes to infinity
@@ -180,9 +207,14 @@ namespace BTCom
 
                 foreach (Node node in Q)
                 {
+                    if (node == null)
+                    {
+                        continue;
+                    }
+
                     int newDistance = distance.Find(x => x.Key.Equals(node)).Value;
 
-                    if (selectedNode == null || newDistance < oldDistance)
+                    if (newDistance < oldDistance)
                     {
                         selectedNode = node;
                         oldDistance = newDistance;
@@ -194,11 +226,13 @@ namespace BTCom
 
                 foreach (KeyValuePair<Node, Edge> neighbour in selectedNode.Neighbours)
                 {
+                    if (neighbour.Key == null) continue;
+
                     // Find the distance to the selected
                     int distanceToSelectedNode = distance.Find(x => x.Key.Equals(selectedNode)).Value;
 
                     // Find the distance to the selected neighbour
-                    int distanceToNeighbour = selectedNode.Neighbours.Find(x => x.Key.Equals(neighbour.Key)).Value.Weight;
+                    int distanceToNeighbour = selectedNode.Neighbours.Find(x => x.Key != null && x.Key.Equals(neighbour.Key)).Value.Weight;
 
                     // Add the two distances
                     int alt = distanceToSelectedNode + distanceToNeighbour;
@@ -210,11 +244,11 @@ namespace BTCom
                     if(alt < neighbourDistance.Value)
                     {
                         // Update the distance
-                        distance.Remove(neighbourDistance);
+                        distance.RemoveAll(x => x.Key.Equals(neighbour.Key));
                         distance.Add(new KeyValuePair<Node, int>(neighbour.Key, alt));
 
                         // Set previous of neighbour to selectednode
-                        previous.Remove(neighbourPrevious);
+                        previous.RemoveAll(x => x.Key.Equals(neighbour.Key));
                         previous.Add(new KeyValuePair<Node, Node>(neighbour.Key, selectedNode));
                     }
                 }
@@ -229,9 +263,9 @@ namespace BTCom
 
             while (previousNode)
             {
-                KeyValuePair<Node, Node> newPreviousNode = previous.Find(x => x.Key.Equals(lastNode));
+                KeyValuePair<Node, Node> newPreviousNode = previous.Find(x => x.Key != null && x.Key.Equals(lastNode));
 
-                if (newPreviousNode.Key == null && newPreviousNode.Value == null)
+                if (lastNode.Equals(from))
                 {
                     // There is a path, everything went well
                     previousNode = false;
