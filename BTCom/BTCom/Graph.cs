@@ -98,8 +98,9 @@ namespace BTCom
                 {
                     continue;
                 }
+
                 // Remove edges from both nodes
-                var keyvalue = checkNode.Neighbours.SingleOrDefault(x => x.Key == node);
+                KeyValuePair<Node, Edge> keyvalue = checkNode.Neighbours.Find(x => x.Key.Equals(node));
                 
                 if (keyvalue.Key != null)
                 {
