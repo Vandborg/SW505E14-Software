@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +22,11 @@ namespace BTCom
             this.path = path;
             this.initialNode = initialNode;
 
+            if (path.Nodes.Count <= 1)
+            {
+                return;
+            }
+
             int initialIndex = path.Nodes[0].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
 
             int fromIndex = initialIndex;
@@ -28,15 +34,19 @@ namespace BTCom
 
             for (int i = 0; i < path.Nodes.Count - 1; i++)
             {
-                Node fromNode = path.Nodes[i];
-                Node toNode = path.Nodes[i + 1];
+                Node fromNode = null;
+                Node thisNode = path.Nodes[i];
+                Node toNode = path.Nodes[i+1];
 
-                // Find the index of the edge from fromNode to toNode
-                toIndex = fromNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(toNode));
+                if (i != 0)
+                {
+                    fromNode = path.Nodes[i - 1];
+                    fromIndex = thisNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(fromNode));
+                }
+
+                toIndex = thisNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(toNode));
 
                 forkliftPath.Add(navigationTable[fromIndex, toIndex]);
-
-                fromIndex = toNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(fromNode));
             }
         }
 
