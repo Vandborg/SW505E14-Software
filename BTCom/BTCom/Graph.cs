@@ -90,7 +90,7 @@ namespace BTCom
             if (!containsNode) return false;
 
             // Remove all egdes to the node removed
-            foreach (var checkNodePair in node.Neighbours)
+            foreach (KeyValuePair<Node, Edge> checkNodePair in node.Neighbours)
             {
                 Node checkNode = checkNodePair.Key;
 
