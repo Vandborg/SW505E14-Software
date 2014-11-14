@@ -82,7 +82,7 @@ namespace BTCom
         {
             // TODO: Get the directions out of the path
             // TODO: Conver that data to a string array
-            string direction = "LLRSRL";
+            string direction = "RRRL";
             byte[] directionArray = Encoding.ASCII.GetBytes(direction);
 
             Console.WriteLine("Adding FetchPallet-job to JobList");
