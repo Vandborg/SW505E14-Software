@@ -35,33 +35,6 @@ namespace BTCom
             return sameIdentifier && samePathLength && samePathNodes;
         }
 
-        public string convertToCarPath(Node initialNode)
-        {
-            int initialIndex = Nodes[0].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
-            
-            List <Char> carPath = new List<Char>();
-
-            int fromIndex = initialIndex;
-            int toIndex = -1;
-
-            for (int i = 0; i < Nodes.Count - 1; i++)
-            {
-                Node fromNode = Nodes[i];
-                Node toNode = Nodes[i+1];
-
-                // Find the index of the edge from fromNode to toNode
-                toIndex = fromNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(toNode));
-
-                carPath.Add(navigationTable[fromIndex, toIndex]);
-
-                fromIndex = toNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(fromNode));
-            }
-
-            // carPath.Reverse();
-
-            return new String(carPath.ToArray());
-        }
-
         public override string ToString()
         {
             string s = "";
