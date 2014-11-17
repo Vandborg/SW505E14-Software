@@ -109,7 +109,7 @@ namespace BTCom
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 3), new Tuple<Node, int>(P, 0), 2);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 2), new Tuple<Node, int>(N, 0), 1);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 1), new Tuple<Node, int>(C, 1), 2);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 1), new Tuple<Node, int>(C, 0), 2);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 2), new Tuple<Node, int>(H, 0), 1);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 1), new Tuple<Node,int>(D, 3), 1);
@@ -117,7 +117,7 @@ namespace BTCom
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(E, 3), new Tuple<Node, int>(F, 1), 1);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(F, 3), new Tuple<Node, int>(G, 1), 2);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(F, 2), new Tuple<Node, int>(G, 1), 2);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 0), new Tuple<Node, int>(H, 2), 1);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 3), new Tuple<Node, int>(Q, 1), 1);
