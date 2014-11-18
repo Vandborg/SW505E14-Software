@@ -77,50 +77,53 @@ TASK(TASK_color_scan)
     if(Navigation.next > -1)
     {
         // Is the meassured color red and was the last color meassured not red
-        if(is_red_color_colorsensor() && !last_color_red)
+        if(is_red_color_colorsensor())
         {
+
+            if(!last_color_red)
+            {
+                // Debugging sound
+                play_sound(SOUND_TICK);
+
+                // If the NXT is driving on an edge in the graph and not an vertex
+                if(on_edge)
+                {
+                    // The next direction in the navigation
+                    char next_direction = Navigation.directions[Navigation.next];
+
+                    switch(next_direction)
+                    {
+                        case 'L':
+                            if(light_sensor == COLOR_SENSOR_RIGHT)
+                            {
+                                switch_sensors();
+                            }
+                            break;
+                        case 'R':
+                            if(light_sensor == COLOR_SENSOR_LEFT)
+                            {
+                                switch_sensors();
+                            }
+                            break;
+                        case 'S':
+                            do_cross_intersection = true;
+                            ActivateTask(TASK_cross_intersection);
+                            break;
+                        default :
+                            Status = ERROR;
+                    }
+                }
+                else
+                {
+                    do_cross_intersection = false;
+
+                    Navigation.next = Navigation.next -1;
+                }
+                on_edge = !on_edge;
+            }
+            
             // The color was red
             last_color_red = true;
-
-            // Debugging sound
-            play_sound(SOUND_TICK);
-
-            // If the NXT is driving on an edge in the graph and not an vertex
-            if(on_edge)
-            {
-                // The next direction in the navigation
-                char next_direction = Navigation.directions[Navigation.next];
-
-                switch(next_direction)
-                {
-                    case 'L':
-                        if(light_sensor == COLOR_SENSOR_RIGHT)
-                        {
-                            switch_sensors();
-                        }
-                        break;
-                    case 'R':
-                        if(light_sensor == COLOR_SENSOR_LEFT)
-                        {
-                            switch_sensors();
-                        }
-                        break;
-                    case 'S':
-                        do_cross_intersection = true;
-                        ActivateTask(TASK_cross_intersection);
-                        break;
-                    default :
-                        Status = ERROR;
-                }
-            }
-            else
-            {
-                do_cross_intersection = false;
-
-                Navigation.next = Navigation.next -1;
-            }
-            on_edge = !on_edge;
-
         }
         else
         {
