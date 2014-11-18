@@ -25,7 +25,7 @@ void user_1ms_isr_type2(void)
 void ecrobot_device_initialize(void)
 {
     ecrobot_init_nxtcolorsensor(COLOR_SENSOR_LEFT, NXT_COLORSENSOR);
-    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_LIGHTSENSOR_RED);
+    ecrobot_init_nxtcolorsensor(COLOR_SENSOR_RIGHT, NXT_COLORSENSOR);
     ecrobot_init_sonar_sensor(SONAR_SENSOR_FRONT);
     ecrobot_init_sonar_sensor(SONAR_SENSOR_REAR);
     ecrobot_init_bt_slave("password");

@@ -122,9 +122,9 @@
     // Linefollow PID-controller definitions
     #define LINE_FOLLOW_SPEED       60
 
-    #define KP                      27
-    #define KI                       2
-    #define KD                      30
+    #define KP                      21//35//27
+    #define KI                       4.2//0// 2
+    #define KD                      26.25//0//30
 
     #define INTEGRAL_MAX          2000     
     #define INTEGRAL_MIN -INTEGRAL_MAX      
