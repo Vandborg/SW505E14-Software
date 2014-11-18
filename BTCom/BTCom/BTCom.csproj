@@ -72,6 +72,7 @@
     <Compile Include="DataEntry.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
+    <Compile Include="Forklift.cs" />
     <Compile Include="ForkliftPath.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="JsonHelper.cs" />
