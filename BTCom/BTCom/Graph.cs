@@ -172,6 +172,16 @@ namespace BTCom
 
         public Path ShortestPath(Node from, Node to, Node ignore = null)
         {
+            if (from == null)
+            {
+                throw new NodeException("From-node cannot be null");
+            }
+
+            if (to == null)
+            {
+                throw new NodeException("To-node cannot be null");
+            }
+
             // Make sure that the nodes are in the graph
             if (!(Nodes.FindAll(x => x.Equals(from)).Count > 0 && Nodes.FindAll(x => x.Equals(to)).Count > 0))
             {

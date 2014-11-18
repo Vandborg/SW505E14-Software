@@ -28,16 +28,16 @@ namespace BTCom
         const byte TYPE_NAVIGATE_TO = 0x4E;
 
         // NXT statuses 
-        char NXTStatus = BUSY;
+        char NXTStatus = '0';
         const char IDLE = 'I';
         const char BUSY = 'B';
         const char ERROR = 'E';
 
         // Joblist queue of package type and data
-        private List<Tuple<byte, byte[]>> JobList = new List<Tuple<byte,byte[]>>();
+        private List<Job> JobList = new List<Job>();
 
         // The current job 
-        private Tuple<byte, byte[]> CurrentJob;
+        private Job CurrentJob;
 
         // Constructor
         public BluetoothConnection(string portName)
@@ -65,39 +65,6 @@ namespace BTCom
             this.WriteTimeout = 10000; // Wait 10 sec before timeout on writebuffer
         }
 
-        // Make the NXT navigate according to the path
-        public void Navigate(ForkliftPath path)
-        {
-            string direction = path.getDirections();
-            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
-
-            Console.WriteLine("Adding Navigate-job to JobList");
-
-            JobList.Add(new Tuple<byte, byte[]>(TYPE_NAVIGATE_TO,directionArray));
-        }
-
-        // Make the NXT fetch a pallet at the end of the path
-        public void FetchPallet(ForkliftPath path)
-        {
-            string direction = path.getDirections();
-            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
-
-            Console.WriteLine("Adding FetchPallet-job to JobList");
-
-            JobList.Add(new Tuple<byte, byte[]>(TYPE_FETCH_PALLET, directionArray));
-        }
-
-        // Make the NXT deliver a pallet at the end of the path
-        public void DeliverPallet(ForkliftPath path)
-        {
-            string direction = path.getDirections();
-            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
-
-            Console.WriteLine("Adding DeliverPallet-job to JobList");
-
-            JobList.Add(new Tuple<byte, byte[]>(TYPE_DELIVER_PALLET, directionArray));
-        }
-
         // Create a job based on string input (console input)
         public void CreateJob(string input)
         {   
@@ -123,7 +90,7 @@ namespace BTCom
                             Console.WriteLine("------------------------------ Joblist of PALL-E ------------------------------");
                             if (CurrentJob != null)
                             {
-                                Console.WriteLine("Current job: (" + ((char)CurrentJob.Item1).ToString() + ", " + Encoding.UTF8.GetString(CurrentJob.Item2, 0, CurrentJob.Item2.Length) + ")");
+                                Console.WriteLine("Current job: " + CurrentJob.ToString());
                             }
                         }
                         else
@@ -132,9 +99,9 @@ namespace BTCom
                         }
 
                         int c = 0;
-                        foreach(Tuple<byte,byte[]> job in JobList)
+                        foreach(Job job in JobList)
                         {   
-                            Console.WriteLine("Job #" + c + " (" + ((char)job.Item1).ToString() + ", " + Encoding.UTF8.GetString(job.Item2, 0, job.Item2.Length) + ")");
+                            Console.WriteLine("Job #" + c + ": " + job.ToString());
                             c++;
                         }
                     }
@@ -149,7 +116,7 @@ namespace BTCom
                                 {
                                     index = int.Parse(inputSplit[2]);
                                 }
-                                catch (Exception e)
+                                catch (Exception)
                                 {
                                     Console.WriteLine("Invalid argument! Correct use => joblist [\"remove\"] [Index]");
                                 }
@@ -185,86 +152,45 @@ namespace BTCom
                     break;
 
                 case "navigate" :
-                    if(inputSplit.Count == 4)
-                    {
-                        Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
-                        Node from = g.getNode(inputSplit[1]); // First argument
-                        Node to = g.getNode(inputSplit[2]); // Second argument
-                        Node ignore = g.getNode(inputSplit[3]); // Third argument    
-
-                        Path p = g.ShortestPath(from, to, ignore);
-
-                        ForkliftPath fp = null;
-
-                        try
-                        {
-                            Navigate(new ForkliftPath(p, ignore));
-                        }
-                        catch (NodeException e)
-                        {
-                            Console.WriteLine("'Fetch' command failed:");
-                            Console.WriteLine(e.Message);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Wrong use of \'navigate\'. Correct use => navigate {StartNode} {EndNode} {IgnoreNode}");
-                    }
-                    break;
-
                 case "deliver" :
-                    if (inputSplit.Count == 4)
-                    {
-                        Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
-                        Node from = g.getNode(inputSplit[1]); // First argument
-                        Node to = g.getNode(inputSplit[2]); // Second argument
-                        Node ignore = g.getNode(inputSplit[3]); // Third argument    
-
-                        Path p = g.ShortestPath(from, to, ignore);
-
-                        ForkliftPath fp = null;
-
-                        try
-                        {
-                            DeliverPallet(new ForkliftPath(p, ignore));
-                        }
-                        catch (NodeException e)
-                        {
-                            Console.WriteLine("'Fetch' command failed:");
-                            Console.WriteLine(e.Message);
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Wrong use of \'deliver\'. Correct use => deliver {StartNode} {EndNode} {IgnoreNode}");
-                    }
-                    break;
-
                 case "fetch" :
-                    if (inputSplit.Count == 4)
+                    if(inputSplit.Count == 2)
                     {
                         Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
-                        Node from = g.getNode(inputSplit[1]); // First argument
-                        Node to = g.getNode(inputSplit[2]); // Second argument
-                        Node ignore = g.getNode(inputSplit[3]); // Third argument    
-                        
-                        Path p = g.ShortestPath(from, to, ignore);
 
-                        ForkliftPath fp = null;
+                        Node to = null;
 
                         try
                         {
-                            FetchPallet(new ForkliftPath(p, ignore));
+                            to = g.getNode(inputSplit[1]); // First argument    
                         }
                         catch (NodeException e)
                         {
-                            Console.WriteLine("'Fetch' command failed:");
-                            Console.WriteLine(e.Message);   
+                            Console.WriteLine("Error when finding node:");
+                            Console.WriteLine(e.Message);
+                            break;
                         }
+
+                        byte type = 0;
+
+                        switch (inputSplit[0])
+                        {
+                            case "navigate":
+                                type = TYPE_NAVIGATE_TO;
+                                break;
+                            case "deliver":
+                                type = TYPE_DELIVER_PALLET;
+                                break;
+                            case "fetch":
+                                type = TYPE_FETCH_PALLET;
+                                break;
+                        }
+
+                        JobList.Add(new Job(type, to));
                     }
                     else
                     {
-                        Console.WriteLine("Wrong use of \'fetch\'. Correct use => fetch {StartNode} {EndNode} {IgnoreNode}");
+                        Console.WriteLine("Wrong use. Correct use => \"navigate\"/\"deliver\"/\"fetch\"/ {DestinationNode}");
                     }
                     break;
 
@@ -274,13 +200,9 @@ namespace BTCom
                         switch (inputSplit[1])
                         {
                             case "navigate":
-                                Console.WriteLine("Correct use => navigate {StartNode} {EndNode}");
-                                break;
-                            case "fetch":
-                                Console.WriteLine("Correct use => fetch {StartNode} {EndNode}");
-                                break;
                             case "deliver":
-                                Console.WriteLine("Correct use => deliver {StartNode} {EndNode}");
+                            case "fetch":
+                                Console.WriteLine("Wrong use. Correct use => \"navigate\"/\"deliver\"/\"fetch\"/ {DestinationNode}");
                                 break;
                             case "joblist":
                                 Console.WriteLine("Correct use => joblist [\"remove\" Index]/[\"clear\"]");
@@ -308,7 +230,7 @@ namespace BTCom
                     break;
             }
 
-            Console.WriteLine("");
+            Console.WriteLine();
         }
 
         // Consumes all packages on the buffer one at the time
@@ -353,7 +275,7 @@ namespace BTCom
         }
 
         // Sends a package with a given type
-        private int SendPackageBT(byte packageType, byte[] package_data)
+        private void SendPackageBT(byte packageType, byte[] package_data)
         {
             // Calculate the size of package_data
             int packageDataSize = package_data.Length;
@@ -366,7 +288,7 @@ namespace BTCom
             if (packageTotalSize > 256)
             {
                 // TODO: Send an error code for too big data array
-                return 0;
+                return;
             }
 
             // Make an array that is as large as the total data size of the package.
@@ -389,7 +311,7 @@ namespace BTCom
             // Wait to ensure that continous requests is possible
             System.Threading.Thread.Sleep(1);
 
-            return 1;
+            return;
         }
 
         // Reads the bytes on the buffer
@@ -488,21 +410,32 @@ namespace BTCom
                     {
                         // The NXT was idle
                         case IDLE:
+
+                            // Check if the nxt just completed a job
+                            if (NXTStatus == BUSY)
+                            {
+                                //TODO: Update the position of PALL-E
+                                Path p = CurrentJob.GetPath();
+
+                                Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
+                                Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
+
+                                Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+                                f.UpdateNodes(frontNode, rearNode);
+                            }
+
+
                             // Check if there is any jobs to be performed
                             if (JobList.Count > 0)
                             {
                                 // Peek in the queue
-                                Tuple<byte, byte[]> nextJob = JobList[0];
-
-                                // Convert the items to string in order to print them
-                                string itemOne = ((char)nextJob.Item1).ToString();
-                                string itemTwo = Encoding.UTF8.GetString(nextJob.Item2, 0, nextJob.Item2.Length);
+                                Job nextJob = JobList[0];
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT (" + itemOne + "," + itemTwo + "). " + (JobList.Count-1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count-1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
-                                SendPackageBT(nextJob.Item1, nextJob.Item2);
+                                SendPackageBT(nextJob.Type, nextJob.GetByes());
                             }
                             // Update the internal status
                             NXTStatus = IDLE;

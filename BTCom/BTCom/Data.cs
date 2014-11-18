@@ -16,6 +16,7 @@ namespace BTCom
         public Dictionary<int, Light> Lights = new Dictionary<int, Light>();
         public Dictionary<int, Graph> Graphs = new Dictionary<int, Graph>();
         public Dictionary<int, Path> Paths = new Dictionary<int, Path>();
+        public Dictionary<int, Forklift> Forklifts = new Dictionary<int, Forklift>();
 
         public Data()
         { 
@@ -117,6 +118,32 @@ namespace BTCom
         public bool RemovePath(Path path)
         {
             bool result = Paths.Remove(path.Identifier);
+
+            if (result)
+            {
+                Database.Instance.Save();
+            }
+
+            return result;
+        }
+
+        public void AddForklift(Forklift forklift)
+        {
+            try
+            {
+                Forklifts.Add(forklift.Identifier, forklift);
+            }
+            catch (ArgumentException)
+            {
+                Forklifts.Remove(forklift.Identifier);
+                Forklifts.Add(forklift.Identifier, forklift);
+            }
+            Database.Instance.Save();
+        }
+
+        public bool RemoveForklift(Forklift forklift)
+        {
+            bool result = Forklifts.Remove(forklift.Identifier);
 
             if (result)
             {

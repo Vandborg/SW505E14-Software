@@ -18,23 +18,36 @@ namespace BTCom
         private Path path = null;
         private Node initialNode = null;
 
-        public ForkliftPath(Path path, Node initialNode)
+        public ForkliftPath(Path path, Node initialNode = null)
         {
-            // Check if the initial node is also the first node in the path
-            if (initialNode.Equals(path.Nodes.FirstOrDefault()))
+            this.initialNode = initialNode;
+
+            // If the initial node is null, check for the node in the forklift property
+            if (this.initialNode == null)
             {
-                throw new NodeException(initialNode, "First- and ignore node cannot be the same");
+                this.initialNode = Database.Instance.Data.Forklifts.FirstOrDefault().Value.RearNode;
+            }
+
+            // Something is wrong, if the initial node is still null
+            if (this.initialNode == null)
+            {
+                throw new NodeException("Initial node is null");
+            }
+            
+            // Check if the initial node is also the first node in the path
+            if (this.initialNode.Equals(path.Nodes.FirstOrDefault()))
+            {
+                throw new NodeException("First- and ignore node cannot be the same");
             }
 
             // Check if the initial node is a neighbour of the first node in the path
-            if (path.Nodes.FirstOrDefault().Neighbours.FindAll(x => x.Key != null && x.Key.Equals(initialNode)).Count == 0)
+            if (path.Nodes.FirstOrDefault().Neighbours.FindAll(x => x.Key != null && x.Key.Equals(this.initialNode)).Count == 0)
             {
-                throw new NodeException(initialNode, "Could not find initial node '" + initialNode.Name + "' in the neighbours of node '" + path.Nodes.FirstOrDefault().Name + "'");
+                throw new NodeException("Could not find initial node '" + this.initialNode.Name + "' in the neighbours of node '" + path.Nodes.FirstOrDefault().Name + "'");
             }
 
             this.path = path;
-            this.initialNode = initialNode;
-
+            
             if (path.Nodes.Count <= 1)
             {
                 return;
