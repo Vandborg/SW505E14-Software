@@ -4,6 +4,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BTCom.Exceptions;
 
 namespace BTCom
 {
@@ -65,24 +66,20 @@ namespace BTCom
         }
 
         // Make the NXT navigate according to the path
-        public void NavigateNXTTo(Path path)
+        public void Navigate(ForkliftPath path)
         {
-            // TODO: Get the directions out of the path
-            // TODO: Conver that data to a string array
-            string direction = "LLRSRL";
+            string direction = path.getDirections();
             byte[] directionArray = Encoding.ASCII.GetBytes(direction);
 
-            Console.WriteLine("Adding NavigateTo-job to JobList");
+            Console.WriteLine("Adding Navigate-job to JobList");
 
             JobList.Add(new Tuple<byte, byte[]>(TYPE_NAVIGATE_TO,directionArray));
         }
 
         // Make the NXT fetch a pallet at the end of the path
-        public void FetchPallet(Path path)
+        public void FetchPallet(ForkliftPath path)
         {
-            // TODO: Get the directions out of the path
-            // TODO: Conver that data to a string array
-            string direction = "RRRL";
+            string direction = path.getDirections();
             byte[] directionArray = Encoding.ASCII.GetBytes(direction);
 
             Console.WriteLine("Adding FetchPallet-job to JobList");
@@ -91,11 +88,9 @@ namespace BTCom
         }
 
         // Make the NXT deliver a pallet at the end of the path
-        public void DeliverPallet(Path path)
+        public void DeliverPallet(ForkliftPath path)
         {
-            // TODO: Get the directions out of the path
-            // TODO: Conver that data to a string array
-            string direction = "LLRSRL";
+            string direction = path.getDirections();
             byte[] directionArray = Encoding.ASCII.GetBytes(direction);
 
             Console.WriteLine("Adding DeliverPallet-job to JobList");
@@ -190,38 +185,86 @@ namespace BTCom
                     break;
 
                 case "navigate" :
-                    if(inputSplit.Count == 3)
+                    if(inputSplit.Count == 4)
                     {
-                        // TODO: Use params to create path
-                        NavigateNXTTo(new Path());
+                        Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+                        Node from = g.getNode(inputSplit[1]); // First argument
+                        Node to = g.getNode(inputSplit[2]); // Second argument
+                        Node ignore = g.getNode(inputSplit[3]); // Third argument    
+
+                        Path p = g.ShortestPath(from, to, ignore);
+
+                        ForkliftPath fp = null;
+
+                        try
+                        {
+                            Navigate(new ForkliftPath(p, ignore));
+                        }
+                        catch (NodeException e)
+                        {
+                            Console.WriteLine("'Fetch' command failed:");
+                            Console.WriteLine(e.Message);
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Wrong use of \'navigate\'. Correct use => navigate {StartNode} {EndNode}");
+                        Console.WriteLine("Wrong use of \'navigate\'. Correct use => navigate {StartNode} {EndNode} {IgnoreNode}");
                     }
                     break;
 
                 case "deliver" :
-                    if (inputSplit.Count == 3)
+                    if (inputSplit.Count == 4)
                     {
-                        // TODO: Use params to create path
-                        DeliverPallet(new Path());
+                        Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+                        Node from = g.getNode(inputSplit[1]); // First argument
+                        Node to = g.getNode(inputSplit[2]); // Second argument
+                        Node ignore = g.getNode(inputSplit[3]); // Third argument    
+
+                        Path p = g.ShortestPath(from, to, ignore);
+
+                        ForkliftPath fp = null;
+
+                        try
+                        {
+                            DeliverPallet(new ForkliftPath(p, ignore));
+                        }
+                        catch (NodeException e)
+                        {
+                            Console.WriteLine("'Fetch' command failed:");
+                            Console.WriteLine(e.Message);
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Wrong use of \'deliver\'. Correct use => deliver {StartNode} {EndNode}");
+                        Console.WriteLine("Wrong use of \'deliver\'. Correct use => deliver {StartNode} {EndNode} {IgnoreNode}");
                     }
                     break;
 
                 case "fetch" :
-                    if (inputSplit.Count == 3)
+                    if (inputSplit.Count == 4)
                     {
-                        // TODO: Use params to create path
-                        FetchPallet(new Path());
+                        Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+                        Node from = g.getNode(inputSplit[1]); // First argument
+                        Node to = g.getNode(inputSplit[2]); // Second argument
+                        Node ignore = g.getNode(inputSplit[3]); // Third argument    
+                        
+                        Path p = g.ShortestPath(from, to, ignore);
+
+                        ForkliftPath fp = null;
+
+                        try
+                        {
+                            FetchPallet(new ForkliftPath(p, ignore));
+                        }
+                        catch (NodeException e)
+                        {
+                            Console.WriteLine("'Fetch' command failed:");
+                            Console.WriteLine(e.Message);   
+                        }
                     }
                     else
                     {
-                        Console.WriteLine("Wrong use of \'fetch\'. Correct use => fetch {StartNode} {EndNode}");
+                        Console.WriteLine("Wrong use of \'fetch\'. Correct use => fetch {StartNode} {EndNode} {IgnoreNode}");
                     }
                     break;
 
@@ -265,6 +308,7 @@ namespace BTCom
                     break;
             }
 
+            Console.WriteLine("");
         }
 
         // Consumes all packages on the buffer one at the time
