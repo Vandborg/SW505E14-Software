@@ -11,7 +11,7 @@
 #include "utility_braking.h"
 #include "utility_distance.h"
 
-#define SPEED 100
+#define SPEED 60
 #define DISPLACED_STARTUP 60
 
 void drive_forward(void)
@@ -21,88 +21,51 @@ void drive_forward(void)
     nxt_motor_set_speed(RIGHT_MOTOR, SPEED, TRUE);
 }
 
-void drive_straight_pid(void) {
-    int Kp = 18000;
+void drive_straight_distance(int distance) {
+    
+    int Kp = 10;
     int Ki = 1;
-    int Kd = 40000;
-    int Tp = 80;
+    int Kd = 12;
 
-    int integral = 0;
-    int currentError = 0;
-    int lastError = 0;
+    int error = 0;
+    int integral_straight = 0;
+    int last_error = 0;
     int derivative = 0;
-    int turn = 0;
+
+    int init_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
+    int init_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
+
+    int current_count_left = 0;
+    int current_count_right = 0;
+
+    int output = 0;
 
     int powerA = 0;
     int powerB = 0;
-    int right_wheel_count = 0;
-    int left_wheel_count = 0;
-    int intial_rotation_right = nxt_motor_get_count(RIGHT_MOTOR);
-    int intial_rotation_left = nxt_motor_get_count(LEFT_MOTOR);
-
-    int initial_time = systick_get_ms();
-    int current_time = 0;
 
     reset_distance();
 
-    int flag = 1;
-
-    while(true) 
+    while(current_distance() < distance)
     {
-        if (flag)
-        {
-            left_wheel_count = 
-            nxt_motor_get_count(LEFT_MOTOR) - intial_rotation_left;
-            right_wheel_count = 
-                nxt_motor_get_count(RIGHT_MOTOR) - intial_rotation_right;
-            
-            currentError = right_wheel_count - left_wheel_count;
-            
-            integral = integral + currentError;
+        current_count_right = 
+            nxt_motor_get_count(RIGHT_MOTOR) - init_motor_count_right;
+        current_count_left = 
+            nxt_motor_get_count(LEFT_MOTOR) - init_motor_count_left;
 
-            derivative = currentError - lastError;
-            turn = Kp * currentError + Ki * integral + Kd * derivative;
-            turn = turn / 10000; // ---> This is only needed if the k's 
-                                 //      are multiplied by a hundred
-            powerA = Tp + turn;
-            powerB = Tp - turn;
+        error = current_count_right - current_count_left;
+        integral_straight = (2/3) * integral_straight + error;
+        derivative = error - last_error;
 
-            // Make motors go... 
-            nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
-            nxt_motor_set_speed(RIGHT_MOTOR, powerB, 1);
+        output = Kp * error + Ki * integral_straight + Kd * derivative;
 
-            lastError = currentError;
+        powerA = LINE_FOLLOW_SPEED - output;
+        powerB = LINE_FOLLOW_SPEED + output;
 
-            current_time = systick_get_ms() - initial_time;
-        }
-        else 
-        {
-            right_wheel_count = 
-                nxt_motor_get_count(RIGHT_MOTOR) - intial_rotation_right;
-            left_wheel_count = 
-                nxt_motor_get_count(LEFT_MOTOR) - intial_rotation_left;
-            
-            currentError = right_wheel_count - left_wheel_count;
-            
-            integral = integral + currentError;
-
-            derivative = currentError - lastError;
-            turn = Kp * currentError + Ki * integral + Kd * derivative;
-            turn = turn / 10000; // ---> This is only needed if the k's 
-                                 //      are multiplied by a hundred
-            powerA = Tp + turn;
-            powerB = Tp - turn;
-
-            // Make motors go... 
-            nxt_motor_set_speed(RIGHT_MOTOR, powerB, 1);
-            nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
-
-            lastError = currentError;
-
-            current_time = systick_get_ms() - initial_time;
-        }
-        
-        flag = !flag;
+        nxt_motor_set_speed(RIGHT_MOTOR, powerA, 1);
+        nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
     }
+
+    // Brake (Update motor speeds when we can get them)
+    forklift_brake(HIGH_BRAKEPOWER, LINE_FOLLOW_SPEED, LINE_FOLLOW_SPEED);
+
 }
-    

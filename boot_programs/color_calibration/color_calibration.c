@@ -16,12 +16,14 @@
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_string/utility_string.h"
 #include "utility/utility_structs/utility_structs.h"
+#include "utility/utility_bluetooth/utility_bluetooth.h"
+
 
 // Number of scans to be executed
 #define NUMBER_OF_COLOR_SCANS 1000
 
 // Distance to move between colors
-#define DISTANCE_BETWEEN_MEASUREMENTS 6
+#define DISTANCE_BETWEEN_MEASUREMENTS 45
 
 // Global variables to use
 color Colors[AMOUNT_OF_COLORS];
@@ -176,7 +178,7 @@ void color_calibration(void)
             char buf[17];
 
             // Go through all colors
-            for(int i = 0; i < AMOUNT_OF_COLORS; i += 2)
+            for(int i = 0; i < AMOUNT_OF_COLORS; i += 4)
             {
                 // Reset the menu 
                 reset_menu();
@@ -195,8 +197,45 @@ void color_calibration(void)
                 Colors[i] = color_left;
                 Colors[i+1] = color_right;
 
+                if(i == COLOR_BLACK_LEFT)
+                {
+                    drive_straight_distance(DISTANCE_BETWEEN_MEASUREMENTS);
+
+                    // Wait before scanning
+                    systick_wait_ms(500);
+
+                    // Scan the colors
+                    color_left = scan_color(COLOR_SENSOR_LEFT);
+                    color_right = scan_color(COLOR_SENSOR_RIGHT);
+
+                    // Get average of black tape and paper
+                    Colors[i].red = 
+                        (Colors[i].red + color_left.red) / 2;
+                    Colors[i].green = 
+                        (Colors[i].green + color_left.green) / 2;
+                    Colors[i].blue = 
+                        (Colors[i].blue + color_left.blue) / 2;
+
+                    Colors[i+1].red = 
+                        (Colors[i+1].red + color_right.red) / 2;
+                    Colors[i+1].green = 
+                        (Colors[i+1].green + color_right.green) / 2;
+                    Colors[i+1].blue = 
+                        (Colors[i+1].blue + color_right.blue) / 2;
+                }
+
                 // Display the colors to the display
-                display_colors(color_left, color_right, get_color_name(i, buf));
+                display_colors(Colors[i], Colors[i+1], get_color_name(i, buf));
+
+                save_color_bt(i, 
+                              Colors[i].red, 
+                              Colors[i].green, 
+                              Colors[i].blue);
+
+                save_color_bt(i+1,
+                              Colors[i+1].red, 
+                              Colors[i+1].green, 
+                              Colors[i+1].blue);
 
                 // Notify that the scan is done
                 play_sound(SOUND_NOTIFICATION);
@@ -205,26 +244,14 @@ void color_calibration(void)
                 systick_wait_ms(500);
 
                 // Do not move on the last iteration
-                if(i != AMOUNT_OF_COLORS - 1) 
+                if(i != AMOUNT_OF_COLORS - 2) 
                 {
-                    // Reset distance
-                    reset_distance();
-
-                    // Move forward
-                    drive_forward();
-
-                    // Wait until disired length has been driven
-                    while(current_distance() < DISTANCE_BETWEEN_MEASUREMENTS)
-                    {
-                        // Do nothing (wait)
-                    }
-
-                    // Brake (Update motor speeds when we can get them)
-                    forklift_brake(HIGH_BRAKEPOWER, 100, 100);
+                    drive_straight_distance(DISTANCE_BETWEEN_MEASUREMENTS);
 
                     // Wait before scanning
                     systick_wait_ms(500);
                 }
+
             }
 
             // Reset the menu

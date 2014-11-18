@@ -11,9 +11,9 @@
     void reset_distance(void);
 
     /* 
-    * Returns the average distance of the two motors in cm.
+    * Returns the average distance of the two motors in mm.
     * Takes no parameters.
-    * Returns an integer describing the distance in cm.
+    * Returns an integer describing the distance in mm.
     */
     int current_distance(void);
 
