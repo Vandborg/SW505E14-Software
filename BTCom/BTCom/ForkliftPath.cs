@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using BTCom.Exceptions;
 
 namespace BTCom
 {
@@ -19,6 +20,18 @@ namespace BTCom
 
         public ForkliftPath(Path path, Node initialNode)
         {
+            // Check if the initial node is also the first node in the path
+            if (initialNode.Equals(path.Nodes.FirstOrDefault()))
+            {
+                throw new NodeException(initialNode, "First- and ignore node cannot be the same");
+            }
+
+            // Check if the initial node is a neighbour of the first node in the path
+            if (path.Nodes.FirstOrDefault().Neighbours.FindAll(x => x.Key != null && x.Key.Equals(initialNode)).Count == 0)
+            {
+                throw new NodeException(initialNode, "Could not find initial node '" + initialNode.Name + "' in the neighbours of node '" + path.Nodes.FirstOrDefault().Name + "'");
+            }
+
             this.path = path;
             this.initialNode = initialNode;
 
