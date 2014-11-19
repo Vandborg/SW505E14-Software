@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BTCom.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace BTCom
 {
@@ -36,10 +37,16 @@ namespace BTCom
         // Joblist queue of package type and data
         private Dictionary<int, Job> JobList = Database.Instance.Data.Jobs;
 
+        // Joblist queue of package type and data
+        private Dictionary<int, DebugJob> DebugJobList = Database.Instance.Data.DebugJobs;
+
         // The current job 
         private Job CurrentJob = null;
 
         private Forklift forklift = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+        
+        // The current job 
+        private DebugJob CurrentDebugJob;
 
         // Constructor
         public BluetoothConnection(string portName)
@@ -260,13 +267,24 @@ namespace BTCom
 
 
                             // Check if there is any jobs to be performed
-                            if (JobList.Count > 0)
+                            if(DebugJobList.Count > 0)
+                            {
+                                // Peek in the queue
+                                DebugJob nextDebugJob = DebugJobList[0];
+
+                                // Tell the user what job was sent
+                                Console.WriteLine("Sending Job -> NXT: " + nextDebugJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
+
+                                // Send the job to the NXT
+                                SendPackageBT(nextDebugJob.Type, nextDebugJob.GetByes());
+                            }
+                            else if (JobList.Count > 0)
                             {
                                 // Peek in the queue
                                 Job nextJob = JobList.First().Value;
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count-1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
                                 SendPackageBT(nextJob.Type, nextJob.GetByes());
@@ -283,9 +301,19 @@ namespace BTCom
                             // If the NXT was just idle, you know you have given it a job
                             if (forklift.Status == Status.IDLE)
                             {
-                                // Remove the job that is being executed currently
-                                CurrentJob = JobList.First().Value;
-                                JobList.Remove(CurrentJob.Identifier);
+                                // Debug jobs has highe priority
+                                if (DebugJobList.Count > 0)
+                                {
+                                    // Remove the job that is being executed currently
+                                    CurrentDebugJob = DebugJobList.First().Value;
+                                    JobList.Remove(CurrentDebugJob.Identifier);
+                                }
+                                else
+                                {
+                                    // Remove the job that is being executed currently
+                                    CurrentJob = JobList.First().Value;
+                                    JobList.Remove(CurrentJob.Identifier);
+                                }   
                             }
 
                             // Update the internal status
