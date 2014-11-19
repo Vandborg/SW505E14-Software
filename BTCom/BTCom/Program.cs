@@ -149,22 +149,22 @@ namespace BTCom
         {
             Database.Instance.Load();
             // Color defines
-            const int COLOR_RED_LEFT = 1;
-            const int COLOR_RED_RIGHT = 2;
-            const int COLOR_BLUE_LEFT = 3;
-            const int COLOR_BLUE_RIGHT = 4;
-            const int COLOR_BLACK_LEFT = 5;
-            const int COLOR_BLACK_RIGHT = 6;
-            const int COLOR_GRAY_LEFT = 7;
-            const int COLOR_GRAY_RIGHT = 8;
-            const int COLOR_WHITE_LEFT = 9;
-            const int COLOR_WHITE_RIGHT = 10;
+            const int COLOR_RED_LEFT = 0;
+            const int COLOR_RED_RIGHT = 1;
+            const int COLOR_BLUE_LEFT = 2;
+            const int COLOR_BLUE_RIGHT = 3;
+            const int COLOR_BLACK_LEFT = 4;
+            const int COLOR_BLACK_RIGHT = 5;
+            const int COLOR_GRAY_LEFT = 6;
+            const int COLOR_GRAY_RIGHT = 7;
+            const int COLOR_WHITE_LEFT = 8;
+            const int COLOR_WHITE_RIGHT = 9;
 
             // The list of all colors when no database exists
             List<Color> colors = new List<Color> 
             { 
-                new Color("RED:LEFT", COLOR_RED_LEFT, 366, 115, 117), // fixed
-                new Color("RED:RIGHT", COLOR_RED_RIGHT, 365, 200, 178),
+                new Color("RED:LEFT", COLOR_RED_LEFT, 476, 115, 120), // fixed
+                new Color("RED:RIGHT", COLOR_RED_RIGHT, 533, 211, 193),
                 new Color("BLUE:LEFT", COLOR_BLUE_LEFT, 175, 138, 172), 
                 new Color("BLUE:RIGHT", COLOR_BLUE_RIGHT, 207, 219, 233), 
                 new Color("BLACK:LEFT", COLOR_BLACK_LEFT, 173, 128, 125), 
