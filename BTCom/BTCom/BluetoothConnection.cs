@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BTCom.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace BTCom
 {
@@ -38,6 +39,12 @@ namespace BTCom
 
         // The current job 
         private Job CurrentJob;
+
+        // Joblist queue of package type and data
+        private List<DebugJob> DebugJobList = Database.Instance.Data.DebugJobs.Select(kvp => kvp.Value).ToList();
+
+        // The current job 
+        private DebugJob CurrentDebugJob;
 
         // Constructor
         public BluetoothConnection(string portName)
@@ -258,17 +265,29 @@ namespace BTCom
 
 
                             // Check if there is any jobs to be performed
-                            if (JobList.Count > 0)
+                            if(DebugJobList.Count > 0)
+                            {
+                                // Peek in the queue
+                                DebugJob nextDebugJob = DebugJobList[0];
+
+                                // Tell the user what job was sent
+                                Console.WriteLine("Sending Job -> NXT: " + nextDebugJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
+
+                                // Send the job to the NXT
+                                SendPackageBT(nextDebugJob.Type, nextDebugJob.GetByes());
+                            }
+                            else if (JobList.Count > 0)
                             {
                                 // Peek in the queue
                                 Job nextJob = JobList[0];
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count-1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
                                 SendPackageBT(nextJob.Type, nextJob.GetByes());
                             }
+
                             // Update the internal status
                             NXTStatus = IDLE;
                             break;
@@ -280,8 +299,17 @@ namespace BTCom
                             if (NXTStatus == IDLE)
                             {
                                 // Remove the job that is being executed currently
-                                CurrentJob = JobList[0];
-                                JobList.RemoveAt(0);
+                                // Debug jobs has highe priority
+                                if (DebugJobList.Count > 0)
+                                {
+                                    CurrentDebugJob = DebugJobList[0];
+                                    DebugJobList.RemoveAt(0);
+                                }
+                                else
+                                {
+                                    CurrentJob = JobList[0];
+                                    JobList.RemoveAt(0);
+                                }   
                             }
 
                             // Update the internal status
