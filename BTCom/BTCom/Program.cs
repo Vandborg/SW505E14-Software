@@ -29,7 +29,7 @@ namespace BTCom
                 // bt.FetchPallet(new Path());
 
                 // Instantiate threads
-                Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
+                Thread ConsoleInputThread = new Thread(Commands.execute);
                 Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
 
                 // Start the threads
@@ -66,7 +66,7 @@ namespace BTCom
                         }
                         catch (NodeException e)
                         {
-                            Console.WriteLine("Error when finding node:");
+                            Console.WriteLine("Error when finding node: ");
                             Console.WriteLine(e.Message);
                             Console.WriteLine();
                         }
@@ -83,7 +83,7 @@ namespace BTCom
                         }
                         catch (NodeException e)
                         {
-                            Console.WriteLine("Error when finding node:");
+                            Console.WriteLine("Error when finding node: ");
                             Console.WriteLine(e.Message);
                             Console.WriteLine();
                         }
@@ -99,17 +99,8 @@ namespace BTCom
             else
             {
                 Console.WriteLine("PALL-E position information:");
-                Console.WriteLine("On the edge between nodes '" + f.RearNode.Name + "' and '" + f.FrontNode.Name + "', faceing '" + f.FrontNode.Name + "'");
+                Console.WriteLine("On the edge between nodes '" + f.RearNode.Name + "' and '" + f.FrontNode.Name + "', facing '" + f.FrontNode.Name + "'");
                 Console.WriteLine();
-            }
-        }
-
-        // Constantly checks console input
-        private static void CheckConsoleInput(BluetoothConnection bt)
-        {
-            while (true)
-            {
-                bt.CreateJob(Console.ReadLine());
             }
         }
 

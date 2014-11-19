@@ -23,9 +23,9 @@ namespace BTCom
         //Type bytes to send
         const byte TYPE_FETCHED_COLOR = 0x47;
 
-        const byte TYPE_DELIVER_PALLET = 0x44;
-        const byte TYPE_FETCH_PALLET = 0x46;
-        const byte TYPE_NAVIGATE_TO = 0x4E;
+        public const byte TYPE_DELIVER_PALLET = 0x44;
+        public const byte TYPE_FETCH_PALLET = 0x46;
+        public const byte TYPE_NAVIGATE_TO = 0x4E;
 
         // NXT statuses 
         char NXTStatus = '0';
@@ -34,7 +34,7 @@ namespace BTCom
         const char ERROR = 'E';
 
         // Joblist queue of package type and data
-        private List<Job> JobList = new List<Job>();
+        private List<Job> JobList = Database.Instance.Data.Jobs.Select(kvp => kvp.Value).ToList();
 
         // The current job 
         private Job CurrentJob;
@@ -63,174 +63,6 @@ namespace BTCom
 
             this.ReadTimeout = 10000; // Wait 10 sec before timeout on readbuffer
             this.WriteTimeout = 10000; // Wait 10 sec before timeout on writebuffer
-        }
-
-        // Create a job based on string input (console input)
-        public void CreateJob(string input)
-        {   
-            // Split the input
-            List<string> inputSplit = input.Split(' ').ToList();
-
-            inputSplit.RemoveAll(s => s == "");
-
-            string cmd = "";
-            if (inputSplit.Count > 0)
-            {
-                cmd = inputSplit[0];
-            }
-
-            // Check if the input is 
-            switch (cmd)
-            {
-                case "joblist":
-                    if (inputSplit.Count == 1)
-                    {
-                        if (JobList.Count > 0 || CurrentJob != null)
-                        {
-                            Console.WriteLine("------------------------------ Joblist of PALL-E ------------------------------");
-                            if (CurrentJob != null)
-                            {
-                                Console.WriteLine("Current job: " + CurrentJob.ToString());
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("The joblist of PALL-E is empty");
-                        }
-
-                        int c = 0;
-                        foreach(Job job in JobList)
-                        {   
-                            Console.WriteLine("Job #" + c + ": " + job.ToString());
-                            c++;
-                        }
-                    }
-                    else if (inputSplit.Count > 1)
-                    {
-                        if (inputSplit[1] == "remove")
-                        {
-                            if (inputSplit.Count > 2)
-                            {
-                                int index = -1;
-                                try
-                                {
-                                    index = int.Parse(inputSplit[2]);
-                                }
-                                catch (Exception)
-                                {
-                                    Console.WriteLine("Invalid argument! Correct use => joblist [\"remove\"] [Index]");
-                                }
-
-                                if (index != -1)
-                                {
-                                    if (index < JobList.Count)
-                                    {
-                                        JobList.RemoveAt(index);
-                                        Console.WriteLine("Removed job at index " + index + ".");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Cant remove the job on that index. There are only " + JobList.Count + " jobs in the list.");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid use! Correct use => joblist [\"remove\"] [Index]");
-                            }
-                        }
-                        else if(inputSplit[1] == "clear")
-                        {
-                            JobList.RemoveRange(0, JobList.Count);
-                            Console.WriteLine("The joblist for PALL-E was cleared.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Correct use => joblist [\"remove\" Index]/[\"clear\"]");
-                        }
-                    }
-                    break;
-
-                case "navigate" :
-                case "deliver" :
-                case "fetch" :
-                    if(inputSplit.Count == 2)
-                    {
-                        Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
-
-                        Node to = null;
-
-                        try
-                        {
-                            to = g.getNode(inputSplit[1]); // First argument    
-                        }
-                        catch (NodeException e)
-                        {
-                            Console.WriteLine("Error when finding node:");
-                            Console.WriteLine(e.Message);
-                            break;
-                        }
-
-                        byte type = 0;
-
-                        switch (inputSplit[0])
-                        {
-                            case "navigate":
-                                type = TYPE_NAVIGATE_TO;
-                                break;
-                            case "deliver":
-                                type = TYPE_DELIVER_PALLET;
-                                break;
-                            case "fetch":
-                                type = TYPE_FETCH_PALLET;
-                                break;
-                        }
-
-                        JobList.Add(new Job(type, to));
-                    }
-                    else
-                    {
-                        Console.WriteLine("Wrong use. Correct use => \"navigate\"/\"deliver\"/\"fetch\"/ {DestinationNode}");
-                    }
-                    break;
-
-                case "help" :
-                    if (inputSplit.Count > 1)
-                    {
-                        switch (inputSplit[1])
-                        {
-                            case "navigate":
-                            case "deliver":
-                            case "fetch":
-                                Console.WriteLine("Wrong use. Correct use => \"navigate\"/\"deliver\"/\"fetch\"/ {DestinationNode}");
-                                break;
-                            case "joblist":
-                                Console.WriteLine("Correct use => joblist [\"remove\" Index]/[\"clear\"]");
-                                break;
-                            default :
-                                Console.WriteLine("Invalid parameter for help. Correct use => help [Command]");
-                                break;
-                        }
-                    }
-                    else if (inputSplit.Count == 1)
-                    {
-                        Console.WriteLine("----------------------------- Commands for PALL-E -----------------------------");
-                        Console.WriteLine("deliver  \t: PALL-E is sent to deliver a pallet at a given place.");
-                        Console.WriteLine("fetch    \t: PALL-E is sent to fetch a pallet at a given place.");
-                        Console.WriteLine("joblist  \t: Print the joblist for PALL-E.");
-                        Console.WriteLine("navigate \t: Navigates PALL-E to specific place.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid parameter for help. Correct use => help [Command]");
-                    }
-                    break;
-                default :
-                    Console.WriteLine("Invalid input, type help for all commands.");
-                    break;
-            }
-
-            Console.WriteLine();
         }
 
         // Consumes all packages on the buffer one at the time

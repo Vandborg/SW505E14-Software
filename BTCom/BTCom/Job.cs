@@ -11,7 +11,12 @@ namespace BTCom
     {
         public byte Type { get; set; }
         public Node Destination { get; set; }
-        
+
+        public Job()
+        {
+            
+        }
+
         public Job(byte type, Node destination)
         {
             Type = type;
