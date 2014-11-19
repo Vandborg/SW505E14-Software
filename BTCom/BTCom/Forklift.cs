@@ -7,10 +7,13 @@ using BTCom.Exceptions;
 
 namespace BTCom
 {
+    public enum Status { UNKNOWN, IDLE, BUSY, ERROR }
+
     public class Forklift : DataEntry
     {
         public Node RearNode { get; set; }
         public Node FrontNode { get; set; }
+        public Status Status { get; set; }
 
         public Forklift()
         {

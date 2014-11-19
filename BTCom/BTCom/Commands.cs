@@ -15,12 +15,13 @@ namespace BTCom
         private const String JOBLIST_REMOVE = "remove";
         private const String JOBLIST_CLEAR = "clear";
 
+        private const String COMMAND_STATUS = "status";
         private const String COMMAND_JOBLIST = "joblist";
         private const String COMMAND_DELIVER = "deliver";
         private const String COMMAND_FETCH = "fetch";
         private const String COMMAND_NAVIGATE = "navigate";
-        private const String COMMAND_CLEAR = "clear";
         private const String COMMAND_POSITION = "position";
+        private const String COMMAND_CLEAR = "clear";
 
         private const String COMMAND_ARGUMENT_CLEAR = "clear";
 
@@ -132,6 +133,17 @@ namespace BTCom
                     help_help();
                 }
             } 
+            else if (commandIdentifier == COMMAND_STATUS)
+            {
+                if (arguments == 0)
+                {
+                    status();
+                }
+                else
+                {
+                    status_help();
+                }
+            }
             // Check if the command is "joblist"
             else if (commandIdentifier == COMMAND_JOBLIST)
             {
@@ -202,6 +214,7 @@ namespace BTCom
         private static void help()
         {
             help_help(false);
+            status_help(false);
             joblist_help(false);
             movement_help(false);
             position_help(false);
@@ -215,6 +228,22 @@ namespace BTCom
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"help\"");
+        }
+
+        public static void status()
+        {
+            Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+            Console.WriteLine("Status: " + f.Status);
+        }
+
+        public static void status_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"status\"");
         }
 
         public static void joblist()

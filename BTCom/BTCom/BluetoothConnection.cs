@@ -28,16 +28,18 @@ namespace BTCom
         public const byte TYPE_NAVIGATE_TO = 0x4E;
 
         // NXT statuses 
-        char NXTStatus = '0';
-        const char IDLE = 'I';
-        const char BUSY = 'B';
-        const char ERROR = 'E';
+        public const char STATUS_IDLE = 'I';
+        public const char STATUS_BUSY = 'B';
+        public const char STATUS_ERROR = 'E';
+        public const char STATUS_UNKNOWN = 'U';
 
         // Joblist queue of package type and data
-        private List<Job> JobList = Database.Instance.Data.Jobs.Select(kvp => kvp.Value).ToList();
+        private Dictionary<int, Job> JobList = Database.Instance.Data.Jobs;
 
         // The current job 
-        private Job CurrentJob;
+        private Job CurrentJob = null;
+
+        private Forklift forklift = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
         // Constructor
         public BluetoothConnection(string portName)
@@ -222,7 +224,7 @@ namespace BTCom
 
                     // Save the updated color
                     Database.Instance.Data.AddColor(color);
-;                    break;
+                    break;
 
                 case TYPE_REPORT_OBSTACLE:
                     // TODO
@@ -231,7 +233,7 @@ namespace BTCom
                 // Check if the NXT updated its status
                 case TYPE_UPDATE_STATUS:
                 {
-                    if (dataString[0] != NXTStatus)
+                    if (dataString[0] != GetStatusByte(forklift))
                     {
                         // Tell the user what the status the NXT updated to
                         Console.WriteLine("NXT-Status: " + dataString);
@@ -241,10 +243,10 @@ namespace BTCom
                     switch (dataString[0])
                     {
                         // The NXT was idle
-                        case IDLE:
+                        case STATUS_IDLE:
 
                             // Check if the nxt just completed a job
-                            if (NXTStatus == BUSY)
+                            if (forklift.Status == Status.BUSY && CurrentJob != null)
                             {
                                 //TODO: Update the position of PALL-E
                                 Path p = CurrentJob.GetPath();
@@ -261,7 +263,7 @@ namespace BTCom
                             if (JobList.Count > 0)
                             {
                                 // Peek in the queue
-                                Job nextJob = JobList[0];
+                                Job nextJob = JobList.First().Value;
 
                                 // Tell the user what job was sent
                                 Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count-1) + " jobs left in the JobList");
@@ -269,35 +271,61 @@ namespace BTCom
                                 // Send the job to the NXT
                                 SendPackageBT(nextJob.Type, nextJob.GetByes());
                             }
+
                             // Update the internal status
-                            NXTStatus = IDLE;
+                            forklift.Status = Status.IDLE;
+                            Database.Instance.Save();
                             break;
 
                         // The NXT was busy
-                        case BUSY:
+                        case STATUS_BUSY:
 
                             // If the NXT was just idle, you know you have given it a job
-                            if (NXTStatus == IDLE)
+                            if (forklift.Status == Status.IDLE)
                             {
                                 // Remove the job that is being executed currently
-                                CurrentJob = JobList[0];
-                                JobList.RemoveAt(0);
+                                CurrentJob = JobList.First().Value;
+                                JobList.Remove(CurrentJob.Identifier);
                             }
 
                             // Update the internal status
-                            NXTStatus = BUSY;
+                            forklift.Status = Status.BUSY;
+                            Database.Instance.Save();
                             break;
 
                         // The NXT encoutered an error
-                        case ERROR:
-                            // Tell the suer that the NXT encountered an error
+                        case STATUS_ERROR:
+                            // Tell the user that the NXT encountered an error
+                            forklift.Status = Status.ERROR;
+                            Database.Instance.Save();
                             Console.WriteLine("The NXT has encountered an error!");
+                            break;
+                        default:
+                            forklift.Status = Status.UNKNOWN;
+                            Database.Instance.Save();
                             break;
                     }
                     break;
                 }
             }
             return;
+        }
+
+        // Used to convert status to byte
+        public char GetStatusByte(Forklift f)
+        {
+            switch (f.Status)
+            {
+                case Status.IDLE:
+                    return STATUS_IDLE;
+                case Status.BUSY:
+                    return STATUS_BUSY;
+                case BTCom.Status.ERROR:
+                    return STATUS_ERROR;
+            }
+
+            // Unknown status
+            return STATUS_UNKNOWN;
         }
     }
 }
