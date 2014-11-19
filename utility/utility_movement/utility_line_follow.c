@@ -50,7 +50,7 @@ int integral = 0;
 int lastError = 0;
 
 bool line_follow = true;
-bool line_follow_enabled = false;
+bool executing_task = false;
 
 S16 rgb[3];
 
@@ -77,54 +77,53 @@ TASK(TASK_color_scan)
     if(Navigation.next > -1)
     {
         // Is the meassured color red and was the last color meassured not red
-        if(is_red_color_colorsensor() && !last_color_red)
+        if(is_red_color_colorsensor())
         {
+
+            if(!last_color_red)
+            {
+                // Debugging sound
+                play_sound(SOUND_TICK);
+
+                // If the NXT is driving on an edge in the graph and not an vertex
+                if(on_edge)
+                {
+                    // The next direction in the navigation
+                    char next_direction = Navigation.directions[Navigation.next];
+
+                    switch(next_direction)
+                    {
+                        case 'L':
+                            if(light_sensor == COLOR_SENSOR_RIGHT)
+                            {
+                                switch_sensors();
+                            }
+                            break;
+                        case 'R':
+                            if(light_sensor == COLOR_SENSOR_LEFT)
+                            {
+                                switch_sensors();
+                            }
+                            break;
+                        case 'S':
+                            do_cross_intersection = true;
+                            ActivateTask(TASK_cross_intersection);
+                            break;
+                        default :
+                            Status = ERROR;
+                    }
+                }
+                else
+                {
+                    do_cross_intersection = false;
+
+                    Navigation.next = Navigation.next -1;
+                }
+                on_edge = !on_edge;
+            }
+            
             // The color was red
             last_color_red = true;
-
-            // Debugging sound
-            play_sound(SOUND_TICK);
-
-            // If the NXT is driving on an edge in the graph and not an vertex
-            if(on_edge)
-            {
-                // The next direction in the navigation
-                char next_direction = Navigation.directions[Navigation.next];
-
-                switch(next_direction)
-                {
-                    case 'L':
-                        if(light_sensor == COLOR_SENSOR_RIGHT)
-                        {
-                            switch_sensors();
-                        }
-                        break;
-                    case 'R':
-                        if(light_sensor == COLOR_SENSOR_LEFT)
-                        {
-                            switch_sensors();
-                        }
-                        break;
-                    case 'S':
-                        do_cross_intersection = true;
-                        ActivateTask(TASK_cross_intersection);
-                        break;
-                    default :
-                        Status = ERROR;
-                }
-            }
-            else
-            {
-                if(do_cross_intersection)
-                {
-                    line_recover();
-                }
-                do_cross_intersection = false;
-
-                Navigation.next = Navigation.next -1;
-            }
-            on_edge = !on_edge;
-
         }
         else
         {
@@ -159,6 +158,16 @@ TASK(TASK_line_follow)
         {
             error = lightLevel - offset_left; 
             integral = integral + error;
+
+            if (integral > INTEGRAL_MAX)
+            {
+                integral = INTEGRAL_MAX;
+            }
+            else if(integral < INTEGRAL_MIN)
+            {
+                integral = INTEGRAL_MIN;
+            }
+
             derivative = error - lastError;
 
             turn = KP * error + KI * integral + KD * derivative;
@@ -173,6 +182,16 @@ TASK(TASK_line_follow)
         {
             error = lightLevel - offset_right;
             integral = integral + error;
+
+            if (integral > INTEGRAL_MAX)
+            {
+                integral = INTEGRAL_MAX;
+            }
+            else if(integral < INTEGRAL_MIN)
+            {
+                integral = INTEGRAL_MIN;
+            }
+
             derivative = error - lastError;
             
             turn = KP * error + KI * integral + KD * derivative;
@@ -184,8 +203,8 @@ TASK(TASK_line_follow)
             powerB = LINE_FOLLOW_SPEED + turn;    
         }
 
-        nxt_motor_set_speed(RIGHT_MOTOR, powerA, 1);
-        nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
+        nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
+        nxt_motor_set_speed(RIGHT_MOTOR, powerB, 1);
 
         lastError = error;
     }
@@ -193,11 +212,21 @@ TASK(TASK_line_follow)
     TerminateTask();
 }
 
+bool first_time = true;
+
+
 TASK(TASK_check_navigation)
 {   
-    if(Navigation.next > -1 && !line_follow_enabled)
+    if(Navigation.next > -1 && !executing_task)
     {
         start_line_following();
+    }
+
+    if (first_time)
+    {
+        SetRelAlarm(ALARM_line_follow, 1, 50);
+        SetRelAlarm(ALARM_color_scan, 1, 100);
+        first_time = false;
     }
 
     TerminateTask();
@@ -235,7 +264,7 @@ TASK(TASK_cross_intersection)
             nxt_motor_get_count(LEFT_MOTOR) - init_motor_count_left;
 
         error = current_count_right - current_count_left;
-        integral_straight = (2/3) * integral * error;
+        integral_straight = (2/3) * integral_straight + error;
         derivative = error - last_error;
 
         output = Kp * error + Ki * integral_straight + Kd * derivative;
@@ -246,7 +275,11 @@ TASK(TASK_cross_intersection)
         nxt_motor_set_speed(RIGHT_MOTOR, powerA, 1);
         nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
     }
-    line_recover();
+
+    line_follow = true;
+    integral = 0;
+    derivative = 0;
+
     TerminateTask();
 }
 
@@ -254,14 +287,15 @@ void start_line_following(void)
 {
     GetResource(RES_SCHEDULER);
 
-    ecrobot_set_nxtcolorsensor(color_sensor, NXT_COLORSENSOR);
-    ecrobot_set_nxtcolorsensor(light_sensor, NXT_COLORSENSOR);
+    // ecrobot_set_nxtcolorsensor(color_sensor, NXT_COLORSENSOR);
+    // ecrobot_set_nxtcolorsensor(light_sensor, NXT_COLORSENSOR);
 
-    SetRelAlarm(ALARM_line_follow, 1, 50);
-    SetRelAlarm(ALARM_color_scan, 1, 150);
-    SetRelAlarm(ALARM_update_color_reg, 1, 45);
+    // SetRelAlarm(ALARM_line_follow, 1, 50);
+    // SetRelAlarm(ALARM_color_scan, 1, 150);
+    // SetRelAlarm(ALARM_update_color_reg, 1, 45);
 
-    line_follow_enabled = true;
+    executing_task = true;
+    line_follow = true;
 
     ReleaseResource(RES_SCHEDULER);
 }
@@ -273,14 +307,16 @@ void stop_line_following(void)
     nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
     nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
 
-    CancelAlarm(ALARM_line_follow);
-    CancelAlarm(ALARM_color_scan);
-    CancelAlarm(ALARM_update_color_reg);
-    
-    ecrobot_set_nxtcolorsensor(color_sensor, NXT_LIGHTSENSOR_NONE);
-    ecrobot_set_nxtcolorsensor(light_sensor, NXT_LIGHTSENSOR_NONE);
+    line_follow = false;
 
-    line_follow_enabled = false;
+    // CancelAlarm(ALARM_line_follow);
+    // CancelAlarm(ALARM_color_scan);
+    // CancelAlarm(ALARM_update_color_reg);
+    
+    // ecrobot_set_nxtcolorsensor(color_sensor, NXT_LIGHTSENSOR_NONE);
+    // ecrobot_set_nxtcolorsensor(light_sensor, NXT_LIGHTSENSOR_NONE);
+
+    executing_task = false;
 
     ReleaseResource(RES_SCHEDULER);
 }
@@ -313,19 +349,19 @@ bool is_red_color_colorsensor(void)
     int b_diff = red_color.blue - color_scan_rgb[2];
     b_diff = b_diff > 0 ? b_diff : -b_diff;
 
-    display_goto_xy(0,3);
-    display_int(color_scan_rgb[0],4);
-    display_goto_xy(7,3);
-    display_int(red_color.red,4);
-    display_goto_xy(0,4);
-    display_int(color_scan_rgb[1],4);
-    display_goto_xy(7,4);
-    display_int(red_color.green,4);
-    display_goto_xy(0,5);
-    display_int(color_scan_rgb[2],4);
-    display_goto_xy(7,5);
-    display_int(red_color.blue,4);
-    display_update();
+    // display_goto_xy(0,3);
+    // display_int(color_scan_rgb[0],4);
+    // display_goto_xy(7,3);
+    // display_int(red_color.red,4);
+    // display_goto_xy(0,4);
+    // display_int(color_scan_rgb[1],4);
+    // display_goto_xy(7,4);
+    // display_int(red_color.green,4);
+    // display_goto_xy(0,5);
+    // display_int(color_scan_rgb[2],4);
+    // display_goto_xy(7,5);
+    // display_int(red_color.blue,4);
+    // display_update();
 
     // Check if the measured color is within 
     // acceptable threshold of the percepted color
@@ -372,7 +408,7 @@ void switch_sensors(void)
 
 void line_recover(void)
 {
-    /*line_follow = false;
+    line_follow = false;
 
     nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
     nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
@@ -401,7 +437,7 @@ void line_recover(void)
 
     while(light_level <= -3 || light_level >= 3)
     {
-        if(light_level < 0)
+        if(light_level > 0)
         {
             nxt_motor_set_speed(light_motor, 70, 0);
             nxt_motor_set_speed(color_motor, 0, 1);
@@ -438,6 +474,6 @@ void line_recover(void)
 
     integral = 0;
     lastError = 0;
-    */
+    
     line_follow = true;
 }

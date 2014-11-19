@@ -146,7 +146,12 @@ CPU ATMEL_AT91SAM7S256
     {
         TASK = TASK_update_color_reg;
     };
-    AUTOSTART = FALSE;
+    AUTOSTART = TRUE
+    {
+      ALARMTIME = 1;
+      CYCLETIME = 50;
+      APPMODE   = appmode1;
+    };
   };
 
 };

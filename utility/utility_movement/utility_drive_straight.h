@@ -7,4 +7,7 @@
      */
     void drive_forward(void);
 
+    void drive_straight_distance(int distance);
+
+
 #endif
