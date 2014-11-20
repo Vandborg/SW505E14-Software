@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO.Packaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,13 @@ namespace BTCom
         {
             get { return _nodes;  }
             set { _nodes = value; }
+        }
+
+        private List<Tuple<Node, Node>> _blockedEdges = new List<Tuple<Node, Node>>();
+        public List<Tuple<Node, Node>> BlockedEdges
+        {
+            get { return _blockedEdges; }
+            set { _blockedEdges = value; }
         }
 
         public Graph()
@@ -114,6 +122,58 @@ namespace BTCom
 
             // Remove the node
             Nodes.Remove(node);
+
+            return true;
+        }
+
+        public bool BlockEdge(String nodeOne, String nodeTwo)
+        {
+            Node a = getNode(nodeOne);
+            Node b = getNode(nodeTwo);
+            return BlockEdge(a, b);
+        }
+
+        public bool BlockEdge(Node nodeOne, Node nodeTwo)
+        {
+            var edge = new Tuple<Node, Node>(nodeOne, nodeTwo);
+
+            if (BlockedEdges.Contains(edge)) return false;
+
+            BlockedEdges.Add(edge);
+
+            var edgeOne = nodeOne.Neighbours.Single(x => x.Key != null && x.Key.Equals(nodeTwo));
+            nodeOne.BlockedNeighbours.Add(edgeOne);
+            nodeOne.Neighbours.Remove(edgeOne);
+
+            var edgeTwo = nodeTwo.Neighbours.Single(x => x.Key != null && x.Key.Equals(nodeOne));
+            nodeTwo.BlockedNeighbours.Add(edgeTwo);
+            nodeTwo.Neighbours.Remove(edgeTwo);
+            
+            return true;
+        }
+
+        public bool UnblockEdge(String nodeOne, String nodeTwo)
+        {
+            Node a = getNode(nodeOne);
+            Node b = getNode(nodeTwo);
+            return UnblockEdge(a, b);
+        }
+
+        public bool UnblockEdge(Node nodeOne, Node nodeTwo)
+        {
+            var edge = new Tuple<Node, Node>(nodeOne, nodeTwo);
+
+            if (!BlockedEdges.Contains(edge)) return false;
+
+            BlockedEdges.Remove(edge);
+            var edgeOne = nodeOne.BlockedNeighbours.Single(x => x.Key != null && x.Key.Equals(nodeTwo));
+            nodeOne.Neighbours.Add(edgeOne);
+            nodeOne.BlockedNeighbours.Remove(edgeOne);
+            
+
+            var edgeTwo = nodeTwo.BlockedNeighbours.Single(x => x.Key != null && x.Key.Equals(nodeOne));
+            nodeTwo.Neighbours.Add(edgeTwo);
+            nodeTwo.BlockedNeighbours.Remove(edgeTwo);
 
             return true;
         }
@@ -322,5 +382,21 @@ namespace BTCom
 
             return p;
         }
+
+        public Path PathToBlockedEdge(Node startNode, Tuple<Node,Node> edge)
+        {   
+            var PathOne = ShortestPath(startNode, edge.Item1);
+            var PathTwo = ShortestPath(startNode, edge.Item2);
+
+            if (PathOne.Weight >= PathTwo.Weight)
+            {
+                return PathTwo;
+            }
+            else
+            {
+                return PathOne;
+            }
+        }
+        
     }
 }

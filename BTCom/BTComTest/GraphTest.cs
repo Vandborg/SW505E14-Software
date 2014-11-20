@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Policy;
 using BTCom;
 using BTCom.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -417,5 +419,90 @@ namespace BTComTest
             Assert.IsFalse(graph.RemoveNode(b));
         }
 
+        [TestMethod]
+        public void BlockEdgeInGraph()
+        {
+            Graph graph = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            graph.AddNode(a);
+            graph.AddNode(b);
+
+            var tupleOne = new Tuple<Node, int>(a, 1);
+            var tupleTwo = new Tuple<Node, int>(b, 3);
+            
+            graph.AddUndirectedEdge(tupleOne, tupleTwo, 5);
+            graph.BlockEdge(a, b);
+
+            Assert.IsTrue(graph.BlockedEdges.Exists(x => x.Item1.Equals(a) && x.Item2.Equals(b)));
+            Assert.IsTrue(a.BlockedNeighbours.Exists(x => x.Key != null && x.Key.Equals(b)));
+            Assert.IsTrue(b.BlockedNeighbours.Exists(x => x.Key != null && x.Key.Equals(a)));
+            Assert.IsFalse(a.Neighbours.Exists(x => x.Key != null && x.Key.Equals(b)));
+            Assert.IsFalse(b.Neighbours.Exists(x => x.Key != null && x.Key.Equals(a)));
+        }
+
+        [TestMethod]
+        public void UnblockEdgeInGraph()
+        {
+            Graph graph = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            graph.AddNode(a);
+            graph.AddNode(b);
+            
+            var tupleOne = new Tuple<Node, int>(a, 1);
+            var tupleTwo = new Tuple<Node, int>(b, 3);
+            
+            graph.AddUndirectedEdge(tupleOne, tupleTwo, 5);
+            graph.BlockEdge(a, b);
+            graph.UnblockEdge(a, b);
+
+            Assert.IsFalse(graph.BlockedEdges.Exists(x => x.Item1.Equals(a) && x.Item2.Equals(b)));
+            Assert.IsFalse(a.BlockedNeighbours.Exists(x => x.Key != null && x.Key.Equals(b)));
+            Assert.IsFalse(b.BlockedNeighbours.Exists(x => x.Key != null && x.Key.Equals(a)));
+            Assert.IsTrue(a.Neighbours.Exists(x => x.Key != null && x.Key.Equals(b)));
+            Assert.IsTrue(b.Neighbours.Exists(x => x.Key != null && x.Key.Equals(a)));
+        }
+
+        [TestMethod]
+        public void ShortestPathToBlockedEdge()
+        {
+            Graph graph = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+            Node c = new Node("c");
+            Node d = new Node("d");
+            Node e = new Node("e");
+
+            graph.AddNode(a);
+            graph.AddNode(b);
+            graph.AddNode(c);
+            graph.AddNode(d);
+            graph.AddNode(e);
+
+            graph.AddUndirectedEdge(new Tuple<Node, int>(a, 1), new Tuple<Node, int>(b, 3), 1);
+            graph.AddUndirectedEdge(new Tuple<Node, int>(b, 2), new Tuple<Node, int>(c, 0), 2);
+            graph.AddUndirectedEdge(new Tuple<Node, int>(c, 3), new Tuple<Node, int>(d, 1), 3); //block this
+            graph.AddUndirectedEdge(new Tuple<Node, int>(d, 0), new Tuple<Node, int>(e, 2), 200);
+            graph.AddUndirectedEdge(new Tuple<Node, int>(e, 1), new Tuple<Node, int>(a, 3), 100);
+
+            graph.BlockEdge(c, d);
+
+            Path expectedPath = new Path()
+            {
+                Identifier = 1,
+                Nodes = new List<Node>(){a, b, c}
+            };
+
+            Path actualPath = graph.PathToBlockedEdge(a, graph.BlockedEdges.FirstOrDefault());
+            actualPath.Identifier = 1;
+
+            Assert.IsTrue(expectedPath.Equals(actualPath));
+        }
     }
 }
