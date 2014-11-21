@@ -148,6 +148,11 @@ namespace BTCom
             var edgeTwo = nodeTwo.Neighbours.Single(x => x.Key != null && x.Key.Equals(nodeOne));
             nodeTwo.BlockedNeighbours.Add(edgeTwo);
             nodeTwo.Neighbours.Remove(edgeTwo);
+
+            if (BreathFirstSearch().Count != Nodes.Count)
+            {
+                throw new Exception("Graph is now not connected");
+            }
             
             return true;
         }
@@ -382,6 +387,34 @@ namespace BTCom
 
             return p;
         }
+
+        public List<Node> BreathFirstSearch()
+        {
+            Queue<Node> Q = new Queue<Node>();
+            List<Node> V = new List<Node>();
+
+            V.Add(Nodes.FirstOrDefault());
+            Q.Enqueue(V.FirstOrDefault());
+
+            while (Q.Count != 0)
+            {
+                Node t = Q.Dequeue();
+                foreach (var edges in t.Neighbours)
+                {
+                    if (edges.Key != null)
+                    {
+                        Node u = edges.Key;
+                        if (!V.Contains(u))
+                        {
+                            V.Add(u);
+                            Q.Enqueue(u);
+                        }
+                    }
+                }
+            }
+
+            return V;
+        } 
 
         public Path PathToBlockedEdge(Node startNode, Tuple<Node,Node> edge)
         {   
