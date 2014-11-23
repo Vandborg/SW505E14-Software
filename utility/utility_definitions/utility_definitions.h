@@ -122,17 +122,21 @@
     // Linefollow PID-controller definitions
     #define LINE_FOLLOW_SPEED       60
 
-    #define KP                      21//35//27
-    #define KI                       4.2//0// 2
-    #define KD                      26.25//0//30
+    #define KP_RIGHT                21//35//27
+    #define KI_RIGHT                 4.2//0// 2
+    #define KD_RIGHT                26.25//0//30
+
+    #define KP_LEFT                 21//35//27
+    #define KI_LEFT                  4.2//0// 2
+    #define KD_LEFT                 26.25//0//30
 
     #define INTEGRAL_MAX          2000     
     #define INTEGRAL_MIN -INTEGRAL_MAX
 
     // Cross intersection PID controller
-    #define KP_STRAIGHT            10//35//27
-    #define KI_STRAIGHT             1//0// 2
-    #define KD_STRAIGHT            12//0//30      
+    #define KP_STRAIGHT             10//35//27
+    #define KI_STRAIGHT              1//0// 2
+    #define KD_STRAIGHT             12//0//30      
 
     // Turn directions
     #define RIGHT_TURN          1
