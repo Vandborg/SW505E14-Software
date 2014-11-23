@@ -21,11 +21,11 @@ char Status;
 int drive_mode = NO_MODE;
 
 DeclareTask(TASK_update_color_reg);
-DeclareTask(TASK_line_follow);
+DeclareTask(TASK_drive_control);
 DeclareTask(TASK_color_scan);
 DeclareTask(TASK_check_navigation);
 DeclareTask(TASK_cross_intersection);
-DeclareAlarm(ALARM_line_follow);
+DeclareAlarm(ALARM_drive_control);
 DeclareAlarm(ALARM_color_scan);
 DeclareAlarm(ALARM_update_color_reg);
 
@@ -144,7 +144,7 @@ TASK(TASK_color_scan)
 
 
 
-TASK(TASK_line_follow)
+TASK(TASK_drive_control)
 {   
     switch(drive_mode)
     {
@@ -176,7 +176,7 @@ TASK(TASK_check_navigation)
 
     if (first_time)
     {
-        SetRelAlarm(ALARM_line_follow, 1, 50);
+        SetRelAlarm(ALARM_drive_control, 1, 50);
         SetRelAlarm(ALARM_color_scan, 1, 100);
         first_time = false;
     }
@@ -189,59 +189,6 @@ int integral_straight = 0;
 int last_error_straight = 0;
 int init_motor_count_left = 0;
 int init_motor_count_right = 0;
-
-
-
-TASK(TASK_cross_intersection)
-{
-    /*line_follow = false;
-
-    int Kp = 10;
-    int Ki = 1;
-    int Kd = 12;
-
-    int error = 0;
-    int integral_straight = 0;
-    int last_error = 0;
-    int derivative_straight = 0;
-
-    int init_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
-    int init_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
-
-    int current_count_left = 0;
-    int current_count_right = 0;
-
-    int output = 0;
-
-    int powerA = 0;
-    int powerB = 0;
-
-    while(do_cross_intersection)
-    {
-        current_count_right = 
-            nxt_motor_get_count(RIGHT_MOTOR) - init_motor_count_right;
-        current_count_left = 
-            nxt_motor_get_count(LEFT_MOTOR) - init_motor_count_left;
-
-        error = current_count_right - current_count_left;
-        integral_straight = (2/3) * integral_straight + error;
-        derivative_straight = error - last_error;
-
-        output = Kp * error + Ki * integral_straight + Kd * derivative_straight;
-
-        powerA = LINE_FOLLOW_SPEED - output;
-        powerB = LINE_FOLLOW_SPEED + output;
-
-        nxt_motor_set_speed(RIGHT_MOTOR, powerA, 1);
-        nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
-    }
-
-    line_follow = true;
-    integral = 0;
-    derivative = 0;*/
-
-    TerminateTask();
-}
 
 void cross_intersection(void)
 {

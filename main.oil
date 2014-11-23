@@ -37,7 +37,7 @@ CPU ATMEL_AT91SAM7S256
     STACKSIZE = 512; /* Stack size */ 
   };
 
-  TASK TASK_line_follow
+  TASK TASK_drive_control
   {
     AUTOSTART = FALSE;
     PRIORITY = 5; /* Smaller value means lower priority */ 
@@ -50,15 +50,6 @@ CPU ATMEL_AT91SAM7S256
   {
     AUTOSTART = FALSE;
     PRIORITY = 4; /* Smaller value means lower priority */ 
-    ACTIVATION = 1;
-    SCHEDULE = FULL;
-    STACKSIZE = 1024; /* Stack size */ 
-  };
-
-  TASK TASK_cross_intersection
-  {
-    AUTOSTART = FALSE;
-    PRIORITY = 3; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = FULL;
     STACKSIZE = 1024; /* Stack size */ 
@@ -89,12 +80,12 @@ CPU ATMEL_AT91SAM7S256
     TICKSPERBASE = 1; /* One tick is equal to 1msec */
   };
 
-  ALARM ALARM_line_follow
+  ALARM ALARM_drive_control
   {
     COUNTER = SysTimerCnt;
     ACTION = ACTIVATETASK
     {
-        TASK = TASK_line_follow;
+        TASK = TASK_drive_control;
     };
     AUTOSTART = FALSE;
   };
