@@ -127,7 +127,12 @@
     #define KD                      26.25//0//30
 
     #define INTEGRAL_MAX          2000     
-    #define INTEGRAL_MIN -INTEGRAL_MAX      
+    #define INTEGRAL_MIN -INTEGRAL_MAX
+
+    // Cross intersection PID controller
+    #define KP_STRAIGHT            10//35//27
+    #define KI_STRAIGHT             1//0// 2
+    #define KD_STRAIGHT            12//0//30      
 
     // Turn directions
     #define RIGHT_TURN          1
@@ -137,6 +142,12 @@
     #define IDLE 'I'
     #define BUSY 'B'
     #define ERROR 'E'
+
+    // Driving modes
+    #define LINE_FOLLOW         0
+    #define LINE_RECOVER        1
+    #define CROSS_INTERSECTION  2
+    #define NO_MODE             3
     
 
 #endif
