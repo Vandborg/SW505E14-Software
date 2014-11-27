@@ -237,9 +237,43 @@ namespace BTCom
                 case TYPE_REPORT_OBSTACLE:
 
                     int directionsIndex = int.Parse(dataString);
+                    Node newFrontNode = null;
+                    Node newRearNode = null;
 
-                    Console.WriteLine("DirectionsIndex from NXT: " + directionsIndex);
+                    if (CurrentDebugJob != null)
+                    {
+                        throw new Exception("Cannot recover from obstacle while doing a debug job");
+                    }
+                    else if (CurrentJob != null)
+                    {
+                        Path currentPath = CurrentJob.GetPath();
+                        int newRearNodeIndex = (currentPath.Nodes.Count - 2) - directionsIndex;
 
+                        // The new rear node is the node right infront of the truck
+                        newRearNode = currentPath.Nodes[newRearNodeIndex];
+
+                        // If the path is blocked immediatly the new front node is the old rear node.
+                        if (newRearNodeIndex == 0)
+                        {
+                            newFrontNode = forklift.RearNode;
+                        }
+                        else
+                        {
+                            // The new front node is the node right behind the truck
+                            newFrontNode = currentPath.Nodes[newRearNodeIndex - 1];
+                        }
+
+                        // Update the values of the front and rear nodes
+                        forklift.UpdateNodes(newFrontNode, newRearNode);
+
+                        // Update edge the NXT is standing on
+                        Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
+
+                    }
+                    else
+                    {
+                        throw new Exception("No current job or debugjob");
+                    }
                     break;
 
                 // Check if the NXT updated its status
