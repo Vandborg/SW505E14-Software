@@ -5,6 +5,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using BTCom.Exceptions;
 
 
 namespace BTCom
@@ -15,16 +16,20 @@ namespace BTCom
         private static void Main(string[] args)
         {
             // Make sure the database is populated
-            PopulateDatabase();            
+            PopulateDatabase();
+
+            UpdatePositionInformation();
 
             if(true) // Set to false if you want to communication with NXT 
             {
                 // Open the bt-connection
-                BluetoothConnection bt = new BluetoothConnection("COM6");
-                bt.FetchPallet(new Path());
+                BluetoothConnection bt = new BluetoothConnection("COM3");
+
+                // TODO: Fix this peace of code
+                // bt.FetchPallet(new Path());
 
                 // Instantiate threads
-                Thread ConsoleInputThread = new Thread(() => CheckConsoleInput(bt));
+                Thread ConsoleInputThread = new Thread(Commands.execute);
                 Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
 
                 // Start the threads
@@ -33,12 +38,69 @@ namespace BTCom
             }
         }
 
-        // Constantly checks console input
-        private static void CheckConsoleInput(BluetoothConnection bt)
+        // Used to check if position information is required
+        private static void UpdatePositionInformation()
         {
-            while (true)
+            Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+            Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+            
+            if (f.RearNode == null || f.FrontNode == null)
             {
-                bt.CreateJob(Console.ReadLine());
+                Console.WriteLine("Information about PALL-E position is required.");
+
+                bool result = false;
+
+                do
+                {
+                    Node rearNode = null;
+                    Node frontNode = null;
+
+                    // The user must enter a faceing node
+                    while (frontNode == null)
+                    {
+                        try
+                        {
+                            Console.Write("Front-node: ");
+                            String faceing = Console.ReadLine();
+                            frontNode = g.getNode(faceing);
+                        }
+                        catch (NodeException e)
+                        {
+                            Console.WriteLine("Error when finding node: ");
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine();
+                        }
+                    }
+
+                    // The user must enter a last node
+                    while (rearNode == null)
+                    {
+                        try
+                        {
+                            Console.Write("Rear-node: ");
+                            String last = Console.ReadLine();
+                            rearNode = g.getNode(last);
+                        }
+                        catch (NodeException e)
+                        {
+                            Console.WriteLine("Error when finding node: ");
+                            Console.WriteLine(e.Message);
+                            Console.WriteLine();
+                        }
+                    }
+
+                    // Update node information
+                    result = f.UpdateNodes(frontNode, rearNode);
+                } 
+                while (!result);
+
+                Database.Instance.Save();
+            }
+            else
+            {
+                Console.WriteLine("PALL-E position information:");
+                Console.WriteLine("On the edge between nodes '" + f.RearNode.Name + "' and '" + f.FrontNode.Name + "', facing '" + f.FrontNode.Name + "'");
+                Console.WriteLine();
             }
         }
 
@@ -56,6 +118,18 @@ namespace BTCom
         {
             PopulateDatabaseWithColors();
             PopulateDatabaseWithGraph();
+            PopulateDatabaseWithForklift();
+        }
+
+        // Populates the database with the forklift
+        private static void PopulateDatabaseWithForklift()
+        {
+            if (Database.Instance.Data.Forklifts.Count <= 0)
+            {
+                Forklift forklift = new Forklift();
+                
+                Database.Instance.Data.AddForklift(forklift);
+            }
         }
 
         // Populates the database with the graph
@@ -105,39 +179,39 @@ namespace BTCom
                 warehouse.AddNode(P);
                 warehouse.AddNode(Q);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 1), new Tuple<Node, int>(B, 3), 4);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 3), new Tuple<Node, int>(P, 0), 2);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 2), new Tuple<Node, int>(N, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 1), new Tuple<Node, int>(B, 3), 100);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 3), new Tuple<Node, int>(P, 0), 55);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(A, 2), new Tuple<Node, int>(N, 0), 25);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 1), new Tuple<Node, int>(C, 0), 2);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 2), new Tuple<Node, int>(H, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 1), new Tuple<Node, int>(C, 0), 42);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 2), new Tuple<Node, int>(H, 0), 24);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 1), new Tuple<Node, int>(D, 3), 1);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 2), new Tuple<Node, int>(F, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 1), new Tuple<Node, int>(D, 3), 11);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 2), new Tuple<Node, int>(F, 0), 6);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(E, 3), new Tuple<Node, int>(F, 1), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(E, 3), new Tuple<Node, int>(F, 1), 11);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(F, 2), new Tuple<Node, int>(G, 1), 2);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(F, 2), new Tuple<Node, int>(G, 1), 42);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 0), new Tuple<Node, int>(H, 2), 1);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 3), new Tuple<Node, int>(Q, 1), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 0), new Tuple<Node, int>(H, 2), 24);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 3), new Tuple<Node, int>(Q, 1), 12);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(H, 3), new Tuple<Node, int>(J, 1), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(H, 3), new Tuple<Node, int>(J, 1), 13);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(I, 2), new Tuple<Node, int>(J, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(I, 2), new Tuple<Node, int>(J, 0), 11);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 3), new Tuple<Node, int>(L, 1), 1);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 2), new Tuple<Node, int>(Q, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 3), new Tuple<Node, int>(L, 1), 26);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 2), new Tuple<Node, int>(Q, 0), 24);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(K, 2), new Tuple<Node, int>(L, 0), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(K, 2), new Tuple<Node, int>(L, 0), 11);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(L, 2), new Tuple<Node, int>(M, 0), 1);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(L, 3), new Tuple<Node, int>(N, 1), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(L, 2), new Tuple<Node, int>(M, 0), 11);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(L, 3), new Tuple<Node, int>(N, 1), 13);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 2), new Tuple<Node, int>(O, 0), 1);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 3), new Tuple<Node, int>(P, 1), 1);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 2), new Tuple<Node, int>(O, 0), 11);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 3), new Tuple<Node, int>(P, 1), 12);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(P, 2), new Tuple<Node, int>(Q, 3), 4);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(P, 2), new Tuple<Node, int>(Q, 3), 141);
 
                 // Save it to the database
                 Database.Instance.Data.AddGraph(warehouse);
@@ -149,30 +223,30 @@ namespace BTCom
         {
             Database.Instance.Load();
             // Color defines
-            const int COLOR_RED_LEFT = 1;
-            const int COLOR_RED_RIGHT = 2;
-            const int COLOR_BLUE_LEFT = 3;
-            const int COLOR_BLUE_RIGHT = 4;
-            const int COLOR_BLACK_LEFT = 5;
-            const int COLOR_BLACK_RIGHT = 6;
-            const int COLOR_GRAY_LEFT = 7;
-            const int COLOR_GRAY_RIGHT = 8;
-            const int COLOR_WHITE_LEFT = 9;
-            const int COLOR_WHITE_RIGHT = 10;
+            const int COLOR_RED_LEFT = 0;
+            const int COLOR_RED_RIGHT = 1;
+            const int COLOR_BLUE_LEFT = 2;
+            const int COLOR_BLUE_RIGHT = 3;
+            const int COLOR_BLACK_LEFT = 4;
+            const int COLOR_BLACK_RIGHT = 5;
+            const int COLOR_GRAY_LEFT = 6;
+            const int COLOR_GRAY_RIGHT = 7;
+            const int COLOR_WHITE_LEFT = 8;
+            const int COLOR_WHITE_RIGHT = 9;
 
             // The list of all colors when no database exists
             List<Color> colors = new List<Color> 
             { 
-                new Color("RED:LEFT", COLOR_RED_LEFT, 315, 115, 117), 
-                new Color("RED:RIGHT", COLOR_RED_RIGHT, 365, 200, 178),
+                new Color("RED:LEFT", COLOR_RED_LEFT, 484, 122, 129), 
+                new Color("RED:RIGHT", COLOR_RED_RIGHT, 535, 225, 206),
                 new Color("BLUE:LEFT", COLOR_BLUE_LEFT, 175, 138, 172), 
                 new Color("BLUE:RIGHT", COLOR_BLUE_RIGHT, 207, 219, 233), 
-                new Color("BLACK:LEFT", COLOR_BLACK_LEFT, 173, 128, 125), 
-                new Color("BLACK:RIGHT", COLOR_BLACK_RIGHT, 200, 295, 263), 
+                new Color("BLACK:LEFT", COLOR_BLACK_LEFT, 127, 99, 101), 
+                new Color("BLACK:RIGHT", COLOR_BLACK_RIGHT, 200, 191, 161), 
                 new Color("GRAY:LEFT", COLOR_GRAY_LEFT, 323, 255, 258), 
                 new Color("GRAY:RIGHT", COLOR_GRAY_RIGHT, 418, 398, 352), 
-                new Color("WHITE:LEFT", COLOR_WHITE_LEFT, 427, 458, 351), 
-                new Color("WHITE:RIGHT", COLOR_WHITE_RIGHT, 500, 488, 437)
+                new Color("WHITE:LEFT", COLOR_WHITE_LEFT, 502, 415, 400), 
+                new Color("WHITE:RIGHT", COLOR_WHITE_RIGHT, 557, 555, 500)
             };
             
             // Check if the database contains all colors

@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data.Entity.Core.Objects;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 
 namespace BTCom
 {
@@ -16,6 +10,9 @@ namespace BTCom
         public Dictionary<int, Light> Lights = new Dictionary<int, Light>();
         public Dictionary<int, Graph> Graphs = new Dictionary<int, Graph>();
         public Dictionary<int, Path> Paths = new Dictionary<int, Path>();
+        public Dictionary<int, Forklift> Forklifts = new Dictionary<int, Forklift>();
+        public Dictionary<int, Job> Jobs = new Dictionary<int, Job>();
+        public Dictionary<int, DebugJob> DebugJobs = new Dictionary<int, DebugJob>();
 
         public Data()
         { 
@@ -125,5 +122,114 @@ namespace BTCom
 
             return result;
         }
+
+        public void AddForklift(Forklift forklift)
+        {
+            try
+            {
+                Forklifts.Add(forklift.Identifier, forklift);
+            }
+            catch (ArgumentException)
+            {
+                Forklifts.Remove(forklift.Identifier);
+                Forklifts.Add(forklift.Identifier, forklift);
+            }
+            Database.Instance.Save();
+        }
+
+        public bool RemoveForklift(Forklift forklift)
+        {
+            bool result = Forklifts.Remove(forklift.Identifier);
+
+            if (result)
+            {
+                Database.Instance.Save();
+            }
+
+            return result;
+        }
+
+        public void AddJob(Job job)
+        {
+            try
+            {
+                Jobs.Add(job.Identifier, job);
+            }
+            catch (ArgumentException)
+            {
+                Jobs.Remove(job.Identifier);
+                Jobs.Add(job.Identifier, job);
+            }
+            Database.Instance.Save();
+        }
+
+        public bool RemoveJob(Job job)
+        {
+            bool result = Jobs.Remove(job.Identifier);
+
+            if (result)
+            {
+                Database.Instance.Save();
+            }
+
+            return result;
+        }
+
+        public int GetNewJobIdentifier()
+        {
+            int max = -1;
+
+            foreach (KeyValuePair<int, Job> job in Jobs)
+            {
+                if (job.Key > max)
+                {
+                    max = job.Key;
+                }
+            }
+
+            return max + 1;
+        }
+
+        public void AddDebugJob(DebugJob debugJob)
+        {
+            try
+            {
+                DebugJobs.Add(debugJob.Identifier, debugJob);
+            }
+            catch (ArgumentException)
+            {
+                DebugJobs.Remove(debugJob.Identifier);
+                DebugJobs.Add(debugJob.Identifier, debugJob);
+            }
+            Database.Instance.Save();
+        }
+
+        public bool RemoveDebugJob(DebugJob debugJob)
+        {
+            bool result = DebugJobs.Remove(debugJob.Identifier);
+
+            if (result)
+            {
+                Database.Instance.Save();
+            }
+
+            return result;
+        }
+
+        public int GetNewDebugJobIdentifier()
+        {
+            int max = -1;
+
+            foreach (KeyValuePair<int, DebugJob> debugJob in DebugJobs)
+            {
+                if (debugJob.Key > max)
+                {
+                    max = debugJob.Key;
+                }
+            }
+
+            return max + 1;
+        }
+
     }
 }
