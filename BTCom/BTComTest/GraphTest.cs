@@ -420,6 +420,7 @@ namespace BTComTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void BlockEdgeInGraph()
         {
             Graph graph = new Graph(1);
@@ -444,6 +445,7 @@ namespace BTComTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(Exception))]
         public void UnblockEdgeInGraph()
         {
             Graph graph = new Graph(1);
