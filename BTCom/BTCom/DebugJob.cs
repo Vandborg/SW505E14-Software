@@ -20,7 +20,7 @@ namespace BTCom
 
         public DebugJob(byte type, String directions)
         {
-            Regex rgx = new Regex(@"([L]*[R]*[S]*)*");
+            Regex rgx = new Regex(@"^[LRS]*$");
             if (rgx.IsMatch(directions))
             {
                 Type = type;
