@@ -238,7 +238,7 @@ TASK(TASK_consume_bluetooth)
         update_status_bt();
 
         // random wait for stuff to work
-        systick_wait_ms(100);
+        systick_wait_ms(10);
 
         // Array containing new task from PC
         char new_task[128] = {0};
