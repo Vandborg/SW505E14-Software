@@ -6,7 +6,7 @@
 #include "string.h"
 
 // Own header
-#include "utility/utility_bluetooth/utility_bluetooth.h"
+//#include 
 
 // Own libraries
 #include "utility/utility_lcd/utility_lcd.h"
