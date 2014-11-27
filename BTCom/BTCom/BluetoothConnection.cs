@@ -346,12 +346,14 @@ namespace BTCom
                                     // Remove the job that is being executed currently
                                     CurrentDebugJob = DebugJobList.First().Value;
                                     JobList.Remove(CurrentDebugJob.Identifier);
+                                    CurrentJob = null;
                                 }
                                 else
                                 {
                                     // Remove the job that is being executed currently
                                     CurrentJob = JobList.First().Value;
                                     JobList.Remove(CurrentJob.Identifier);
+                                    CurrentDebugJob = null;
                                 }   
                             }
 
