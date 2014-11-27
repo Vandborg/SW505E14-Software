@@ -82,6 +82,7 @@
     <Compile Include="Forklift.cs" />
     <Compile Include="ForkliftPath.cs" />
     <Compile Include="Graph.cs" />
+    <Compile Include="Interfaces\IDecayable.cs" />
     <Compile Include="Job.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="BluetoothConnection.cs">
