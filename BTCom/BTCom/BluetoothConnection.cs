@@ -281,10 +281,13 @@ namespace BTCom
                 // Check if the NXT updated its status
                 case TYPE_UPDATE_STATUS:
                 {
+                    bool statusChanged = false;
                     if (dataString[0] != GetStatusByte(forklift))
                     {
                         // Tell the user what the status the NXT updated to
                         Console.WriteLine("NXT-Status: " + dataString);
+                        statusChanged = true;
+                        
                     }
 
                     // Check what status the NXT told us
