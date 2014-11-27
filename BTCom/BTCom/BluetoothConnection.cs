@@ -360,13 +360,37 @@ namespace BTCom
                             Database.Instance.Save();
                             break;
 
+                        case STATUS_OBSTACLE:
+
+                            // Update the internal status
+                            forklift.Status = Status.OBSTACLE;
+                            Database.Instance.Save();
+
+                            if (CurrentDebugJob != null)
+                            {
+                                throw new Exception("Cannot recover from obstacle while doing a debug job");
+                            }
+                            else if (CurrentJob != null)
+                            {
+                                // Send an alternative path to avoid obstacle
+                                SendPackageBT(CurrentJob.Type, CurrentJob.GetBytes());
+                            }
+                            else
+                            {
+                                throw new Exception("No current job or debugjob");
+                            }
+                            break;
+
                         // The NXT encoutered an error
                         case STATUS_ERROR:
-                            // Tell the user that the NXT encountered an error
+                            // Update the internal status
                             forklift.Status = Status.ERROR;
                             Database.Instance.Save();
+
+                            // Tell the user that the NXT encountered an error
                             Console.WriteLine("The NXT has encountered an error!");
                             break;
+
                         default:
                             forklift.Status = Status.UNKNOWN;
                             Database.Instance.Save();
