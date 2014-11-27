@@ -236,6 +236,8 @@ namespace BTCom
 
                 case TYPE_REPORT_OBSTACLE:
 
+                    Console.WriteLine("Obstacle encountered! Calculating alternative path.");
+
                     int directionsIndex = int.Parse(dataString);
                     Node newFrontNode = null;
                     Node newRearNode = null;
