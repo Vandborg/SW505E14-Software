@@ -63,5 +63,9 @@
      */
     void update_status_bt(void);
    
+    /*
+     * Tells the pc what the current job index is. Varies from -1 to job length
+     */
+    void report_obstacle_bt(void);
 
 #endif
