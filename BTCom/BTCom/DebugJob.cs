@@ -59,7 +59,7 @@ namespace BTCom
             return sameIdentifier && sameType && sameDirections;
         }
 
-        public byte[] GetByes()
+        public byte[] GetBytes()
         {
             // Reverse the string
             string s = new string(this.Directions.ToCharArray().Reverse().ToArray());
