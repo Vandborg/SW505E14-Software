@@ -10,11 +10,11 @@ namespace BTCom
     {
         private List<Node> _path = new List<Node>();
 
-        public int Weight 
+        public double Weight 
         { 
             get
             {
-                int weight = 0;
+                double weight = 0;
                 for(int i = 0; i < Nodes.Count-1; i++)
                 {
                     int index = Nodes[i].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(Nodes[i + 1]));

@@ -506,5 +506,58 @@ namespace BTComTest
 
             Assert.IsTrue(expectedPath.Equals(actualPath));
         }
+
+        [TestMethod]
+        public void TestEdgeWeightChangeAfterVisit()
+        {
+            Graph g = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+            Node c = new Node("c");
+
+            Edge ab = new Edge(2) { Visited = 99, Blocked = 50 };
+            Edge bc = new Edge(2) { Visited = 99, Blocked = 50 };
+
+            g.AddNode(a);
+            g.AddNode(b);
+            g.AddNode(c);
+
+            g.AddUndirectedEdge(new Tuple<Node, int>(a, 1), new Tuple<Node, int>(b, 3), ab);
+            g.AddUndirectedEdge(new Tuple<Node, int>(b, 1), new Tuple<Node, int>(c, 3), bc);
+
+            ab.Visited += 1;
+            bc.Visited += 1;
+
+            const double expected = 3.0;
+            double actualab = ab.Weight;
+            double actualbc = bc.Weight;
+
+            Assert.IsTrue(Math.Abs(expected - actualab) < 1);
+            Assert.IsTrue(Math.Abs(expected - actualbc) < 1);
+        }
+
+        [TestMethod]
+        public void TestGraphSmallerWeightsUponDecay()
+        {
+            Graph g = new Graph(1);
+
+            Node a = new Node("a");
+            Node b = new Node("b");
+
+            Edge ab = new Edge(2) { Visited = 20, Blocked = 1 };
+
+            g.AddNode(a);
+            g.AddNode(b);
+            
+            g.AddUndirectedEdge(new Tuple<Node, int>(a, 1), new Tuple<Node, int>(b, 3), ab);
+
+            g.Decay(0.5);
+
+            double actual = ab.Weight;
+            const double expected = 2.05;
+
+            Assert.IsTrue(Math.Abs(actual - expected) < 0.01);
+        }
     }
 }

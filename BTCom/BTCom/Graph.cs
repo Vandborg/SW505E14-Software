@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BTCom.Exceptions;
+using BTCom.Interfaces;
 
 namespace BTCom
 {
-    public class Graph : DataEntry
+    public class Graph : DataEntry, IDecayable
     {
         private List<Node> _nodes = new List<Node>();
         public List<Node> Nodes
@@ -141,13 +142,15 @@ namespace BTCom
 
             BlockedEdges.Add(edge);
 
-            var edgeOne = nodeOne.Neighbours.Single(x => x.Key != null && x.Key.Equals(nodeTwo));
-            nodeOne.BlockedNeighbours.Add(edgeOne);
-            nodeOne.Neighbours.Remove(edgeOne);
+            KeyValuePair<Node, Edge> edgeOne = nodeOne.Neighbours.Single(x => x.Key != null && x.Key.Equals(nodeTwo));
+            int index = nodeOne.Neighbours.IndexOf(edgeOne);
+            nodeOne.BlockedNeighbours[index] = edgeOne;
+            nodeOne.Neighbours[index] = new KeyValuePair<Node, Edge>();
 
-            var edgeTwo = nodeTwo.Neighbours.Single(x => x.Key != null && x.Key.Equals(nodeOne));
-            nodeTwo.BlockedNeighbours.Add(edgeTwo);
-            nodeTwo.Neighbours.Remove(edgeTwo);
+            KeyValuePair<Node, Edge> edgeTwo = nodeTwo.Neighbours.Single(x => x.Key != null && x.Key.Equals(nodeOne));
+            index = nodeTwo.Neighbours.IndexOf(edgeTwo);
+            nodeTwo.BlockedNeighbours[index] = edgeTwo;
+            nodeTwo.Neighbours[index] = new KeyValuePair<Node, Edge>();
 
             if (BreathFirstSearch().Count != Nodes.Count)
             {
@@ -197,6 +200,37 @@ namespace BTCom
 
             // Check if all properties are the same
             return sameIdentifier && sameNodeLength;
+        }
+
+        public void Decay(double decayRate)
+        {
+            List<Edge> edges = new List<Edge>();
+
+            // Find all unique edges and add them to a list
+            foreach (Node node in Nodes)
+            {
+                foreach (KeyValuePair<Node, Edge> edge in node.Neighbours)
+                {
+                    if (edge.Value != null && !edges.Contains(edge.Value))
+                    {
+                        edges.Add(edge.Value);    
+                    }
+                }
+
+                foreach (KeyValuePair<Node, Edge> edge in node.BlockedNeighbours)
+                {
+                    if (edge.Value != null && !edges.Contains(edge.Value))
+                    {
+                        edges.Add(edge.Value);
+                    }
+                }
+            }
+
+            // Go through the edges and decay them
+            foreach (Edge edge in edges)
+            {
+                edge.Decay(decayRate);
+            }
         }
 
         public Node getNode(string name)
@@ -255,7 +289,7 @@ namespace BTCom
 
             List<Node> Q = new List<Node>();
 
-            List<KeyValuePair<Node, int>> distance = new List<KeyValuePair<Node, int>>();
+            List<KeyValuePair<Node, double>> distance = new List<KeyValuePair<Node, double>>();
             List<KeyValuePair<Node, Node>> previous = new List<KeyValuePair<Node, Node>>();
 
             foreach (Node node in Nodes)
@@ -268,7 +302,7 @@ namespace BTCom
                 if (!node.Equals(from))
                 {
                     // Set the distance of all nodes to infinity
-                    distance.Add(new KeyValuePair<Node, int>(node, Int32.MaxValue));
+                    distance.Add(new KeyValuePair<Node, double>(node, Double.MaxValue));
 
                     // Set the previous node for all nodes to null (undefined)
                     previous.Add(new KeyValuePair<Node, Node>(node, null));
@@ -279,14 +313,14 @@ namespace BTCom
             }
 
             // The distance to the node "from" is always 0
-            distance.Add(new KeyValuePair<Node, int>(from, 0));
+            distance.Add(new KeyValuePair<Node, double>(from, 0));
 
             // While there are nodes to inspect
             while (Q.Count > 0)
             {
                 // Find the node with lowest distance in Q
                 Node selectedNode = Q.First();
-                int oldDistance = Int32.MaxValue;
+                double oldDistance = Int32.MaxValue;
 
                 foreach (Node node in Q)
                 {
@@ -295,7 +329,7 @@ namespace BTCom
                         continue;
                     }
 
-                    int newDistance = distance.Find(x => x.Key.Equals(node)).Value;
+                    double newDistance = distance.Find(x => x.Key.Equals(node)).Value;
 
                     if (newDistance < oldDistance)
                     {
@@ -321,22 +355,22 @@ namespace BTCom
                     }
                     
                     // Find the distance to the selected
-                    int distanceToSelectedNode = distance.Find(x => x.Key.Equals(selectedNode)).Value;
+                    double distanceToSelectedNode = distance.Find(x => x.Key.Equals(selectedNode)).Value;
 
                     // Find the distance to the selected neighbour
-                    int distanceToNeighbour = selectedNode.Neighbours.Find(x => x.Key != null && x.Key.Equals(neighbour.Key)).Value.Weight;
+                    double distanceToNeighbour = selectedNode.Neighbours.Find(x => x.Key != null && x.Key.Equals(neighbour.Key)).Value.Weight;
 
                     // Add the two distances
-                    int alt = distanceToSelectedNode + distanceToNeighbour;
+                    double alt = distanceToSelectedNode + distanceToNeighbour;
 
-                    int neighbourDistance = distance.Find(x => x.Key.Equals(neighbour.Key)).Value;
+                    double neighbourDistance = distance.Find(x => x.Key.Equals(neighbour.Key)).Value;
 
                     // Check if this new distance (alt) is shorter than what we know
                     if(alt < neighbourDistance)
                     {
                         // Update the distance
                         distance.RemoveAll(x => x.Key.Equals(neighbour.Key));
-                        distance.Add(new KeyValuePair<Node, int>(neighbour.Key, alt));
+                        distance.Add(new KeyValuePair<Node, double>(neighbour.Key, alt));
 
                         // Set previous of neighbour to selectednode
                         previous.RemoveAll(x => x.Key.Equals(neighbour.Key));
