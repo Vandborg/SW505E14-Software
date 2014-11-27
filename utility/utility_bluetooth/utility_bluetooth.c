@@ -215,13 +215,13 @@ void update_status_bt(void)
 }
 
 // Report obstacle
-void report_obstacle(void)
+void report_obstacle_bt(void)
 {
     // Array to contain navigation.next so it can be sent
-    char index_str[2];
+    char index_str[3];
 
     // Save navigation.next to index_str
-    index_str[0] = Navigation.next;
+    int_to_string(Navigation.next, index_str);
 
     // Send report obstacle package with the current job index to the pc.
     send_package_bt(TYPE_REPORT_OBSTACLE, index_str);
