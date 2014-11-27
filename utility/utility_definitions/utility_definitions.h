@@ -134,6 +134,7 @@
     #define IDLE 'I'
     #define BUSY 'B'
     #define ERROR 'E'
+    #define OBSTACLE 'O'
     
 
 #endif
