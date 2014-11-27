@@ -55,13 +55,16 @@ namespace BTCom
             return g.ShortestPath(from, Destination, ignore);
         }
 
-        public byte[] GetBytes()
+        public byte[] GetBytes(bool printForkliftPath)
         {
             Node ignore = Database.Instance.Data.Forklifts.FirstOrDefault().Value.RearNode;
             
             ForkliftPath fp = new ForkliftPath(this.GetPath(), ignore);
 
-            Console.WriteLine(fp.ToString());
+            if (printForkliftPath)
+            {
+                Console.WriteLine(fp.ToString());
+            }
 
             return Encoding.ASCII.GetBytes(fp.getDirections());
         }
