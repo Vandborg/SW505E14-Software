@@ -106,16 +106,16 @@
     #define SIXTH_ROTATION      6
 
     // Color definitions (for both left and right sensor)
-    #define COLOR_RED_LEFT       1
-    #define COLOR_RED_RIGHT      2
-    #define COLOR_BLUE_LEFT      3
-    #define COLOR_BLUE_RIGHT     4
-    #define COLOR_BLACK_LEFT     5
-    #define COLOR_BLACK_RIGHT    6
-    #define COLOR_GRAY_LEFT      7
-    #define COLOR_GRAY_RIGHT     8
-    #define COLOR_WHITE_LEFT     9
-    #define COLOR_WHITE_RIGHT   10 
+    #define COLOR_RED_LEFT       0
+    #define COLOR_RED_RIGHT      1
+    #define COLOR_BLUE_LEFT      2
+    #define COLOR_BLUE_RIGHT     3
+    #define COLOR_BLACK_LEFT     4
+    #define COLOR_BLACK_RIGHT    5
+    #define COLOR_GRAY_LEFT      6
+    #define COLOR_GRAY_RIGHT     7
+    #define COLOR_WHITE_LEFT     8
+    #define COLOR_WHITE_RIGHT    9 
 
     #define AMOUNT_OF_COLORS    10
     
