@@ -234,7 +234,11 @@ namespace BTCom
                     break;
 
                 case TYPE_REPORT_OBSTACLE:
-                    // TODO
+
+                    int directionsIndex = int.Parse(dataString);
+
+                    Console.WriteLine("DirectionsIndex from NXT: " + directionsIndex);
+
                     break;
 
                 // Check if the NXT updated its status
@@ -273,7 +277,7 @@ namespace BTCom
                                 DebugJob nextDebugJob = DebugJobList[0];
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT: " + nextDebugJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending DebugJob -> NXT: " + nextDebugJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
                                 SendPackageBT(nextDebugJob.Type, nextDebugJob.GetByes());
