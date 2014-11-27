@@ -146,12 +146,12 @@
     #define IDLE 'I'
     #define BUSY 'B'
     #define ERROR 'E'
+	#define OBSTACLE 'O'
 
     // Driving modes
     #define LINE_FOLLOW         0
     #define LINE_RECOVER        1
     #define CROSS_INTERSECTION  2
     #define NO_MODE             3
-    
 
 #endif

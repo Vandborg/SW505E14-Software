@@ -31,6 +31,7 @@ namespace BTCom
         // NXT statuses 
         public const char STATUS_IDLE = 'I';
         public const char STATUS_BUSY = 'B';
+        public const char STATUS_OBSTACLE = 'O';
         public const char STATUS_ERROR = 'E';
         public const char STATUS_UNKNOWN = 'U';
 
@@ -234,16 +235,59 @@ namespace BTCom
                     break;
 
                 case TYPE_REPORT_OBSTACLE:
-                    // TODO
+
+                    Console.WriteLine("Obstacle encountered! Calculating alternative path.");
+
+                    int directionsIndex = int.Parse(dataString);
+                    Node newFrontNode = null;
+                    Node newRearNode = null;
+
+                    if (CurrentDebugJob != null)
+                    {
+                        throw new Exception("Cannot recover from obstacle while doing a debug job");
+                    }
+                    else if (CurrentJob != null)
+                    {
+                        Path currentPath = CurrentJob.GetPath();
+                        int newRearNodeIndex = (currentPath.Nodes.Count - 2) - directionsIndex;
+
+                        // The new rear node is the node right infront of the truck
+                        newRearNode = currentPath.Nodes[newRearNodeIndex];
+
+                        // If the path is blocked immediatly the new front node is the old rear node.
+                        if (newRearNodeIndex == 0)
+                        {
+                            newFrontNode = forklift.RearNode;
+                        }
+                        else
+                        {
+                            // The new front node is the node right behind the truck
+                            newFrontNode = currentPath.Nodes[newRearNodeIndex - 1];
+                        }
+
+                        // Update the values of the front and rear nodes
+                        forklift.UpdateNodes(newFrontNode, newRearNode);
+
+                        // Update edge the NXT is standing on
+                        Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
+
+                    }
+                    else
+                    {
+                        throw new Exception("No current job or debugjob");
+                    }
                     break;
 
                 // Check if the NXT updated its status
                 case TYPE_UPDATE_STATUS:
                 {
+                    bool statusChanged = false;
                     if (dataString[0] != GetStatusByte(forklift))
                     {
                         // Tell the user what the status the NXT updated to
                         Console.WriteLine("NXT-Status: " + dataString);
+                        statusChanged = true;
+                        
                     }
 
                     // Check what status the NXT told us
@@ -273,10 +317,10 @@ namespace BTCom
                                 DebugJob nextDebugJob = DebugJobList[0];
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT: " + nextDebugJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending DebugJob -> NXT: " + nextDebugJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
-                                SendPackageBT(nextDebugJob.Type, nextDebugJob.GetByes());
+                                SendPackageBT(nextDebugJob.Type, nextDebugJob.GetBytes());
                             }
                             else if (JobList.Count > 0)
                             {
@@ -287,7 +331,7 @@ namespace BTCom
                                 Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
-                                SendPackageBT(nextJob.Type, nextJob.GetByes());
+                                SendPackageBT(nextJob.Type, nextJob.GetBytes(statusChanged));
                             }
 
                             // Update the internal status
@@ -307,12 +351,14 @@ namespace BTCom
                                     // Remove the job that is being executed currently
                                     CurrentDebugJob = DebugJobList.First().Value;
                                     JobList.Remove(CurrentDebugJob.Identifier);
+                                    CurrentJob = null;
                                 }
                                 else
                                 {
                                     // Remove the job that is being executed currently
                                     CurrentJob = JobList.First().Value;
                                     JobList.Remove(CurrentJob.Identifier);
+                                    CurrentDebugJob = null;
                                 }   
                             }
 
@@ -321,13 +367,38 @@ namespace BTCom
                             Database.Instance.Save();
                             break;
 
+                        case STATUS_OBSTACLE:
+
+                            if (CurrentDebugJob != null)
+                            {
+                                throw new Exception("Cannot recover from obstacle while doing a debug job");
+                            }
+                            else if (CurrentJob != null)
+                            {
+                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (DebugJobList.Count + JobList.Count) + " jobs left in the JobList");
+                                // Send an alternative path to avoid obstacle
+                                SendPackageBT(CurrentJob.Type, CurrentJob.GetBytes(statusChanged));
+                            }
+                            else
+                            {
+                                throw new Exception("No current job or debugjob");
+                            }
+
+                            // Update the internal status
+                            forklift.Status = Status.OBSTACLE;
+                            Database.Instance.Save();
+                            break;
+
                         // The NXT encoutered an error
                         case STATUS_ERROR:
-                            // Tell the user that the NXT encountered an error
+                            // Update the internal status
                             forklift.Status = Status.ERROR;
                             Database.Instance.Save();
+
+                            // Tell the user that the NXT encountered an error
                             Console.WriteLine("The NXT has encountered an error!");
                             break;
+
                         default:
                             forklift.Status = Status.UNKNOWN;
                             Database.Instance.Save();
@@ -348,12 +419,13 @@ namespace BTCom
                     return STATUS_IDLE;
                 case Status.BUSY:
                     return STATUS_BUSY;
-                case BTCom.Status.ERROR:
+                case Status.ERROR:
                     return STATUS_ERROR;
+                case Status.OBSTACLE:
+                    return STATUS_OBSTACLE;
+                default :
+                    return STATUS_UNKNOWN;
             }
-
-            // Unknown status
-            return STATUS_UNKNOWN;
         }
     }
 }

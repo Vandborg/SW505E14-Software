@@ -41,7 +41,8 @@ namespace BTCom
             }
 
             // Check if the initial node is a neighbour of the first node in the path
-            if (path.Nodes.FirstOrDefault().Neighbours.FindAll(x => x.Key != null && x.Key.Equals(this.initialNode)).Count == 0)
+            if (path.Nodes.FirstOrDefault().Neighbours.FindAll(x => x.Key != null && x.Key.Equals(this.initialNode)).Count == 0
+                && path.Nodes.FirstOrDefault().BlockedNeighbours.FindAll(x => x.Key != null && x.Key.Equals(this.initialNode)).Count == 0)
             {
                 throw new NodeException("Could not find initial node '" + this.initialNode.Name + "' in the neighbours of node '" + path.Nodes.FirstOrDefault().Name + "'");
             }
@@ -53,7 +54,18 @@ namespace BTCom
                 return;
             }
 
-            int initialIndex = path.Nodes[0].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
+            int initialIndex = 0;
+            
+            // Check if the initial node is in neighbours
+            if (path.Nodes[0].Neighbours.FindAll(x => x.Key != null && x.Key.Equals(initialNode)).Count > 0)
+            {
+                initialIndex = path.Nodes[0].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
+            }
+            // The initial node was not in neighbours, then it must be in blocked neighbours
+            else
+            {
+                initialIndex = path.Nodes[0].BlockedNeighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
+            }
 
             int fromIndex = initialIndex;
             int toIndex = -1;

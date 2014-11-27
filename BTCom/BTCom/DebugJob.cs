@@ -20,7 +20,11 @@ namespace BTCom
 
         public DebugJob(byte type, String directions)
         {
-            Regex rgx = new Regex(@"([L]*[R]*[S]*)*");
+            // Make sure that the directions arguments is capital letters
+            directions = directions.ToUpper();
+
+            // Check if the directions fits the format
+            Regex rgx = new Regex("^[LRS]*$");
             if (rgx.IsMatch(directions))
             {
                 Type = type;
@@ -55,7 +59,7 @@ namespace BTCom
             return sameIdentifier && sameType && sameDirections;
         }
 
-        public byte[] GetByes()
+        public byte[] GetBytes()
         {
             // Reverse the string
             string s = new string(this.Directions.ToCharArray().Reverse().ToArray());
