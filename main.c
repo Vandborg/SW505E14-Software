@@ -10,10 +10,17 @@
 #include "utility/utility_movement/utility_movement.h"
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_structs/utility_structs.h"
+#include "utility/utility_lcd/utility_lcd.h"
 
 navigation Navigation;
 
 DeclareCounter(SysTimerCnt);
+DeclareTask(TASK_update_color_reg);
+DeclareTask(TASK_drive_control);
+DeclareTask(TASK_color_scan);
+DeclareTask(TASK_check_navigation);
+DeclareTask(TASK_consume_bluetooth);
+
 
 // System clock
 void user_1ms_isr_type2(void) 
@@ -39,6 +46,37 @@ void ecrobot_device_terminate(void)
     ecrobot_term_sonar_sensor(SONAR_SENSOR_FRONT);
     ecrobot_term_sonar_sensor(SONAR_SENSOR_REAR);
 }
+
+void ErrorHook(StatusType ercd)
+{
+    if (ercd == E_OS_LIMIT)
+    {
+        TaskType id;
+        GetTaskID(&id);
+
+        if(TASK_color_scan == id) 
+        {
+            lcd_display_line(LCD_LINE_ONE, "Scan fejl", true);
+        }
+        else if(TASK_update_color_reg) 
+        {
+            // lcd_display_line(LCD_LINE_TWO, "Update fejl", true);
+        }
+        else if(TASK_check_navigation) 
+        {
+            lcd_display_line(LCD_LINE_FOUR, "Check fejl", true);
+        }
+        else if(TASK_drive_control)
+        {
+            lcd_display_line(LCD_LINE_FIVE, "Line fejl", true);
+        }
+        else if(TASK_consume_bluetooth)
+        {
+            lcd_display_line(LCD_LINE_SIX, "BT fejl", true);
+        }
+    }
+}
+
 
 void initialize_colors(void) 
 {

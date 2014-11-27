@@ -24,7 +24,6 @@ DeclareTask(TASK_update_color_reg);
 DeclareTask(TASK_drive_control);
 DeclareTask(TASK_color_scan);
 DeclareTask(TASK_check_navigation);
-DeclareTask(TASK_cross_intersection);
 DeclareAlarm(ALARM_drive_control);
 DeclareAlarm(ALARM_color_scan);
 DeclareAlarm(ALARM_update_color_reg);
@@ -90,7 +89,6 @@ TASK(TASK_color_scan)
         // Is the meassured color red and was the last color meassured not red
         if(is_red_color_colorsensor())
         {
-
             if(!last_color_red)
             {
                 // Debugging sound
@@ -137,7 +135,7 @@ TASK(TASK_color_scan)
     }
     else
     {
-        drive_mode = NO_MODE;
+        stop_line_following();
         // TODO: Handle type of task (Fetch or deliver pallet)
         Status = IDLE;
     }
@@ -177,6 +175,34 @@ TASK(TASK_check_navigation)
     {
         SetRelAlarm(ALARM_drive_control, 1, 50);
         SetRelAlarm(ALARM_color_scan, 1, 100);
+
+        // Calculate the left offset by taking the average of white & black rgb
+        int black_light_level_left = 
+            (Colors[COLOR_BLACK_LEFT].red +
+             Colors[COLOR_BLACK_LEFT].green + 
+             Colors[COLOR_BLACK_LEFT].blue) / 3;
+
+        int white_light_level_left = 
+            (Colors[COLOR_WHITE_LEFT].red +
+             Colors[COLOR_WHITE_LEFT].green + 
+             Colors[COLOR_WHITE_LEFT].blue) / 3;
+
+        offset_left = (white_light_level_left + black_light_level_left) / 2;
+
+
+        // Calculate the left offset by taking the average of white & black rgb
+        int black_light_level_right = 
+            (Colors[COLOR_BLACK_RIGHT].red +
+             Colors[COLOR_BLACK_RIGHT].green + 
+             Colors[COLOR_BLACK_RIGHT].blue) / 3;
+
+        int white_light_level_right = 
+            (Colors[COLOR_WHITE_RIGHT].red +
+             Colors[COLOR_WHITE_RIGHT].green + 
+             Colors[COLOR_WHITE_RIGHT].blue) / 3;
+
+        offset_right = (white_light_level_right + black_light_level_right) / 2;
+
         first_time = false;
     }
 
@@ -382,9 +408,6 @@ void swap(U8* a, U8* b)
 void switch_sensors(void)
 {
     drive_mode = NO_MODE;
-    /*U8 temp = color_sensor;
-    color_sensor = light_sensor;
-    light_sensor = temp;*/
 
     swap(&color_sensor, &light_sensor);
     swap(&color_motor, &light_motor);
@@ -393,25 +416,29 @@ void switch_sensors(void)
     drive_mode = LINE_RECOVER;
 }
 
+bool line_found = false;
+
 void line_recover(void)
 {
     if (first_iteration)
     {
-        init_motor_count_left = 
-            nxt_motor_get_count(LEFT_MOTOR);
-        init_motor_count_right = 
-            nxt_motor_get_count(RIGHT_MOTOR);
+        init_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
+        init_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
 
+        line_found = false;
         first_iteration = false;
     }
 
+    // Set offset to be the offset corresponding to the left motor and sensor
     int offset = light_motor == LEFT_MOTOR ? offset_left : offset_right;  
+
     int light_level = get_light_level(light_sensor) - offset;
 
 
-    if(light_level <= -10 || light_level >= 10)
+    if((light_level <= -10 || light_level >= 10) && 
+        !line_found)
     {
-        if(light_level > 0)
+        if(light_level < 0)
         {
             nxt_motor_set_speed(light_motor, 70, 0);
             nxt_motor_set_speed(color_motor, 0, 1);
@@ -425,6 +452,8 @@ void line_recover(void)
     }
     else 
     {
+        line_found = true;
+
         int right_count = 
             nxt_motor_get_count(RIGHT_MOTOR) - init_motor_count_right;
         int left_count = 
