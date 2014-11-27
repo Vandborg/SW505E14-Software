@@ -413,12 +413,13 @@ namespace BTCom
                     return STATUS_IDLE;
                 case Status.BUSY:
                     return STATUS_BUSY;
-                case BTCom.Status.ERROR:
+                case Status.ERROR:
                     return STATUS_ERROR;
+                case Status.OBSTACLE:
+                    return STATUS_OBSTACLE;
+                default :
+                    return STATUS_UNKNOWN;
             }
-
-            // Unknown status
-            return STATUS_UNKNOWN;
         }
     }
 }
