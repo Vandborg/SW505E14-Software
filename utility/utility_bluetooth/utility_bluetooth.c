@@ -225,12 +225,15 @@ void report_obstacle_bt(void)
 
     // Send report obstacle package with the current job index to the pc.
     send_package_bt(TYPE_REPORT_OBSTACLE, index_str);
+
+    Status = OBSTACLE;
+    Navigation.next = -1;
 }
 
 TASK(TASK_consume_bluetooth) 
 {   
     // If the NXT is idling, tell the pc and get a new task. 
-    if(Status == IDLE)
+    if(Status == IDLE || Status == OBSTACLE)
     {
         update_status_bt();
 
