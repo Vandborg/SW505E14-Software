@@ -11,11 +11,11 @@ namespace BTCom
         public string Name { get; set; }
 
         private List<KeyValuePair<Node, Edge>> _neighbours = new List<KeyValuePair<Node, Edge>>(4) {
-                                                                                                        new KeyValuePair<Node, Edge>(), 
-                                                                                                        new KeyValuePair<Node, Edge>(), 
-                                                                                                        new KeyValuePair<Node, Edge>(), 
-                                                                                                        new KeyValuePair<Node, Edge>()
-                                                                                                   };
+            new KeyValuePair<Node, Edge>(), 
+            new KeyValuePair<Node, Edge>(), 
+            new KeyValuePair<Node, Edge>(), 
+            new KeyValuePair<Node, Edge>()
+        };
         public List<KeyValuePair<Node, Edge>> Neighbours
         {
             get { return _neighbours;  }
@@ -23,11 +23,11 @@ namespace BTCom
         }
 
         private List<KeyValuePair<Node, Edge>> _blockedNeighbours = new List<KeyValuePair<Node, Edge>>(4) {
-                                                                                                              new KeyValuePair<Node, Edge>(), 
-                                                                                                              new KeyValuePair<Node, Edge>(), 
-                                                                                                              new KeyValuePair<Node, Edge>(), 
-                                                                                                              new KeyValuePair<Node, Edge>()
-                                                                                                          };
+            new KeyValuePair<Node, Edge>(), 
+            new KeyValuePair<Node, Edge>(), 
+            new KeyValuePair<Node, Edge>(), 
+            new KeyValuePair<Node, Edge>()
+        };
         public List<KeyValuePair<Node, Edge>> BlockedNeighbours
         {
             get { return _blockedNeighbours; }
