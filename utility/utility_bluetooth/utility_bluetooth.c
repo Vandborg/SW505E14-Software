@@ -214,7 +214,18 @@ void update_status_bt(void)
     send_package_bt(TYPE_UPDATE_STATUS, status_str);
 }
 
+// Report obstacle
+void report_obstacle_bt(void)
+{
+    // Array to contain navigation.next so it can be sent
+    char index_str[3];
 
+    // Save navigation.next to index_str
+    int_to_string(Navigation.next, index_str);
+
+    // Send report obstacle package with the current job index to the pc.
+    send_package_bt(TYPE_REPORT_OBSTACLE, index_str);
+}
 
 TASK(TASK_consume_bluetooth) 
 {   
