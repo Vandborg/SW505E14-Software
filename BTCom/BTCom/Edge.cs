@@ -28,7 +28,7 @@ namespace BTCom
             set { ; }
         }
 
-        public Edge(int distance)
+        public Edge(double distance)
         {
             Distance = distance;
         }
