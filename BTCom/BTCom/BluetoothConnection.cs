@@ -331,7 +331,7 @@ namespace BTCom
                                 Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
-                                SendPackageBT(nextJob.Type, nextJob.GetBytes());
+                                SendPackageBT(nextJob.Type, nextJob.GetBytes(statusChanged));
                             }
 
                             // Update the internal status
@@ -369,23 +369,24 @@ namespace BTCom
 
                         case STATUS_OBSTACLE:
 
-                            // Update the internal status
-                            forklift.Status = Status.OBSTACLE;
-                            Database.Instance.Save();
-
                             if (CurrentDebugJob != null)
                             {
                                 throw new Exception("Cannot recover from obstacle while doing a debug job");
                             }
                             else if (CurrentJob != null)
                             {
+                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (DebugJobList.Count + JobList.Count) + " jobs left in the JobList");
                                 // Send an alternative path to avoid obstacle
-                                SendPackageBT(CurrentJob.Type, CurrentJob.GetBytes());
+                                SendPackageBT(CurrentJob.Type, CurrentJob.GetBytes(statusChanged));
                             }
                             else
                             {
                                 throw new Exception("No current job or debugjob");
                             }
+
+                            // Update the internal status
+                            forklift.Status = Status.OBSTACLE;
+                            Database.Instance.Save();
                             break;
 
                         // The NXT encoutered an error
