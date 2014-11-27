@@ -6,7 +6,7 @@ CPU ATMEL_AT91SAM7S256
   {
     STATUS = EXTENDED;
     STARTUPHOOK = FALSE;
-    ERRORHOOK = FALSE;
+    ERRORHOOK = TRUE;
     SHUTDOWNHOOK = FALSE;
     PRETASKHOOK = FALSE;
     POSTTASKHOOK = FALSE;
@@ -22,40 +22,49 @@ CPU ATMEL_AT91SAM7S256
   TASK TASK_boot
   {
     AUTOSTART = TRUE { APPMODE = appmode1; };
-    PRIORITY = 5; /* Smaller value means lower priority */ 
+    PRIORITY = 7; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = NON;
-    STACKSIZE = 512; /* Stack size */ 
+    STACKSIZE = 1024; /* Stack size */ 
   };
 
-  TASK TASK_line_follow
+  TASK TASK_update_color_reg
   {
     AUTOSTART = FALSE;
-    PRIORITY = 3; /* Smaller value means lower priority */ 
+    PRIORITY = 6; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = FULL;
     STACKSIZE = 512; /* Stack size */ 
   };
 
-  TASK TASK_obstacle_detection
+  TASK TASK_drive_control
   {
     AUTOSTART = FALSE;
-    PRIORITY = 4; /* Smaller value means lower priority */ 
+    PRIORITY = 5; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
-    SCHEDULE = NON;
-    STACKSIZE = 512; /* Stack size */ 
+    SCHEDULE = FULL;
+    STACKSIZE = 1024; /* Stack size */ 
   };
 
   TASK TASK_color_scan
   {
     AUTOSTART = FALSE;
-    PRIORITY = 2; /* Smaller value means lower priority */ 
+    PRIORITY = 4; /* Smaller value means lower priority */ 
     ACTIVATION = 1;
     SCHEDULE = FULL;
-    STACKSIZE = 512; /* Stack size */ 
+    STACKSIZE = 1024; /* Stack size */ 
   };
 
   TASK TASK_consume_bluetooth
+  {
+    AUTOSTART = FALSE;
+    PRIORITY = 2; /* Smaller value means lower priority */ 
+    ACTIVATION = 1;
+    SCHEDULE = FULL;
+    STACKSIZE = 1024; /* Stack size */ 
+  };
+
+  TASK TASK_check_navigation
   {
     AUTOSTART = FALSE;
     PRIORITY = 1; /* Smaller value means lower priority */ 
@@ -71,17 +80,17 @@ CPU ATMEL_AT91SAM7S256
     TICKSPERBASE = 1; /* One tick is equal to 1msec */
   };
 
-  ALARM cyclic_alarm
+  ALARM ALARM_drive_control
   {
     COUNTER = SysTimerCnt;
     ACTION = ACTIVATETASK
     {
-        TASK = TASK_line_follow;
+        TASK = TASK_drive_control;
     };
     AUTOSTART = FALSE;
   };
 
-  ALARM cyclic_alarm_2
+  ALARM ALARM_color_scan
   {
     COUNTER = SysTimerCnt;
     ACTION = ACTIVATETASK
@@ -91,7 +100,7 @@ CPU ATMEL_AT91SAM7S256
     AUTOSTART = FALSE;
   };
 
-  ALARM cyclic_alarm_3
+  ALARM ALARM_consume_bluetooth
   {
     COUNTER = SysTimerCnt;
     ACTION = ACTIVATETASK
@@ -106,18 +115,34 @@ CPU ATMEL_AT91SAM7S256
     };
   };
 
-  ALARM cyclic_alarm_4
+  ALARM ALARM_check_navigation
   {
     COUNTER = SysTimerCnt;
     ACTION = ACTIVATETASK
     {
-        TASK = TASK_obstacle_detection;
+        TASK = TASK_check_navigation;
     };
     AUTOSTART = TRUE
     {
       ALARMTIME = 1;
-      CYCLETIME = 200;
+      CYCLETIME = 1000;
       APPMODE   = appmode1;
     };
   };
+
+  ALARM ALARM_update_color_reg
+  {
+    COUNTER = SysTimerCnt;
+    ACTION = ACTIVATETASK
+    {
+        TASK = TASK_update_color_reg;
+    };
+    AUTOSTART = TRUE
+    {
+      ALARMTIME = 1;
+      CYCLETIME = 50;
+      APPMODE   = appmode1;
+    };
+  };
+
 };

@@ -13,7 +13,7 @@
      * left_motor_speed The current speed of the left motor. Goes from -100 to 100
      * right_motor_speed The current speed of the right motor. Goes from -100 to 100
      */
-    void forklift_brake(int breakpower, 
+    void forklift_brake(int brakepower, 
                         int left_motor_speed, 
                         int right_motor_speed);
 
@@ -34,7 +34,7 @@
      * left_motor_speed The current speed of the left motor. Goes from -100 to 100
      * right_motor_speed The current speed of the right motor. Goes from -100 to 100
      */
-    void fading_brake(int breakpower, 
+    void fading_brake(int brakepower, 
                       int left_motor_speed, 
                       int right_motor_speed);
 
@@ -47,7 +47,7 @@
      * left_motor_speed The current speed of the left motor. Goes from -100 to 100
      * right_motor_speed The current speed of the right motor. Goes from -100 to 100
      */
-    void slow_brake(int breakpower, 
+    void slow_brake(int brakepower, 
                     int left_motor_speed, 
                     int right_motor_speed);
 

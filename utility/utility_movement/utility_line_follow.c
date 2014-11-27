@@ -12,40 +12,48 @@
 #include "utility/utility_structs/utility_structs.h"
 
 
-#define COLOR_THRESHOLD 20
-
+#define COLOR_THRESHOLD 50
 // Used to navigate
 navigation Navigation;
 
 // The status of the NXT
 char Status;
+int drive_mode = NO_MODE;
 
-DeclareTask(TASK_line_follow);
+DeclareTask(TASK_update_color_reg);
+DeclareTask(TASK_drive_control);
 DeclareTask(TASK_color_scan);
-DeclareAlarm(cyclic_alarm);
-DeclareAlarm(cyclic_alarm_2);
+DeclareTask(TASK_check_navigation);
+DeclareAlarm(ALARM_drive_control);
+DeclareAlarm(ALARM_color_scan);
+DeclareAlarm(ALARM_update_color_reg);
 
 // Prototypes
-int get_light_level(U8 sensor);
-void turn_direction(U8 direction);
-void switch_sensors(void);
-void cross_intersection(int line_follow_timeout);
+void start_line_following(void);
+void stop_line_following(void);
 bool is_red_color_colorsensor(void);
+void turn_direction(U8 direction);
+int get_light_level(U8 sensor);
+void switch_sensors(void);
+void cross_intersection(void);
 void line_recover(void);
+void line_following(void);
+void swap(U8* a, U8* b);
+
 
 // Persistent variables for PID, and color_scan/swap
 U8 color_sensor = COLOR_SENSOR_LEFT;
+U8 color_motor = COLOR_SENSOR_LEFT;
 U8 light_sensor = COLOR_SENSOR_RIGHT;
+U8 light_motor = COLOR_SENSOR_RIGHT;
 
 int offset_left = (416+140)/2;
 int offset_right = (513+220)/2;
 
 int integral = 0;
-int lastError = 0;
+int last_error = 0;
 
-bool line_follow = true;
-
-S16 rgb[3];
+bool executing_task = false;
 
 // The global pereption of colors
 color Colors[AMOUNT_OF_COLORS]; 
@@ -55,17 +63,268 @@ S16 color_scan_rgb[3] = {-1,-1,-1};
 
 // Indidcates wether the NXT is on an edge or inside a node (intersection)
 bool on_edge = true; 
+bool last_color_red = false;
+
+// Indicates if the next has just come out of boot mode
+bool first_time = true;
+
+// Drive straight persistent variables
+bool first_iteration = true; // Indicates if the init count should be saved
+int integral_straight = 0;
+int last_error_straight = 0;
+int init_motor_count_left = 0;
+int init_motor_count_right = 0;
+
+TASK(TASK_update_color_reg)
+{
+    ecrobot_process_bg_nxtcolorsensor();
+    TerminateTask();
+}
+
+TASK(TASK_color_scan)
+{
+    // There is some path left to follow
+    if(Navigation.next > -1)
+    {
+        // Is the meassured color red and was the last color meassured not red
+        if(is_red_color_colorsensor())
+        {
+            if(!last_color_red)
+            {
+                // Debugging sound
+                play_sound(SOUND_TICK);
+
+                // If the NXT is driving on an edge in the graph and not an vertex
+                if(on_edge)
+                {
+                    // The next direction in the navigation
+                    char next_direction = Navigation.directions[Navigation.next];
+
+                    switch(next_direction)
+                    {
+                        case 'L':
+                            turn_direction(LEFT_TURN);
+                            break;
+                        case 'R':
+                            turn_direction(RIGHT_TURN);
+                            break;
+                        case 'S':
+                            first_iteration = true;
+                            drive_mode = CROSS_INTERSECTION;
+                            break;
+                        default :
+                            Status = ERROR;
+                    }
+                }
+                else
+                {
+                    drive_mode = LINE_FOLLOW;
+                    Navigation.next = Navigation.next - 1;
+                }
+                on_edge = !on_edge;
+            }
+            
+            // The color was red
+            last_color_red = true;
+        }
+        else
+        {
+            // The color was not red
+            last_color_red = false;
+        }
+    }
+    else
+    {
+        stop_line_following();
+        // TODO: Handle type of task (Fetch or deliver pallet)
+        Status = IDLE;
+    }
+    
+    TerminateTask();
+}
+
+TASK(TASK_drive_control)
+{   
+    switch(drive_mode)
+    {
+        case LINE_FOLLOW:
+            line_following();
+            break;
+        case LINE_RECOVER:
+            line_recover();
+            break;
+        case CROSS_INTERSECTION:
+            cross_intersection();
+            break;
+        default:
+            nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+            nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
+            break;
+    }
+    TerminateTask();
+}
+
+TASK(TASK_check_navigation)
+{   
+    if(Navigation.next > -1 && !executing_task)
+    {
+        start_line_following();
+    }
+
+    if (first_time)
+    {
+        SetRelAlarm(ALARM_drive_control, 1, 50);
+        SetRelAlarm(ALARM_color_scan, 1, 100);
+
+        // Calculate the left offset by taking the average of white & black rgb
+        int black_light_level_left = 
+            (Colors[COLOR_BLACK_LEFT].red +
+             Colors[COLOR_BLACK_LEFT].green + 
+             Colors[COLOR_BLACK_LEFT].blue) / 3;
+
+        int white_light_level_left = 
+            (Colors[COLOR_WHITE_LEFT].red +
+             Colors[COLOR_WHITE_LEFT].green + 
+             Colors[COLOR_WHITE_LEFT].blue) / 3;
+
+        offset_left = (white_light_level_left + black_light_level_left) / 2;
+
+
+        // Calculate the left offset by taking the average of white & black rgb
+        int black_light_level_right = 
+            (Colors[COLOR_BLACK_RIGHT].red +
+             Colors[COLOR_BLACK_RIGHT].green + 
+             Colors[COLOR_BLACK_RIGHT].blue) / 3;
+
+        int white_light_level_right = 
+            (Colors[COLOR_WHITE_RIGHT].red +
+             Colors[COLOR_WHITE_RIGHT].green + 
+             Colors[COLOR_WHITE_RIGHT].blue) / 3;
+
+        offset_right = (white_light_level_right + black_light_level_right) / 2;
+
+        first_time = false;
+    }
+
+    TerminateTask();
+}
+
+void cross_intersection(void)
+{
+    if(first_iteration) 
+    {
+        init_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
+        init_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
+        first_iteration = false;
+    }
+
+    int current_count_left = 
+        nxt_motor_get_count(LEFT_MOTOR) - init_motor_count_left;
+    int current_count_right = 
+        nxt_motor_get_count(RIGHT_MOTOR) - init_motor_count_right;
+
+    int error_straight = current_count_right - current_count_left;
+
+    integral_straight = (2/3) * integral_straight + error_straight;
+
+    int derivative_straight = error_straight - last_error_straight;
+
+    int output = 
+        KP_STRAIGHT * error_straight + 
+        KI_STRAIGHT * integral_straight + 
+        KD_STRAIGHT * derivative_straight;
+
+    int powerA = LINE_FOLLOW_SPEED - output;
+    int powerB = LINE_FOLLOW_SPEED + output;
+
+    nxt_motor_set_speed(RIGHT_MOTOR, powerA, 1);
+    nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
+
+    last_error_straight = error_straight;
+
+    return;
+}
+
+void line_following(void) 
+{
+    int powerA = 0;
+    int powerB = 0;
+
+    int error = 0;
+    int derivative = 0;
+    int turn = 0;
+
+    int lightLevel = get_light_level(light_sensor);
+
+    if (light_sensor == COLOR_SENSOR_LEFT)
+    {
+        error = lightLevel - offset_left; 
+        integral = integral + error;
+
+        if (integral > INTEGRAL_MAX)
+        {
+            integral = INTEGRAL_MAX;
+        }
+        else if(integral < INTEGRAL_MIN)
+        {
+            integral = INTEGRAL_MIN;
+        }
+
+        derivative = error - last_error;
+
+        turn = 
+            KP_LEFT * error + 
+            KI_LEFT * integral + 
+            KD_LEFT * derivative;
+        
+        // This is needed because the k's are multiplied by a hundred
+        turn = turn / 100; 
+
+        powerA = LINE_FOLLOW_SPEED + turn;
+        powerB = LINE_FOLLOW_SPEED - turn;
+    }
+    else
+    {
+        error = lightLevel - offset_right;
+        integral = integral + error;
+
+        if (integral > INTEGRAL_MAX)
+        {
+            integral = INTEGRAL_MAX;
+        }
+        else if(integral < INTEGRAL_MIN)
+        {
+            integral = INTEGRAL_MIN;
+        }
+
+        derivative = error - last_error;
+        
+        turn = 
+            KP_RIGHT * error + 
+            KI_RIGHT * integral + 
+            KD_RIGHT * derivative;
+        
+        // This is needed because the k's are multiplied by a hundred
+        turn = turn / 100; 
+
+        powerA = LINE_FOLLOW_SPEED - turn;
+        powerB = LINE_FOLLOW_SPEED + turn;    
+    }
+
+    nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
+    nxt_motor_set_speed(RIGHT_MOTOR, powerB, 1);
+
+    last_error = error;
+
+    return;
+}
 
 void start_line_following(void)
 {
     GetResource(RES_SCHEDULER);
 
-    ecrobot_set_nxtcolorsensor(color_sensor, NXT_COLORSENSOR);
-    ecrobot_set_nxtcolorsensor(light_sensor, NXT_COLORSENSOR);
-    ecrobot_process_bg_nxtcolorsensor();
-
-    SetRelAlarm(cyclic_alarm, 1, 50);
-    SetRelAlarm(cyclic_alarm_2, 1, 300);
+    executing_task = true;
+    drive_mode = LINE_FOLLOW;
 
     ReleaseResource(RES_SCHEDULER);
 }
@@ -74,76 +333,14 @@ void stop_line_following(void)
 {
     GetResource(RES_SCHEDULER);
 
-    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
-    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
-
-    CancelAlarm(cyclic_alarm);
-    CancelAlarm(cyclic_alarm_2);
-    
-    ecrobot_set_nxtcolorsensor(color_sensor, NXT_LIGHTSENSOR_NONE);
-    ecrobot_set_nxtcolorsensor(light_sensor, NXT_LIGHTSENSOR_NONE);
-    ecrobot_process_bg_nxtcolorsensor();
+    executing_task = false;
+    drive_mode = NO_MODE;
 
     ReleaseResource(RES_SCHEDULER);
 }
 
-TASK(TASK_line_follow)
-{   
-    // lcd_display_line(LCD_LINE_ONE, "TASK_line_follow", true);
-    if (line_follow)
-    {
-        int powerA = 0;
-        int powerB = 0;
-
-        int error = 0;
-        int derivative = 0;
-        int turn = 0;
-
-        int lightLevel = get_light_level(light_sensor);
-
-        if (light_sensor == COLOR_SENSOR_LEFT)
-        {
-            error = lightLevel - offset_left; 
-            integral = integral + error;
-            derivative = error - lastError;
-
-            turn = KP * error + KI * integral + KD * derivative;
-            
-            // This is needed because the k's are multiplied by a hundred
-            turn = turn / 100; 
-
-            powerA = LINE_FOLLOW_SPEED + turn;
-            powerB = LINE_FOLLOW_SPEED - turn;
-        }
-        else
-        {
-            error = lightLevel - offset_right;
-            integral = integral + error;
-            derivative = error - lastError;
-            
-            turn = KP * error + KI * integral + KD * derivative;
-            
-            // This is needed because the k's are multiplied by a hundred
-            turn = turn / 100; 
-
-            powerA = LINE_FOLLOW_SPEED - turn;
-            powerB = LINE_FOLLOW_SPEED + turn;    
-        }
-
-        nxt_motor_set_speed(RIGHT_MOTOR, powerA, 1);
-        nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
-
-        lastError = error;
-    }
-
-    TerminateTask();
-}
-
-bool is_red_color_colorsensor()
+bool is_red_color_colorsensor(void)
 {
-    // Update the color sensor
-    // ecrobot_process_bg_nxtcolorsensor();
-
     // Read the color from the current color_sensor
     ecrobot_get_nxtcolorsensor_rgb(color_sensor, color_scan_rgb);
 
@@ -174,48 +371,11 @@ bool is_red_color_colorsensor()
        g_diff < COLOR_THRESHOLD && 
        b_diff < COLOR_THRESHOLD)
     {
+        // play_sound(SOUND_NOTIFICATION);
         return true;
     }
 
     return false;
-}
-
-TASK(TASK_color_scan)
-{
-    // lcd_display_line(LCD_LINE_ONE, "TASK_color_scan", true);
-    if(is_red_color_colorsensor())
-    {
-        if(on_edge)
-        {
-            //char next_direction = Navigation.directions[Navigation.next];
-
-            // TODO: Follow instruction
-            switch('S')
-            {
-                case 'L':
-                    if(light_sensor == COLOR_SENSOR_RIGHT)
-                    {
-                        // switch_sensors();
-                    }
-                    break;
-                case 'R':
-                    if(light_sensor == COLOR_SENSOR_LEFT)
-                    {
-                        // switch_sensors();
-                    }
-                    break;
-                case 'S':
-                    cross_intersection(1000);
-                    break;
-                default :
-                    Status = ERROR;
-            }
-        }
-        
-        on_edge = !on_edge;
-    }
-    
-    TerminateTask();
 }
 
 void turn_direction(U8 direction) 
@@ -227,9 +387,8 @@ void turn_direction(U8 direction)
     }
 }
 
-int get_light_level(U8 sensor) 
+int get_light_level(U8 sensor)
 {
-    ecrobot_process_bg_nxtcolorsensor();
 
     S16 light_rgb[3];
     ecrobot_get_nxtcolorsensor_rgb(light_sensor, light_rgb);
@@ -239,94 +398,45 @@ int get_light_level(U8 sensor)
     return light_level;
 }
 
+void swap(U8* a, U8* b)
+{
+    U8 temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
 void switch_sensors(void)
 {
-    line_follow = false;
-    U8 temp = color_sensor;
-    color_sensor = light_sensor;
-    light_sensor = temp;
+    drive_mode = NO_MODE;
 
-    line_recover();
+    swap(&color_sensor, &light_sensor);
+    swap(&color_motor, &light_motor);
+
+    first_iteration = true;
+    drive_mode = LINE_RECOVER;
 }
 
-void cross_intersection(int line_follow_timeout)
+bool line_found = false;
+
+void line_recover(void)
 {
-    line_follow = false;
-    int Kp = 10;
-    int Ki = 1;
-    int Kd = 12;
-
-    int error = 0;
-    int integral_straight = 0;
-    int last_error = 0;
-    int derivative = 0;
-
-    int init_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
-    int init_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
-
-    int current_count_left = 0;
-    int current_count_right = 0;
-
-    int output = 0;
-
-    int powerA = 0;
-    int powerB = 0;
-
-    int time_stamp = systick_get_ms();
-
-    while(systick_get_ms() - time_stamp < line_follow_timeout)
+    if (first_iteration)
     {
-        current_count_right = 
-            nxt_motor_get_count(RIGHT_MOTOR) - init_motor_count_right;
-        current_count_left = 
-            nxt_motor_get_count(LEFT_MOTOR) - init_motor_count_left;
+        init_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
+        init_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
 
-        error = current_count_right - current_count_left;
-        integral_straight = (2/3) * integral * error;
-        derivative = error - last_error;
-
-        output = Kp * error + Ki * integral_straight + Kd * derivative;
-
-        powerA = LINE_FOLLOW_SPEED - output;
-        powerB = LINE_FOLLOW_SPEED + output;
-
-        nxt_motor_set_speed(RIGHT_MOTOR, powerA, 1);
-        nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
+        line_found = false;
+        first_iteration = false;
     }
 
-    line_recover();
-}
-
-void line_recover(void) 
-{
-    line_follow = false;
-
-    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
-    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
-
-    int offset = 0;
-    U8 light_motor = 0;
-    U8 color_motor = 0;
-
-    if (light_sensor == COLOR_SENSOR_LEFT)
-    {
-        offset = offset_left;
-        light_motor = LEFT_MOTOR;
-        color_motor = RIGHT_MOTOR;
-    }
-    else 
-    {
-        offset = offset_right;
-        light_motor = RIGHT_MOTOR;
-        color_motor = LEFT_MOTOR;
-    }
+    // Set offset to be the offset corresponding to the left motor and sensor
+    int offset = light_motor == LEFT_MOTOR ? offset_left : offset_right;  
 
     int light_level = get_light_level(light_sensor) - offset;
 
-    int left_init_count = nxt_motor_get_count(LEFT_MOTOR);
-    int right_init_count = nxt_motor_get_count(RIGHT_MOTOR);
 
-    while(light_level <= -3 || light_level >= 3)
+    if((light_level <= -10 || light_level >= 10) && 
+        !line_found)
     {
         if(light_level < 0)
         {
@@ -339,32 +449,34 @@ void line_recover(void)
             nxt_motor_set_speed(color_motor, 70, 0);
             nxt_motor_set_speed(light_motor, 0, 1);
         }
-        light_level = get_light_level(light_sensor) - offset;
-    }        
-
-    int right_count = nxt_motor_get_count(RIGHT_MOTOR) - right_init_count;
-    int left_count = nxt_motor_get_count(LEFT_MOTOR) - left_init_count;
-
-    while(!(left_count >= right_count - 5 && 
-          left_count <= right_count + 5))
-    {
-        if (left_count > right_count)
-        {
-            nxt_motor_set_speed(RIGHT_MOTOR, 70, 0);
-            nxt_motor_set_speed(LEFT_MOTOR, 0, 1);            
-        }
-        else if(left_count < right_count)
-        {
-            nxt_motor_set_speed(LEFT_MOTOR, 70, 0);
-            nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
-        }
-
-        right_count = nxt_motor_get_count(RIGHT_MOTOR) - right_init_count;
-        left_count = nxt_motor_get_count(LEFT_MOTOR) - left_init_count;
     }
+    else 
+    {
+        line_found = true;
 
-    integral = 0;
-    lastError = 0;
-
-    line_follow = true;
+        int right_count = 
+            nxt_motor_get_count(RIGHT_MOTOR) - init_motor_count_right;
+        int left_count = 
+            nxt_motor_get_count(LEFT_MOTOR) - init_motor_count_left;
+        
+        if(!(left_count >= right_count - 5 && 
+             left_count <= right_count + 5))
+        {
+            if (left_count > right_count)
+            {
+                nxt_motor_set_speed(RIGHT_MOTOR, 70, 0);
+                nxt_motor_set_speed(LEFT_MOTOR, 0, 1);            
+            }
+            else if(left_count < right_count)
+            {
+                nxt_motor_set_speed(LEFT_MOTOR, 70, 0);
+                nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+            }
+        }
+        else
+        {
+            drive_mode = LINE_FOLLOW;
+        }
+    }  
+    return;        
 }
