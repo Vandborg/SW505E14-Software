@@ -55,7 +55,7 @@ namespace BTCom
             return g.ShortestPath(from, Destination, ignore);
         }
 
-        public byte[] GetByes()
+        public byte[] GetBytes()
         {
             Node ignore = Database.Instance.Data.Forklifts.FirstOrDefault().Value.RearNode;
             

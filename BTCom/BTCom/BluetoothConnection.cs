@@ -326,7 +326,7 @@ namespace BTCom
                                 Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
-                                SendPackageBT(nextJob.Type, nextJob.GetByes());
+                                SendPackageBT(nextJob.Type, nextJob.GetBytes());
                             }
 
                             // Update the internal status
