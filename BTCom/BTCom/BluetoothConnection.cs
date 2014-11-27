@@ -31,6 +31,7 @@ namespace BTCom
         // NXT statuses 
         public const char STATUS_IDLE = 'I';
         public const char STATUS_BUSY = 'B';
+        public const char STATUS_OBSTACLE = 'O';
         public const char STATUS_ERROR = 'E';
         public const char STATUS_UNKNOWN = 'U';
 

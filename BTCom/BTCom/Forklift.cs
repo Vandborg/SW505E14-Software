@@ -7,7 +7,7 @@ using BTCom.Exceptions;
 
 namespace BTCom
 {
-    public enum Status { UNKNOWN, IDLE, BUSY, ERROR }
+    public enum Status { UNKNOWN, IDLE, BUSY, OBSTACLE, ERROR }
 
     public class Forklift : DataEntry
     {
