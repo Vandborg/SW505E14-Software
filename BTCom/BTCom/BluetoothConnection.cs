@@ -4,6 +4,8 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BTCom.Exceptions;
+using System.Text.RegularExpressions;
 
 namespace BTCom
 {
@@ -22,21 +24,30 @@ namespace BTCom
         //Type bytes to send
         const byte TYPE_FETCHED_COLOR = 0x47;
 
-        const byte TYPE_DELIVER_PALLET = 0x44;
-        const byte TYPE_FETCH_PALLET = 0x46;
-        const byte TYPE_NAVIGATE_TO = 0x4E;
+        public const byte TYPE_DELIVER_PALLET = 0x44;
+        public const byte TYPE_FETCH_PALLET = 0x46;
+        public const byte TYPE_NAVIGATE_TO = 0x4E;
 
         // NXT statuses 
-        char NXTStatus = BUSY;
-        const char IDLE = 'I';
-        const char BUSY = 'B';
-        const char ERROR = 'E';
+        public const char STATUS_IDLE = 'I';
+        public const char STATUS_BUSY = 'B';
+        public const char STATUS_OBSTACLE = 'O';
+        public const char STATUS_ERROR = 'E';
+        public const char STATUS_UNKNOWN = 'U';
 
         // Joblist queue of package type and data
-        private List<Tuple<byte, byte[]>> JobList = new List<Tuple<byte,byte[]>>();
+        private Dictionary<int, Job> JobList = Database.Instance.Data.Jobs;
+
+        // Joblist queue of package type and data
+        private Dictionary<int, DebugJob> DebugJobList = Database.Instance.Data.DebugJobs;
 
         // The current job 
-        private Tuple<byte, byte[]> CurrentJob;
+        private Job CurrentJob = null;
+
+        private Forklift forklift = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+        
+        // The current job 
+        private DebugJob CurrentDebugJob;
 
         // Constructor
         public BluetoothConnection(string portName)
@@ -62,209 +73,6 @@ namespace BTCom
 
             this.ReadTimeout = 10000; // Wait 10 sec before timeout on readbuffer
             this.WriteTimeout = 10000; // Wait 10 sec before timeout on writebuffer
-        }
-
-        // Make the NXT navigate according to the path
-        public void NavigateNXTTo(Path path)
-        {
-            // TODO: Get the directions out of the path
-            // TODO: Conver that data to a string array
-            string direction = "LLRSRL";
-            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
-
-            Console.WriteLine("Adding NavigateTo-job to JobList");
-
-            JobList.Add(new Tuple<byte, byte[]>(TYPE_NAVIGATE_TO,directionArray));
-        }
-
-        // Make the NXT fetch a pallet at the end of the path
-        public void FetchPallet(string s)
-        {
-            // TODO: Get the directions out of the path
-            // TODO: Conver that data to a string array
-            
-            byte[] directionArray = Encoding.ASCII.GetBytes(s);
-
-            Console.WriteLine("Adding FetchPallet-job to JobList");
-
-            JobList.Add(new Tuple<byte, byte[]>(TYPE_FETCH_PALLET, directionArray));
-        }
-
-        // Make the NXT deliver a pallet at the end of the path
-        public void DeliverPallet(Path path)
-        {
-            // TODO: Get the directions out of the path
-            // TODO: Conver that data to a string array
-            string direction = "LLRSRL";
-            byte[] directionArray = Encoding.ASCII.GetBytes(direction);
-
-            Console.WriteLine("Adding DeliverPallet-job to JobList");
-
-            JobList.Add(new Tuple<byte, byte[]>(TYPE_DELIVER_PALLET, directionArray));
-        }
-
-        // Create a job based on string input (console input)
-        public void CreateJob(string input)
-        {   
-            // Split the input
-            List<string> inputSplit = input.Split(' ').ToList();
-
-            inputSplit.RemoveAll(s => s == "");
-
-            string cmd = "";
-            if (inputSplit.Count > 0)
-            {
-                cmd = inputSplit[0];
-            }
-
-            // Check if the input is 
-            switch (cmd)
-            {
-                case "joblist":
-                    if (inputSplit.Count == 1)
-                    {
-                        if (JobList.Count > 0 || CurrentJob != null)
-                        {
-                            Console.WriteLine("------------------------------ Joblist of PALL-E ------------------------------");
-                            if (CurrentJob != null)
-                            {
-                                Console.WriteLine("Current job: (" + ((char)CurrentJob.Item1).ToString() + ", " + Encoding.UTF8.GetString(CurrentJob.Item2, 0, CurrentJob.Item2.Length) + ")");
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("The joblist of PALL-E is empty");
-                        }
-
-                        int c = 0;
-                        foreach(Tuple<byte,byte[]> job in JobList)
-                        {   
-                            Console.WriteLine("Job #" + c + " (" + ((char)job.Item1).ToString() + ", " + Encoding.UTF8.GetString(job.Item2, 0, job.Item2.Length) + ")");
-                            c++;
-                        }
-                    }
-                    else if (inputSplit.Count > 1)
-                    {
-                        if (inputSplit[1] == "remove")
-                        {
-                            if (inputSplit.Count > 2)
-                            {
-                                int index = -1;
-                                try
-                                {
-                                    index = int.Parse(inputSplit[2]);
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine("Invalid argument! Correct use => joblist [\"remove\"] [Index]");
-                                }
-
-                                if (index != -1)
-                                {
-                                    if (index < JobList.Count)
-                                    {
-                                        JobList.RemoveAt(index);
-                                        Console.WriteLine("Removed job at index " + index + ".");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Cant remove the job on that index. There are only " + JobList.Count + " jobs in the list.");
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid use! Correct use => joblist [\"remove\"] [Index]");
-                            }
-                        }
-                        else if(inputSplit[1] == "clear")
-                        {
-                            JobList.RemoveRange(0, JobList.Count);
-                            Console.WriteLine("The joblist for PALL-E was cleared.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Correct use => joblist [\"remove\" Index]/[\"clear\"]");
-                        }
-                    }
-                    break;
-
-                case "navigate" :
-                    if(inputSplit.Count == 3)
-                    {
-                        // TODO: Use params to create path
-                        NavigateNXTTo(new Path());
-                    }
-                    else
-                    {
-                        Console.WriteLine("Wrong use of \'navigate\'. Correct use => navigate {StartNode} {EndNode}");
-                    }
-                    break;
-
-                case "deliver" :
-                    if (inputSplit.Count == 3)
-                    {
-                        // TODO: Use params to create path
-                        DeliverPallet(new Path());
-                    }
-                    else
-                    {
-                        Console.WriteLine("Wrong use of \'deliver\'. Correct use => deliver {StartNode} {EndNode}");
-                    }
-                    break;
-
-                case "fetch" :
-                    if (inputSplit.Count == 3)
-                    {
-                        // TODO: Use params to create path
-                        FetchPallet(inputSplit[1]);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Wrong use of \'fetch\'. Correct use => fetch {StartNode} {EndNode}");
-                    }
-                    break;
-
-                case "help" :
-                    if (inputSplit.Count > 1)
-                    {
-                        switch (inputSplit[1])
-                        {
-                            case "navigate":
-                                Console.WriteLine("Correct use => navigate {StartNode} {EndNode}");
-                                break;
-                            case "fetch":
-                                Console.WriteLine("Correct use => fetch {StartNode} {EndNode}");
-                                break;
-                            case "deliver":
-                                Console.WriteLine("Correct use => deliver {StartNode} {EndNode}");
-                                break;
-                            case "joblist":
-                                Console.WriteLine("Correct use => joblist [\"remove\" Index]/[\"clear\"]");
-                                break;
-                            default :
-                                Console.WriteLine("Invalid parameter for help. Correct use => help [Command]");
-                                break;
-                        }
-                    }
-                    else if (inputSplit.Count == 1)
-                    {
-                        Console.WriteLine("----------------------------- Commands for PALL-E -----------------------------");
-                        Console.WriteLine("deliver  \t: PALL-E is sent to deliver a pallet at a given place.");
-                        Console.WriteLine("fetch    \t: PALL-E is sent to fetch a pallet at a given place.");
-                        Console.WriteLine("joblist  \t: Print the joblist for PALL-E.");
-                        Console.WriteLine("navigate \t: Navigates PALL-E to specific place.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid parameter for help. Correct use => help [Command]");
-                    }
-                    break;
-                default :
-                    Console.WriteLine("Invalid input, type help for all commands.");
-                    break;
-            }
-
         }
 
         // Consumes all packages on the buffer one at the time
@@ -309,7 +117,7 @@ namespace BTCom
         }
 
         // Sends a package with a given type
-        private int SendPackageBT(byte packageType, byte[] package_data)
+        private void SendPackageBT(byte packageType, byte[] package_data)
         {
             // Calculate the size of package_data
             int packageDataSize = package_data.Length;
@@ -322,7 +130,7 @@ namespace BTCom
             if (packageTotalSize > 256)
             {
                 // TODO: Send an error code for too big data array
-                return 0;
+                return;
             }
 
             // Make an array that is as large as the total data size of the package.
@@ -345,7 +153,7 @@ namespace BTCom
             // Wait to ensure that continous requests is possible
             System.Threading.Thread.Sleep(1);
 
-            return 1;
+            return;
         }
 
         // Reads the bytes on the buffer
@@ -424,71 +232,200 @@ namespace BTCom
 
                     // Save the updated color
                     Database.Instance.Data.AddColor(color);
-;                    break;
+                    break;
 
                 case TYPE_REPORT_OBSTACLE:
-                    // TODO
+
+                    Console.WriteLine("Obstacle encountered! Calculating alternative path.");
+
+                    int directionsIndex = int.Parse(dataString);
+                    Node newFrontNode = null;
+                    Node newRearNode = null;
+
+                    if (CurrentDebugJob != null)
+                    {
+                        throw new Exception("Cannot recover from obstacle while doing a debug job");
+                    }
+                    else if (CurrentJob != null)
+                    {
+                        Path currentPath = CurrentJob.GetPath();
+                        int newRearNodeIndex = (currentPath.Nodes.Count - 2) - directionsIndex;
+
+                        // The new rear node is the node right infront of the truck
+                        newRearNode = currentPath.Nodes[newRearNodeIndex];
+
+                        // If the path is blocked immediatly the new front node is the old rear node.
+                        if (newRearNodeIndex == 0)
+                        {
+                            newFrontNode = forklift.RearNode;
+                        }
+                        else
+                        {
+                            // The new front node is the node right behind the truck
+                            newFrontNode = currentPath.Nodes[newRearNodeIndex - 1];
+                        }
+
+                        // Update the values of the front and rear nodes
+                        forklift.UpdateNodes(newFrontNode, newRearNode);
+
+                        // Update edge the NXT is standing on
+                        Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
+
+                    }
+                    else
+                    {
+                        throw new Exception("No current job or debugjob");
+                    }
                     break;
 
                 // Check if the NXT updated its status
                 case TYPE_UPDATE_STATUS:
                 {
-                    if (dataString[0] != NXTStatus)
+                    bool statusChanged = false;
+                    if (dataString[0] != GetStatusByte(forklift))
                     {
                         // Tell the user what the status the NXT updated to
                         Console.WriteLine("NXT-Status: " + dataString);
+                        statusChanged = true;
+                        
                     }
 
                     // Check what status the NXT told us
                     switch (dataString[0])
                     {
                         // The NXT was idle
-                        case IDLE:
+                        case STATUS_IDLE:
+
+                            // Check if the nxt just completed a job
+                            if (forklift.Status == Status.BUSY && CurrentJob != null)
+                            {
+                                //TODO: Update the position of PALL-E
+                                Path p = CurrentJob.GetPath();
+
+                                Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
+                                Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
+
+                                Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+                                f.UpdateNodes(frontNode, rearNode);
+                            }
+
+
                             // Check if there is any jobs to be performed
-                            if (JobList.Count > 0)
+                            if(DebugJobList.Count > 0)
                             {
                                 // Peek in the queue
-                                Tuple<byte, byte[]> nextJob = JobList[0];
-
-                                // Convert the items to string in order to print them
-                                string itemOne = ((char)nextJob.Item1).ToString();
-                                string itemTwo = Encoding.UTF8.GetString(nextJob.Item2, 0, nextJob.Item2.Length);
+                                DebugJob nextDebugJob = DebugJobList[0];
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT (" + itemOne + "," + itemTwo + "). " + (JobList.Count-1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending DebugJob -> NXT: " + nextDebugJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
-                                SendPackageBT(nextJob.Item1, nextJob.Item2);
+                                SendPackageBT(nextDebugJob.Type, nextDebugJob.GetBytes());
                             }
+                            else if (JobList.Count > 0)
+                            {
+                                // Peek in the queue
+                                Job nextJob = JobList.First().Value;
+
+                                // Tell the user what job was sent
+                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
+
+                                // Send the job to the NXT
+                                SendPackageBT(nextJob.Type, nextJob.GetBytes(statusChanged));
+                            }
+
                             // Update the internal status
-                            NXTStatus = IDLE;
+                            forklift.Status = Status.IDLE;
+                            Database.Instance.Save();
                             break;
 
                         // The NXT was busy
-                        case BUSY:
+                        case STATUS_BUSY:
 
                             // If the NXT was just idle, you know you have given it a job
-                            if (NXTStatus == IDLE)
+                            if (forklift.Status == Status.IDLE)
                             {
-                                // Remove the job that is being executed currently
-                                CurrentJob = JobList[0];
-                                JobList.RemoveAt(0);
+                                // Debug jobs has highe priority
+                                if (DebugJobList.Count > 0)
+                                {
+                                    // Remove the job that is being executed currently
+                                    CurrentDebugJob = DebugJobList.First().Value;
+                                    JobList.Remove(CurrentDebugJob.Identifier);
+                                    CurrentJob = null;
+                                }
+                                else
+                                {
+                                    // Remove the job that is being executed currently
+                                    CurrentJob = JobList.First().Value;
+                                    JobList.Remove(CurrentJob.Identifier);
+                                    CurrentDebugJob = null;
+                                }   
                             }
 
                             // Update the internal status
-                            NXTStatus = BUSY;
+                            forklift.Status = Status.BUSY;
+                            Database.Instance.Save();
+                            break;
+
+                        case STATUS_OBSTACLE:
+
+                            if (CurrentDebugJob != null)
+                            {
+                                throw new Exception("Cannot recover from obstacle while doing a debug job");
+                            }
+                            else if (CurrentJob != null)
+                            {
+                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (DebugJobList.Count + JobList.Count) + " jobs left in the JobList");
+                                // Send an alternative path to avoid obstacle
+                                SendPackageBT(CurrentJob.Type, CurrentJob.GetBytes(statusChanged));
+                            }
+                            else
+                            {
+                                throw new Exception("No current job or debugjob");
+                            }
+
+                            // Update the internal status
+                            forklift.Status = Status.OBSTACLE;
+                            Database.Instance.Save();
                             break;
 
                         // The NXT encoutered an error
-                        case ERROR:
-                            // Tell the suer that the NXT encountered an error
+                        case STATUS_ERROR:
+                            // Update the internal status
+                            forklift.Status = Status.ERROR;
+                            Database.Instance.Save();
+
+                            // Tell the user that the NXT encountered an error
                             Console.WriteLine("The NXT has encountered an error!");
+                            break;
+
+                        default:
+                            forklift.Status = Status.UNKNOWN;
+                            Database.Instance.Save();
                             break;
                     }
                     break;
                 }
             }
             return;
+        }
+
+        // Used to convert status to byte
+        public char GetStatusByte(Forklift f)
+        {
+            switch (f.Status)
+            {
+                case Status.IDLE:
+                    return STATUS_IDLE;
+                case Status.BUSY:
+                    return STATUS_BUSY;
+                case Status.ERROR:
+                    return STATUS_ERROR;
+                case Status.OBSTACLE:
+                    return STATUS_OBSTACLE;
+                default :
+                    return STATUS_UNKNOWN;
+            }
         }
     }
 }

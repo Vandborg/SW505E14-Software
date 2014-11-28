@@ -10,6 +10,23 @@ namespace BTCom
     {
         private List<Node> _path = new List<Node>();
 
+        public double Weight 
+        { 
+            get
+            {
+                double weight = 0;
+                for(int i = 0; i < Nodes.Count-1; i++)
+                {
+                    int index = Nodes[i].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(Nodes[i + 1]));
+                    weight += Nodes[i].Neighbours[index].Value.Weight;
+                }
+                return weight;
+            }
+        }
+
+
+        private static char[,] navigationTable = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
+                                                                      {'S','R','#','L'}, {'L','S','R','#'} };
         public List<Node> Nodes
         {
             get { return _path; }
