@@ -19,6 +19,7 @@ namespace BTCom
         private const String COMMAND_STATUS = "status";
         private const String COMMAND_JOBLIST = "joblist";
         private const String COMMAND_DELIVER = "deliver";
+        private const String COMMAND_DIRECTIONS = "directions";
         private const String COMMAND_FETCH = "fetch";
         private const String COMMAND_NAVIGATE = "navigate";
         private const String COMMAND_POSITION = "position";
@@ -172,11 +173,18 @@ namespace BTCom
             {
                 if (arguments == 1)
                 {
-                    movement(commandIdentifier, commandSplit[0]);
+                    moveNode(commandIdentifier, commandSplit[0]);
                 }
                 else
                 {
-                    movement_help();
+                    moveNode_help();
+                }
+            }
+            else if (commandIdentifier == COMMAND_DIRECTIONS)
+            {
+                if (arguments == 1)
+                {
+                    navigate(commandSplit[0]);
                 }
             }
             else if (commandIdentifier == COMMAND_POSITION)
@@ -217,7 +225,8 @@ namespace BTCom
             help_help(false);
             status_help(false);
             joblist_help(false);
-            movement_help(false);
+            moveNode_help(false);
+            navigate_help(false);
             position_help(false);
             clear_help(false);
         }
@@ -254,7 +263,7 @@ namespace BTCom
             int c = 0;
             foreach (KeyValuePair<int, Job> job in Database.Instance.Data.Jobs)
             {
-                Console.WriteLine("Job #" + job.Key + ": " + job.Value.ToString());
+                Console.WriteLine(job.Value.ToString());
                 c++;
             }
 
@@ -334,7 +343,7 @@ namespace BTCom
             Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\" / \"help\"]");
         }
 
-        private static void movement(string type, string node)
+        private static void moveNode(string type, string node)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -350,31 +359,75 @@ namespace BTCom
                 return;
             }
 
-            byte movementType = 0;
-
             if (type == COMMAND_DELIVER)
             {
-                movementType = BluetoothConnection.TYPE_DELIVER_PALLET;
+                try
+                {
+                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.deliver));
+                    printSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    printError(e.Message);
+                }
             }
             else if (type == COMMAND_FETCH)
             {
-                movementType = BluetoothConnection.TYPE_FETCH_PALLET;
+                try 
+                {
+                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.fetch));
+                    printSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    printError(e.Message);
+                }
             }
             else if (type == COMMAND_NAVIGATE)
             {
-                movementType = BluetoothConnection.TYPE_NAVIGATE_TO;
+                try
+                {
+                    Database.Instance.Data.AddJob(new NavigateJob(Database.Instance.Data.GetNewJobIdentifier(), destination));
+                    printSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    printError(e.Message);
+                }
+                
             }
-
-            Database.Instance.Data.AddJob((new Job(Database.Instance.Data.GetNewJobIdentifier(), movementType, destination)));
         }
 
-        private static void movement_help(bool incorrect_use = true)
+        private static void moveNode_help(bool incorrect_use = true)
         {
             if (incorrect_use)
             {
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"fetch\" / \"deliver\" / \"navigate\" {node}");
+        }
+
+        private static void navigate(string directions)
+        {
+            try
+            {
+                Database.Instance.Data.AddJob(new NavigateJob(Database.Instance.Data.GetNewJobIdentifier(), directions));
+                printSuccess("Job added");
+            }
+            catch (Exception e)
+            {
+                printError(e.Message);
+            }
+            
+        }
+
+        private static void navigate_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"directions\" {L | S | R}*");
         }
 
         private static void position()

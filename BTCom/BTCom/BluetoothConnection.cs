@@ -271,13 +271,10 @@ namespace BTCom
                 // Check if the NXT updated its status
                 case TYPE_UPDATE_STATUS:
                 {
-                    bool statusChanged = false;
                     if (dataString[0] != GetStatusByte(forklift))
                     {
                         // Tell the user what the status the NXT updated to
                         Console.WriteLine("NXT-Status: " + dataString);
-                        statusChanged = true;
-                        
                     }
 
                     // Check what status the NXT told us
@@ -310,7 +307,7 @@ namespace BTCom
                                 Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count + JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
-                                SendPackageBT(nextJob.Type, nextJob.GetBytes(statusChanged));
+                                SendPackageBT(nextJob.GetJobTypeBytes(), nextJob.GetBytes());
                             }
 
                             // Update the internal status
@@ -344,7 +341,7 @@ namespace BTCom
                             {
                                 Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (JobList.Count + JobList.Count) + " jobs left in the JobList");
                                 // Send an alternative path to avoid obstacle
-                                SendPackageBT(CurrentJob.Type, CurrentJob.GetBytes(statusChanged));
+                                SendPackageBT(CurrentJob.GetJobTypeBytes(), CurrentJob.GetBytes());
                             }
                             else
                             {

@@ -10,8 +10,8 @@ namespace BTCom
 {
     public class ForkliftPath
     {
-        private static readonly char[,] navigationTable = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
-                                                                           {'S','R','#','L'}, {'L','S','R','#'} };
+        public static readonly char[,] navigationTable = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
+                                                                          {'S','R','#','L'}, {'L','S','R','#'} };
 
         private readonly List<Char> forkliftPath = new List<Char>();
 
