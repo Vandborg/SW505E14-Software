@@ -75,7 +75,6 @@
   <ItemGroup>
     <Compile Include="Color.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="DebugJob.cs" />
     <Compile Include="DataEntry.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
