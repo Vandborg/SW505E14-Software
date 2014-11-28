@@ -81,6 +81,8 @@ namespace BTCom
                     rearNode = newRearNode;
                 }
 
+                p.Nodes.Add(frontNode);
+                
                 return p;
 
             }

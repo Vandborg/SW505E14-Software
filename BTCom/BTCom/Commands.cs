@@ -23,6 +23,7 @@ namespace BTCom
         private const String COMMAND_FETCH = "fetch";
         private const String COMMAND_NAVIGATE = "navigate";
         private const String COMMAND_POSITION = "position";
+        private const String COMMAND_CURRENTJOB = "currentjob";
         private const String COMMAND_CLEAR = "clear";
 
         private const String COMMAND_ARGUMENT_CLEAR = "clear";
@@ -164,6 +165,17 @@ namespace BTCom
                 else
                 {
                     joblist_help();
+                }
+            }
+            else if (commandIdentifier == COMMAND_CURRENTJOB)
+            {
+                if (arguments == 0)
+                {
+                    Commands.current_job();
+                }
+                else
+                {
+                    current_job_help();
                 }
             }
             // Check if the command is "deliver", "fetch" or "navigate"
@@ -477,6 +489,27 @@ namespace BTCom
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"position\" [FrontNode RearNode]");
+        }
+
+        private static void current_job()
+        {
+            if (BluetoothConnection.CurrentJob != null)
+            {
+                Console.WriteLine("Current job: '" + BluetoothConnection.CurrentJob.ToString() + "'");
+            }
+            else
+            {
+                Console.WriteLine("No current job");
+            }
+        }
+
+        private static void current_job_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"currentjob\"");
         }
 
         private static void clear()

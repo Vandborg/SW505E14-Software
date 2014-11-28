@@ -39,7 +39,7 @@ namespace BTCom
         private Dictionary<int, Job> JobList = Database.Instance.Data.Jobs;
         
         // The current job 
-        private Job CurrentJob = null;
+        public static Job CurrentJob = null;
 
         private Forklift forklift = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
@@ -304,7 +304,7 @@ namespace BTCom
                                 Job nextJob = JobList.First().Value;
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count + JobList.Count - 1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
                                 SendPackageBT(nextJob.GetJobTypeBytes(), nextJob.GetBytes());
@@ -326,7 +326,7 @@ namespace BTCom
                                 {
                                     // Remove the job that is being executed currently
                                     CurrentJob = JobList.First().Value;
-                                    JobList.Remove(CurrentJob.Identifier);
+                                    Database.Instance.Data.Jobs.Remove(CurrentJob.Identifier);
                                 }   
                             }
 
@@ -339,7 +339,7 @@ namespace BTCom
 
                             if (CurrentJob != null)
                             {
-                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (JobList.Count + JobList.Count) + " jobs left in the JobList");
+                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (JobList.Count) + " jobs left in the JobList");
                                 // Send an alternative path to avoid obstacle
                                 SendPackageBT(CurrentJob.GetJobTypeBytes(), CurrentJob.GetBytes());
                             }
