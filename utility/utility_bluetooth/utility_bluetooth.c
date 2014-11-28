@@ -198,8 +198,6 @@ void create_path_bt(char* package)
     // we are currently doing. 
     Navigation.next = direction_count-1;
     Navigation.type_of_task = package[1];
-    Status = BUSY;
-    update_status_bt();
 }
 
 void update_status_bt(void)
@@ -238,18 +236,24 @@ TASK(TASK_consume_bluetooth)
         update_status_bt();
 
         // random wait for stuff to work
-        systick_wait_ms(10);
+        systick_wait_ms(100);
 
         // Array containing new task from PC
         char new_task[128] = {0};
         if(read_buffer_bt(new_task) != 0)
         {
+            Status = BUSY;
+            update_status_bt();
             // If a new task has been fetched, call function to compute path.
             create_path_bt(new_task);
         }
     }
     // If the status is error, tell the pc. 
     else if(Status == ERROR)
+    {
+        update_status_bt();
+    }
+    else if(Status == BUSY)
     {
         update_status_bt();
     }
