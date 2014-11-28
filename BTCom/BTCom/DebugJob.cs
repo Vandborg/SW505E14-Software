@@ -23,6 +23,8 @@ namespace BTCom
             // Make sure that the directions arguments is capital letters
             directions = directions.ToUpper();
 
+            Console.WriteLine("DEBUG_DIRECTION: " +directions);
+
             // Check if the directions fits the format
             Regex rgx = new Regex("^[LRS]*$");
             if (rgx.IsMatch(directions))

@@ -23,7 +23,7 @@ namespace BTCom
             if(true) // Set to false if you want to communication with NXT 
             {
                 // Open the bt-connection
-                BluetoothConnection bt = new BluetoothConnection("COM3");
+                BluetoothConnection bt = new BluetoothConnection("COM5");
 
                 // TODO: Fix this peace of code
                 // bt.FetchPallet(new Path());

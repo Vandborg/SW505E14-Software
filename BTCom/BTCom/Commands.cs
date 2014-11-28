@@ -18,7 +18,6 @@ namespace BTCom
 
         private const String COMMAND_STATUS = "status";
         private const String COMMAND_JOBLIST = "joblist";
-        private const String COMMAND_DEBUG_NAVIGATE = "debug";
         private const String COMMAND_DELIVER = "deliver";
         private const String COMMAND_FETCH = "fetch";
         private const String COMMAND_NAVIGATE = "navigate";
@@ -166,18 +165,6 @@ namespace BTCom
                     joblist_help();
                 }
             }
-            // Check if the command is to add a new debug job
-            else if (commandIdentifier == COMMAND_DEBUG_NAVIGATE)
-            {
-                if (arguments == 1)
-                {
-                    Commands.debug_navigate(commandSplit[0]);
-                }
-                else
-                {
-                    debug_navigate_help();
-                }
-            }
             // Check if the command is "deliver", "fetch" or "navigate"
             else if (commandIdentifier == COMMAND_DELIVER
                      || commandIdentifier == COMMAND_FETCH
@@ -230,7 +217,6 @@ namespace BTCom
             help_help(false);
             status_help(false);
             joblist_help(false);
-            debug_navigate_help(false);
             movement_help(false);
             position_help(false);
             clear_help(false);
@@ -346,22 +332,6 @@ namespace BTCom
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\" / \"help\"]");
-        }
-
-        private static void debug_navigate(string directions)
-        {
-            DebugJob d = new DebugJob(Database.Instance.Data.GetNewDebugJobIdentifier(), BluetoothConnection.TYPE_NAVIGATE_TO, directions);
-            Database.Instance.Data.AddDebugJob(d);
-            printSuccess("Debug job added");
-        }
-
-        private static void debug_navigate_help(bool incorrect_use = true)
-        {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
-            Console.WriteLine("\"debug\" {directions}");
         }
 
         private static void movement(string type, string node)
