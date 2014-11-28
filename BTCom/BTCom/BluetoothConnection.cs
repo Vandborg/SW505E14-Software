@@ -157,12 +157,14 @@ namespace BTCom
 
             Regex lrsRegex = new Regex("^[LRS]*$");
 
-            if (!lrsRegex.IsMatch(lrs))
+            if (lrsRegex.IsMatch(lrs))
+            {
+                SendPackageBT(TYPE_NAVIGATE_TO, Encoding.ASCII.GetBytes(lrsString));
+            }
+            else
             {
                 throw new FormatException("Contains something else than LRS");
-            }
-
-            SendPackageBT(TYPE_NAVIGATE_TO, Encoding.ASCII.GetBytes(lrsString));
+            }  
         }
 
         // Reads the bytes on the buffer
