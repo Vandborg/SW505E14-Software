@@ -159,7 +159,6 @@ namespace BTComTest
             Assert.IsTrue(expected.Equals(actual));
         }
 
-
         [TestCleanup()]
         public void Cleanup()
         {

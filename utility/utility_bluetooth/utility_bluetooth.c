@@ -198,7 +198,8 @@ void create_path_bt(char* package)
     // we are currently doing. 
     Navigation.next = direction_count-1;
     Navigation.type_of_task = package[1];
-    
+    Status = BUSY;
+    update_status_bt();
 }
 
 void update_status_bt(void)

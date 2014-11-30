@@ -24,9 +24,6 @@ namespace BTCom
             }
         }
 
-
-        private static char[,] navigationTable = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
-                                                                      {'S','R','#','L'}, {'L','S','R','#'} };
         public List<Node> Nodes
         {
             get { return _path; }
