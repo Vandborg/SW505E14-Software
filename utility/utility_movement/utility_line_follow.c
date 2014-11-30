@@ -81,13 +81,35 @@ TASK(TASK_update_color_reg)
     TerminateTask();
 }
 
+
+bool first_instruction = true;
 TASK(TASK_color_scan)
 {
     // There is some path left to follow
     if(Navigation.next > -1)
     {
+        if (first_instruction)
+        {
+            char next_direction = Navigation.directions[Navigation.next];
+
+            switch(next_direction)
+            {
+                case 'L':
+                    turn_direction(LEFT_TURN);
+                    break;
+                case 'R':
+                    turn_direction(RIGHT_TURN);
+                    break;
+                case 'S':
+                    break;
+                default :
+                    Status = ERROR;
+            }
+
+            first_instruction = false;
+        }
         // Is the meassured color red and was the last color meassured not red
-        if(is_red_color_colorsensor())
+        else if(is_red_color_colorsensor())
         {
             if(!last_color_red)
             {
@@ -103,10 +125,8 @@ TASK(TASK_color_scan)
                     switch(next_direction)
                     {
                         case 'L':
-                            turn_direction(LEFT_TURN);
                             break;
                         case 'R':
-                            turn_direction(RIGHT_TURN);
                             break;
                         case 'S':
                             first_iteration = true;
@@ -118,7 +138,26 @@ TASK(TASK_color_scan)
                 }
                 else
                 {
-                    drive_mode = LINE_FOLLOW;
+                    
+                    char next_direction = Navigation.directions[Navigation.next];
+
+                    switch(next_direction)
+                    {
+                        case 'L':
+                            turn_direction(LEFT_TURN);
+                            break;
+                        case 'R':
+                            turn_direction(RIGHT_TURN);
+                            break;
+                        case 'S':
+                            break;
+                        default :
+                            Status = ERROR;
+                    }
+
+                    first_iteration = true;
+                    drive_mode = LINE_RECOVER;
+
                     Navigation.next = Navigation.next - 1;
                 }
                 on_edge = !on_edge;
@@ -168,6 +207,7 @@ TASK(TASK_check_navigation)
 {   
     if(Navigation.next > -1 && !executing_task)
     {
+        first_instruction = true;
         start_line_following();
     }
 
@@ -418,9 +458,6 @@ void switch_sensors(void)
 
     swap(&color_sensor, &light_sensor);
     swap(&color_motor, &light_motor);
-
-    first_iteration = true;
-    drive_mode = LINE_RECOVER;
 }
 
 bool line_found = false;

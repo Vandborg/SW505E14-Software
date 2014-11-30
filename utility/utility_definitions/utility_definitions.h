@@ -143,9 +143,9 @@
     #define LEFT_TURN           0 
 
     // Device statuses
-    #define IDLE 'I'
-    #define BUSY 'B'
-    #define ERROR 'E'
+    #define IDLE     'I'
+    #define BUSY     'B'
+    #define ERROR    'E'
     #define OBSTACLE 'O'
     
     
