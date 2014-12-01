@@ -156,8 +156,6 @@ namespace BTCom
             {
                 throw new Exception("Graph is now not connected");
             }
-
-            Database.Instance.Save();
             
             return true;
         }
@@ -184,8 +182,6 @@ namespace BTCom
             var edgeTwo = nodeTwo.BlockedNeighbours.Single(x => x.Key != null && x.Key.Equals(nodeOne));
             nodeTwo.Neighbours.Add(edgeTwo);
             nodeTwo.BlockedNeighbours.Remove(edgeTwo);
-
-            Database.Instance.Save();
 
             return true;
         }
@@ -235,8 +231,6 @@ namespace BTCom
             {
                 edge.Decay(decayRate);
             }
-
-            Database.Instance.Save();
         }
 
         public Node getNode(string name)
