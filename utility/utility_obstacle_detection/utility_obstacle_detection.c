@@ -25,7 +25,7 @@ bool driving_forward = true;
 
 TASK(TASK_obstacle_detection)
 {
-    if(driving_forward)
+    /*if(driving_forward)
     {
         distance_front += ecrobot_get_sonar_sensor(SONAR_SENSOR_FRONT);
         distance_front /= 2;
@@ -53,7 +53,7 @@ TASK(TASK_obstacle_detection)
             turn_degrees(180);
         }
     }
-
+*/
     TerminateTask();
 }
 
