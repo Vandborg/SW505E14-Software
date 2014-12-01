@@ -19,38 +19,45 @@
 
 DeclareTask(TASK_obstacle_detection);
 
-S32 distance_front = 255;
-S32 distance_rear = 255;
-bool driving_forward = true;
+#define MAX_DISTANCE 255
+#define MIN_DISTANCE 0
+#define HALF_ROTATION_DEGREES 180
+
+S32 distance_front = MAX_DISTANCE;
+S32 distance_rear = MAX_DISTANCE;
+bool driving_forward;
 
 TASK(TASK_obstacle_detection)
 {
+    
     if(driving_forward)
     {
+        distance_rear = MAX_DISTANCE;
         distance_front += ecrobot_get_sonar_sensor(SONAR_SENSOR_FRONT);
         distance_front /= 2;
 
         if(distance_front <= OBSTACLE_DISTANCE_THRESHOLD_FRONT)
         {
-            distance_front = 0;
+            distance_front = MIN_DISTANCE;
 
             stop_line_following();
 
-            turn_degrees(180);
+            turn_degrees(HALF_ROTATION_DEGREES);
         }
     }
     else
     {
+        distance_front = MAX_DISTANCE;
         distance_rear += ecrobot_get_sonar_sensor(SONAR_SENSOR_REAR);   
         distance_rear /= 2;
 
         if(distance_rear <= OBSTACLE_DISTANCE_THRESHOLD_REAR)
         {
-            distance_rear = 0;
+            distance_rear = MIN_DISTANCE;
 
             stop_line_following();
 
-            turn_degrees(180);
+            turn_degrees(HALF_ROTATION_DEGREES);
         }
     }
 

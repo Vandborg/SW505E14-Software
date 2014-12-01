@@ -7,9 +7,9 @@
     // Include structs
     #include "utility/utility_structs/utility_structs.h"
 
-    // Color values for the sensors
     extern color Colors[AMOUNT_OF_COLORS];
     extern navigation Navigation = {"", -1, 0};
     extern char Status = IDLE; 
+    extern bool driving_forward = true;
 
 #endif
