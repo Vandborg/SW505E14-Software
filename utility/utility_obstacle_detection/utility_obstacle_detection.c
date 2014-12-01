@@ -38,7 +38,7 @@ TASK(TASK_obstacle_detection)
 
         if(distance_front <= OBSTACLE_DISTANCE_THRESHOLD_FRONT)
         {
-            stop_line_following();
+            emergency_stop();
 
             turn_degrees(HALF_ROTATION_DEGREES);
 
@@ -53,7 +53,7 @@ TASK(TASK_obstacle_detection)
 
         if(distance_rear <= OBSTACLE_DISTANCE_THRESHOLD_REAR)
         {
-            stop_line_following();
+            emergency_stop();
 
             turn_degrees(HALF_ROTATION_DEGREES);
 
