@@ -64,7 +64,7 @@ color Colors[AMOUNT_OF_COLORS];
 S16 color_scan_rgb[3] = {-1,-1,-1};
 
 // Indidcates wether the NXT is on an edge or inside a node (intersection)
-bool on_edge = true; 
+bool crossing_intersection = false; 
 bool last_color_red = false;
 
 // Indicates if the next has just come out of boot mode
@@ -105,17 +105,21 @@ TASK(TASK_color_scan)
                 {
                     case 'L':
                         turn_direction(LEFT_TURN);
-                        drive_mode = LINE_RECOVER;
                         break;
                     case 'R':
                         turn_direction(RIGHT_TURN);
-                        drive_mode = LINE_RECOVER;
                         break;
                     case 'S':
                         first_iteration = true;
+                        crossing_intersection = true;
                         drive_mode = CROSS_INTERSECTION;
                         break;
                     case 'N':
+                        if (crossing_intersection)
+                        {
+                            drive_mode = LINE_RECOVER;
+                            crossing_intersection = false;
+                        }
                         break;
                     default :
                         Status = ERROR;
@@ -211,12 +215,10 @@ TASK(TASK_check_navigation)
         {
             case 'L':
                 turn_direction(LEFT_TURN);
-                drive_mode = LINE_RECOVER;
                 Navigation.next -= 1;
                 break;
             case 'R':
                 turn_direction(RIGHT_TURN);
-                drive_mode = LINE_RECOVER;
                 Navigation.next -= 1;
                 break;
             default:
@@ -464,6 +466,7 @@ void turn_direction(U8 direction)
        (direction == LEFT_TURN && light_sensor == COLOR_SENSOR_RIGHT))
     {
         switch_sensors();
+        drive_mode = LINE_RECOVER;
     }
 }
 
