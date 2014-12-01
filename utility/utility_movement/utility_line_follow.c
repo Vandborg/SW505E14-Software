@@ -39,15 +39,15 @@ void switch_sensors(void);
 void cross_intersection(void);
 void line_recover(void);
 void line_following(void);
-void swap(U8* a, U8* b);
+void swap(U32* a, U32* b);
 void turn_arround(void);
-
 
 // Persistent variables for PID, and color_scan/swap
 U8 color_sensor = COLOR_SENSOR_LEFT;
-U8 color_motor = COLOR_SENSOR_LEFT;
 U8 light_sensor = COLOR_SENSOR_RIGHT;
-U8 light_motor = COLOR_SENSOR_RIGHT;
+
+U32 color_motor = LEFT_MOTOR;
+U32 light_motor = RIGHT_MOTOR;
 
 int offset_left = (416+140)/2;
 int offset_right = (513+220)/2;
@@ -211,10 +211,12 @@ TASK(TASK_check_navigation)
         {
             case 'L':
                 turn_direction(LEFT_TURN);
+                drive_mode = LINE_RECOVER;
                 Navigation.next -= 1;
                 break;
             case 'R':
                 turn_direction(RIGHT_TURN);
+                drive_mode = LINE_RECOVER;
                 Navigation.next -= 1;
                 break;
             default:
@@ -394,6 +396,7 @@ void start_line_following(void)
     GetResource(RES_SCHEDULER);
 
     executing_task = true;
+    first_iteration = true;
     drive_mode = LINE_RECOVER;
 
     ReleaseResource(RES_SCHEDULER);
@@ -475,9 +478,9 @@ int get_light_level(U8 sensor)
     return light_level;
 }
 
-void swap(U8* a, U8* b)
+void swap(U32* a, U32* b)
 {
-    U8 temp = *a;
+    U32 temp = *a;
     *a = *b;
     *b = temp;
 }
@@ -488,6 +491,23 @@ void switch_sensors(void)
 
     swap(&color_sensor, &light_sensor);
     swap(&color_motor, &light_motor);
+
+    if(light_sensor == COLOR_SENSOR_LEFT)
+    {
+        lcd_display_line(LCD_LINE_FOUR, "LC", 1);
+    }
+    else
+    {
+        lcd_display_line(LCD_LINE_FOUR, "RC", 1);
+    }
+    if(light_motor == LEFT_MOTOR)
+    {
+        lcd_display_line(LCD_LINE_FIVE, "LM", 1);
+    }
+    else
+    {
+        lcd_display_line(LCD_LINE_FIVE, "RM", 1);
+    }
 }
 
 bool line_found = false;
@@ -514,14 +534,14 @@ void line_recover(void)
     {
         if(light_level < 0)
         {
-            nxt_motor_set_speed(light_motor, 70, 0);
-            nxt_motor_set_speed(color_motor, 0, 1);
+            nxt_motor_set_speed(light_motor, 0, 1);
+            nxt_motor_set_speed(color_motor, 70, 0);
 
         }
         else 
         {
-            nxt_motor_set_speed(color_motor, 70, 0);
-            nxt_motor_set_speed(light_motor, 0, 1);
+            nxt_motor_set_speed(light_motor, 70, 0);
+            nxt_motor_set_speed(color_motor, 0, 1);
         }
     }
     else 
