@@ -28,10 +28,8 @@ namespace BTCom
                 throw new NodeException("Front- and rear-nodes are not neighbours");
             }
 
-            this.RearNode = rearNode;
-            this.FrontNode = frontNode;
-
-            Database.Instance.Save();
+            RearNode = rearNode;
+            FrontNode = frontNode;
 
             return true;
         }

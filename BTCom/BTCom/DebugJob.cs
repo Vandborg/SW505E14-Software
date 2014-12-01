@@ -17,11 +17,11 @@ namespace BTCom
 
             string dir = directions.ToUpper();
 
-            Regex lrsRegex = new Regex("^[LRS]*$");
+            Regex lrsRegex = new Regex("^[LRSN]*$");
 
             if (!lrsRegex.IsMatch(dir))
             {
-                throw new FormatException("Directions can only be a combination of 'L', 'R' and 'S'");
+                throw new FormatException("Directions can only be a combination of 'L', 'R', 'S' and 'N'");
             }
 
             Directions = dir;

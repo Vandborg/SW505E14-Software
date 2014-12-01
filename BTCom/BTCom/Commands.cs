@@ -26,6 +26,8 @@ namespace BTCom
         private const String COMMAND_POSITION = "position";
         private const String COMMAND_CURRENTJOB = "currentjob";
         private const String COMMAND_CLEAR = "clear";
+        private const String COMMAND_SAVE = "save";
+        private const String COMMAND_EXIT = "exit";
 
         private const String COMMAND_ARGUMENT_CLEAR = "clear";
 
@@ -233,6 +235,28 @@ namespace BTCom
                     clear_help();
                 }
             }
+            else if (commandIdentifier == COMMAND_SAVE)
+            {
+                if (arguments == 0)
+                {
+                    Commands.save();
+                }
+                else
+                {
+                    save_help();
+                }
+            }
+            else if (commandIdentifier == COMMAND_EXIT)
+            {
+                if (arguments == 0)
+                {
+                    Commands.exit();
+                }
+                else
+                {
+                    exit_help();
+                }
+            }
             // Some unknown command, show the help
             else
             {
@@ -250,6 +274,8 @@ namespace BTCom
             debug_help(false);
             position_help(false);
             clear_help(false);
+            save_help(false);
+            exit_help(false);
         }
 
         private static void help_help(bool incorrect_use = true)
@@ -301,7 +327,6 @@ namespace BTCom
             {
                 // Remove all jobs
                 Database.Instance.Data.Jobs = new Dictionary<int, Job>();
-                Database.Instance.Save();
 
                 printSuccess("Joblist was cleared");
             }
@@ -556,6 +581,44 @@ namespace BTCom
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"clear\"");
+        }
+
+        private static void save()
+        {
+            Database.Instance.Save();
+
+            printSuccess("Saved database");
+        }
+
+        private static void save_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"save\"");
+        }
+
+        private static void exit()
+        {
+            printSuccess("Saving database...");
+
+            Database.Instance.Save();
+
+            printSuccess("Database saved, bye bye");
+
+            System.Threading.Thread.Sleep(251);
+
+            Environment.Exit(1);
+        }
+
+        private static void exit_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"exit\"");
         }
     }
 }
