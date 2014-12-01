@@ -90,12 +90,35 @@ namespace BTCom
 
         // Method to convert a ForkliftPath to the desired NXT format
         public string getDirections()
-        {
-            forkliftPath.Reverse();
-            String s = new string(forkliftPath.ToArray());
-            forkliftPath.Reverse();
+        {            
+            String dir = new string(forkliftPath.ToArray());
 
-            return s;
+            // Insert a N after each L or R
+            for (int i = 0; i < dir.Count(); i++)
+            {
+                if (dir[i] == 'L' || dir[i] == 'R')
+                {
+                    dir = dir.Insert(i + 1, "N");
+                }
+            }
+            // Insert an S before each S unless it is the first S
+            for (int i = 0; i < dir.Count(); i++)
+            {
+                if (i > 0 && dir[i] == 'S')
+                {
+                    dir = dir.Insert(i, "N");
+                    i++;
+                }
+            }
+
+            // Reverse the string
+            char[] dirCharArray = dir.ToCharArray();
+            string reverseDir = String.Empty;
+            for (int i = dirCharArray.Length - 1; i > -1; i--)
+            {
+                reverseDir += dirCharArray[i];
+            }
+            return reverseDir;
         }
 
         public override string ToString()
