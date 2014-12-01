@@ -290,7 +290,7 @@ namespace BTCom
                             {
                                 Path p = CurrentJob.GetPath();
 
-                                if (p.Nodes.Count != 0)
+                                if (p.Nodes.Count > 2)
                                 {
                                     Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
                                     Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
