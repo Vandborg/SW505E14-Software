@@ -15,7 +15,7 @@ namespace BTCom
             return Identifier.ToString();
         }
 
-        public abstract bool Equals(Object obj);
+        public new abstract bool Equals(Object obj);
 
         public override string ToString()
         {

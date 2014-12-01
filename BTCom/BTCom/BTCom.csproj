@@ -75,15 +75,18 @@
   <ItemGroup>
     <Compile Include="Color.cs" />
     <Compile Include="Commands.cs" />
-    <Compile Include="DebugJob.cs" />
     <Compile Include="DataEntry.cs" />
+    <Compile Include="DebugJob.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
+    <Compile Include="PalletJob.cs" />
     <Compile Include="Forklift.cs" />
     <Compile Include="ForkliftPath.cs" />
     <Compile Include="Graph.cs" />
     <Compile Include="Interfaces\IDecayable.cs" />
     <Compile Include="Job.cs" />
+    <Compile Include="PalletJobType.cs" />
+    <Compile Include="NavigateJob.cs" />
     <Compile Include="JsonHelper.cs" />
     <Compile Include="BluetoothConnection.cs">
       <SubType>Component</SubType>

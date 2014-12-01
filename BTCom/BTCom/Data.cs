@@ -12,7 +12,6 @@ namespace BTCom
         public Dictionary<int, Path> Paths = new Dictionary<int, Path>();
         public Dictionary<int, Forklift> Forklifts = new Dictionary<int, Forklift>();
         public Dictionary<int, Job> Jobs = new Dictionary<int, Job>();
-        public Dictionary<int, DebugJob> DebugJobs = new Dictionary<int, DebugJob>();
 
         public Data()
         { 
@@ -189,47 +188,5 @@ namespace BTCom
 
             return max + 1;
         }
-
-        public void AddDebugJob(DebugJob debugJob)
-        {
-            try
-            {
-                DebugJobs.Add(debugJob.Identifier, debugJob);
-            }
-            catch (ArgumentException)
-            {
-                DebugJobs.Remove(debugJob.Identifier);
-                DebugJobs.Add(debugJob.Identifier, debugJob);
-            }
-            Database.Instance.Save();
-        }
-
-        public bool RemoveDebugJob(DebugJob debugJob)
-        {
-            bool result = DebugJobs.Remove(debugJob.Identifier);
-
-            if (result)
-            {
-                Database.Instance.Save();
-            }
-
-            return result;
-        }
-
-        public int GetNewDebugJobIdentifier()
-        {
-            int max = -1;
-
-            foreach (KeyValuePair<int, DebugJob> debugJob in DebugJobs)
-            {
-                if (debugJob.Key > max)
-                {
-                    max = debugJob.Key;
-                }
-            }
-
-            return max + 1;
-        }
-
     }
 }
