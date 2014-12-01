@@ -69,3 +69,21 @@ void move_fork(int lifting_height)
     // Once the desired height has been reached, stop the motor.
     nxt_motor_set_speed(FORK_MOTOR, MOTOR_NO_SPEED, BRAKE);
 }
+
+void place_pallet()
+{
+    // TODO: Do something
+
+    move_fork(LIFTING_MODE_LOW);
+
+    // TODO: Do something
+}
+
+void lift_pallet()
+{
+    // TODO: Do something
+    
+    move_fork(LIFTING_MODE_MID);
+
+    // TODO: Do something
+}
