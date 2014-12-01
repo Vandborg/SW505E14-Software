@@ -254,6 +254,8 @@ TASK(TASK_consume_bluetooth)
     else if(Status == ERROR || Status == BUSY)
     {
         update_status_bt();
+        char garbage[128] = {0};
+        read_buffer_bt(garbage);
     }
 
     TerminateTask();
