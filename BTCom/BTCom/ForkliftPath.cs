@@ -93,38 +93,32 @@ namespace BTCom
         {            
             String dir = new string(forkliftPath.ToArray());
 
-            // Insert an N after each S if the next char is also an S
-            for (int i = 0; i < dir.Count() - 1; i++)
+            // Insert a N after each L or R
+            for (int i = 0; i < dir.Count(); i++)
             {
-                if (dir[i] == 'S' && dir[i + 1] == 'S')
+                if (dir[i] == 'L' || dir[i] == 'R')
                 {
                     dir = dir.Insert(i + 1, "N");
                 }
             }
-
-            // Insert an N before each L or R if it is not the first char and the previous char is not an S
+            // Insert an S before each S unless it is the first S
             for (int i = 0; i < dir.Count(); i++)
             {
-                if (i > 0)
+                if (i > 0 && dir[i] == 'S')
                 {
-                    if (dir[i] == 'L' && dir[i - 1] != 'S')
-                    {
-                        dir = dir.Insert(i - 1, "N");
-                        i++;
-                    }
-
-                    if (dir[i] == 'R' && dir[i - 1] != 'S')
-                    {
-                        dir = dir.Insert(i - 1, "N");
-                        i++;
-                    }
+                    dir = dir.Insert(i, "N");
+                    i++;
                 }
             }
 
             // Reverse the string
-            dir.Reverse();
-
-            return dir;
+            char[] dirCharArray = dir.ToCharArray();
+            string reverseDir = String.Empty;
+            for (int i = dirCharArray.Length - 1; i > -1; i--)
+            {
+                reverseDir += dirCharArray[i];
+            }
+            return reverseDir;
         }
 
         public override string ToString()
