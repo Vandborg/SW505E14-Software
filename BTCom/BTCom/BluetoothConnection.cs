@@ -255,6 +255,8 @@ namespace BTCom
 
                     if (CurrentJob != null)
                     {
+
+
                         Path currentPath = CurrentJob.GetPath();
                         int newRearNodeIndex = (currentPath.Nodes.Count - 2) - directionsIndex;
 
@@ -305,13 +307,16 @@ namespace BTCom
                             {
                                 Path p = CurrentJob.GetPath();
 
-                                Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
-                                Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
+                                if (p.Nodes.Count != 0)
+                                {
+                                    Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
+                                    Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
 
-                                Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
-                                f.UpdateNodes(frontNode, rearNode);
+                                    Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+                                    f.UpdateNodes(frontNode, rearNode);
 
-                                CurrentJob = null;
+                                    CurrentJob = null;   
+                                }
                             }
 
                             // Check if there is any jobs to be performed
@@ -329,7 +334,6 @@ namespace BTCom
 
                             // Update the internal status
                             forklift.Status = Status.IDLE;
-                            Database.Instance.Save();
                             break;
 
                         // The NXT was busy
@@ -349,7 +353,6 @@ namespace BTCom
 
                             // Update the internal status
                             forklift.Status = Status.BUSY;
-                            Database.Instance.Save();
                             break;
 
                         case STATUS_OBSTACLE:
@@ -367,22 +370,19 @@ namespace BTCom
 
                             // Update the internal status
                             forklift.Status = Status.OBSTACLE;
-                            Database.Instance.Save();
                             break;
 
                         // The NXT encoutered an error
                         case STATUS_ERROR:
                             // Update the internal status
                             forklift.Status = Status.ERROR;
-                            Database.Instance.Save();
-
+                            
                             // Tell the user that the NXT encountered an error
                             Console.WriteLine("The NXT has encountered an error!");
                             break;
 
                         default:
                             forklift.Status = Status.UNKNOWN;
-                            Database.Instance.Save();
                             break;
                     }
                     break;

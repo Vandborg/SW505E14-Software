@@ -31,7 +31,7 @@ namespace BTCom
                 // Instantiate threads
                 Thread ConsoleInputThread = new Thread(() => Commands.execute());
                 Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
-
+                
                 // Start the threads
                 ConsoleInputThread.Start();
                 ConsumeBTThread.Start();            

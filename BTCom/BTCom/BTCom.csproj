@@ -76,6 +76,7 @@
     <Compile Include="Color.cs" />
     <Compile Include="Commands.cs" />
     <Compile Include="DataEntry.cs" />
+    <Compile Include="DebugJob.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="PalletJob.cs" />
