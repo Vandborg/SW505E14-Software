@@ -150,23 +150,6 @@ namespace BTCom
             return;
         }
 
-        // Sends a strings LRS-string to the nxt as a navigate package
-        public void SendDebugDirections(string lrsString)
-        {
-            string lrs = lrsString.ToUpper();
-
-            Regex lrsRegex = new Regex("^[LRS]*$");
-
-            if (lrsRegex.IsMatch(lrs))
-            {
-                SendPackageBT(TYPE_NAVIGATE_TO, Encoding.ASCII.GetBytes(lrsString));
-            }
-            else
-            {
-                throw new FormatException("Contains something else than LRS");
-            }  
-        }
-
         // Reads the bytes on the buffer
         private byte[] ReadBTBuffer()
         {
