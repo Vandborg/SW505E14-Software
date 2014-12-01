@@ -258,5 +258,13 @@ TASK(TASK_consume_bluetooth)
         read_buffer_bt(garbage);
     }
 
+    char buffer[15];
+    char buffer2[2];
+    lcd_display_line(LCD_LINE_ONE, Navigation.directions, true);
+    lcd_display_line(LCD_LINE_TWO, int_to_string(Navigation.next, buffer), true);
+    buffer2[0] = Status;
+    buffer2[1] = '\0';
+    lcd_display_line(LCD_LINE_THREE, buffer2, true);
+
     TerminateTask();
 }

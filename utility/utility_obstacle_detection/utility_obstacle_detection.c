@@ -30,7 +30,7 @@ bool use_rear_sonar_sensor;
 
 TASK(TASK_obstacle_detection)
 {
-    
+    /*
     if(use_front_sonar_sensor)
     {
         distance_rear = MAX_DISTANCE;
@@ -62,7 +62,7 @@ TASK(TASK_obstacle_detection)
             report_obstacle_bt();
         }
     }
-
+    */
     TerminateTask();
 }
 

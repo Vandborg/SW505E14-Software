@@ -23,7 +23,7 @@ namespace BTCom
             if(true) // Set to false if you want to communication with NXT 
             {
                 // Open the bt-connection
-                BluetoothConnection bt = new BluetoothConnection("COM5");
+                BluetoothConnection bt = new BluetoothConnection("COM3");
 
                 // TODO: Fix this peace of code
                 // bt.FetchPallet(new Path());
@@ -31,7 +31,7 @@ namespace BTCom
                 // Instantiate threads
                 Thread ConsoleInputThread = new Thread(() => Commands.execute());
                 Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
-                
+
                 // Start the threads
                 ConsoleInputThread.Start();
                 ConsumeBTThread.Start();            
