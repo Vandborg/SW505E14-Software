@@ -39,7 +39,7 @@ namespace BTCom
         private Dictionary<int, Job> JobList = Database.Instance.Data.Jobs;
         
         // The current job 
-        private Job CurrentJob = null;
+        public static Job CurrentJob = null;
 
         private Forklift forklift = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
@@ -238,6 +238,8 @@ namespace BTCom
 
                     if (CurrentJob != null)
                     {
+
+
                         Path currentPath = CurrentJob.GetPath();
                         int newRearNodeIndex = (currentPath.Nodes.Count - 2) - directionsIndex;
 
@@ -288,13 +290,16 @@ namespace BTCom
                             {
                                 Path p = CurrentJob.GetPath();
 
-                                Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
-                                Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
+                                if (p.Nodes.Count != 0)
+                                {
+                                    Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
+                                    Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
 
-                                Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
-                                f.UpdateNodes(frontNode, rearNode);
+                                    Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+                                    f.UpdateNodes(frontNode, rearNode);
 
-                                CurrentJob = null;
+                                    CurrentJob = null;   
+                                }
                             }
 
                             // Check if there is any jobs to be performed
@@ -304,7 +309,7 @@ namespace BTCom
                                 Job nextJob = JobList.First().Value;
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count + JobList.Count - 1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
                                 SendPackageBT(nextJob.GetJobTypeBytes(), nextJob.GetBytes());
@@ -312,7 +317,6 @@ namespace BTCom
 
                             // Update the internal status
                             forklift.Status = Status.IDLE;
-                            Database.Instance.Save();
                             break;
 
                         // The NXT was busy
@@ -326,20 +330,19 @@ namespace BTCom
                                 {
                                     // Remove the job that is being executed currently
                                     CurrentJob = JobList.First().Value;
-                                    JobList.Remove(CurrentJob.Identifier);
+                                    Database.Instance.Data.Jobs.Remove(CurrentJob.Identifier);
                                 }   
                             }
 
                             // Update the internal status
                             forklift.Status = Status.BUSY;
-                            Database.Instance.Save();
                             break;
 
                         case STATUS_OBSTACLE:
 
                             if (CurrentJob != null)
                             {
-                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (JobList.Count + JobList.Count) + " jobs left in the JobList");
+                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (JobList.Count) + " jobs left in the JobList");
                                 // Send an alternative path to avoid obstacle
                                 SendPackageBT(CurrentJob.GetJobTypeBytes(), CurrentJob.GetBytes());
                             }
@@ -350,22 +353,19 @@ namespace BTCom
 
                             // Update the internal status
                             forklift.Status = Status.OBSTACLE;
-                            Database.Instance.Save();
                             break;
 
                         // The NXT encoutered an error
                         case STATUS_ERROR:
                             // Update the internal status
                             forklift.Status = Status.ERROR;
-                            Database.Instance.Save();
-
+                            
                             // Tell the user that the NXT encountered an error
                             Console.WriteLine("The NXT has encountered an error!");
                             break;
 
                         default:
                             forklift.Status = Status.UNKNOWN;
-                            Database.Instance.Save();
                             break;
                     }
                     break;

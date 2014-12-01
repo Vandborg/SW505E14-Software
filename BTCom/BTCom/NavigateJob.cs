@@ -81,6 +81,8 @@ namespace BTCom
                     rearNode = newRearNode;
                 }
 
+                p.Nodes.Add(frontNode);
+                
                 return p;
 
             }
@@ -134,7 +136,7 @@ namespace BTCom
 
         public override string ToString()
         {
-            String s = "#" + ID() + ". Type: 'Navigate'";
+            String s = "#" + ID() + ". Type: 'navigate'";
 
             if (Destination != null)
             {

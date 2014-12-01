@@ -20,9 +20,11 @@ namespace BTCom
         private const String COMMAND_JOBLIST = "joblist";
         private const String COMMAND_DELIVER = "deliver";
         private const String COMMAND_DIRECTIONS = "directions";
+        private const String COMMAND_DEBUG = "debug";
         private const String COMMAND_FETCH = "fetch";
         private const String COMMAND_NAVIGATE = "navigate";
         private const String COMMAND_POSITION = "position";
+        private const String COMMAND_CURRENTJOB = "currentjob";
         private const String COMMAND_CLEAR = "clear";
 
         private const String COMMAND_ARGUMENT_CLEAR = "clear";
@@ -166,6 +168,17 @@ namespace BTCom
                     joblist_help();
                 }
             }
+            else if (commandIdentifier == COMMAND_CURRENTJOB)
+            {
+                if (arguments == 0)
+                {
+                    Commands.current_job();
+                }
+                else
+                {
+                    current_job_help();
+                }
+            }
             // Check if the command is "deliver", "fetch" or "navigate"
             else if (commandIdentifier == COMMAND_DELIVER
                      || commandIdentifier == COMMAND_FETCH
@@ -184,7 +197,14 @@ namespace BTCom
             {
                 if (arguments == 1)
                 {
-                    navigate(commandSplit[0]);
+                    directions(commandSplit[0]);
+                }
+            }
+            else if (commandIdentifier == COMMAND_DEBUG)
+            {
+                if (arguments == 1)
+                {
+                    debug(commandSplit[0]);
                 }
             }
             else if (commandIdentifier == COMMAND_POSITION)
@@ -226,7 +246,8 @@ namespace BTCom
             status_help(false);
             joblist_help(false);
             moveNode_help(false);
-            navigate_help(false);
+            directions_help(false);
+            debug_help(false);
             position_help(false);
             clear_help(false);
         }
@@ -407,7 +428,7 @@ namespace BTCom
             Console.WriteLine("\"fetch\" / \"deliver\" / \"navigate\" {node}");
         }
 
-        private static void navigate(string directions)
+        private static void directions(string directions)
         {
             try
             {
@@ -421,13 +442,36 @@ namespace BTCom
             
         }
 
-        private static void navigate_help(bool incorrect_use = true)
+        private static void directions_help(bool incorrect_use = true)
         {
             if (incorrect_use)
             {
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"directions\" {L | S | R}*");
+        }
+
+        private static void debug(string directions)
+        {
+            try
+            {
+                DebugJob dj = new DebugJob(Database.Instance.Data.GetNewJobIdentifier(), directions);
+                Database.Instance.Data.AddJob(dj);
+            }
+            catch (FormatException e)
+            {
+                printError(e.Message);
+            }
+            
+        }
+
+        private static void debug_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"debug\" {L | S | R}*");
         }
 
         private static void position()
@@ -477,6 +521,27 @@ namespace BTCom
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"position\" [FrontNode RearNode]");
+        }
+
+        private static void current_job()
+        {
+            if (BluetoothConnection.CurrentJob != null)
+            {
+                Console.WriteLine("Current job: '" + BluetoothConnection.CurrentJob.ToString() + "'");
+            }
+            else
+            {
+                Console.WriteLine("No current job");
+            }
+        }
+
+        private static void current_job_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"currentjob\"");
         }
 
         private static void clear()
