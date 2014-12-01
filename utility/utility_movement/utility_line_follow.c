@@ -117,8 +117,9 @@ TASK(TASK_color_scan)
                     case 'N':
                         if (crossing_intersection)
                         {
-                            drive_mode = LINE_RECOVER;
                             crossing_intersection = false;
+                            first_iteration = true;
+                            drive_mode = LINE_RECOVER;
                         }
                         break;
                     default :
@@ -466,6 +467,7 @@ void turn_direction(U8 direction)
        (direction == LEFT_TURN && light_sensor == COLOR_SENSOR_RIGHT))
     {
         switch_sensors();
+        first_iteration = true;
         drive_mode = LINE_RECOVER;
     }
 }
