@@ -38,11 +38,11 @@ TASK(TASK_obstacle_detection)
 
         if(distance_front <= OBSTACLE_DISTANCE_THRESHOLD_FRONT)
         {
-            distance_front = MIN_DISTANCE;
-
             stop_line_following();
 
             turn_degrees(HALF_ROTATION_DEGREES);
+
+            report_obstacle_bt();
         }
     }
     else
@@ -53,11 +53,11 @@ TASK(TASK_obstacle_detection)
 
         if(distance_rear <= OBSTACLE_DISTANCE_THRESHOLD_REAR)
         {
-            distance_rear = MIN_DISTANCE;
-
             stop_line_following();
 
             turn_degrees(HALF_ROTATION_DEGREES);
+
+            report_obstacle_bt();
         }
     }
 
