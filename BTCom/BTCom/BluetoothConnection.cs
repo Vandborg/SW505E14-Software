@@ -37,17 +37,11 @@ namespace BTCom
 
         // Joblist queue of package type and data
         private Dictionary<int, Job> JobList = Database.Instance.Data.Jobs;
-
-        // Joblist queue of package type and data
-        private Dictionary<int, DebugJob> DebugJobList = Database.Instance.Data.DebugJobs;
-
-        // The current job 
-        private Job CurrentJob = null;
-
-        private Forklift forklift = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
         
         // The current job 
-        private DebugJob CurrentDebugJob;
+        public static Job CurrentJob = null;
+
+        private Forklift forklift = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
         // Constructor
         public BluetoothConnection(string portName)
@@ -242,11 +236,7 @@ namespace BTCom
                     Node newFrontNode = null;
                     Node newRearNode = null;
 
-                    if (CurrentDebugJob != null)
-                    {
-                        throw new Exception("Cannot recover from obstacle while doing a debug job");
-                    }
-                    else if (CurrentJob != null)
+                    if (CurrentJob != null)
                     {
                         Path currentPath = CurrentJob.GetPath();
                         int newRearNodeIndex = (currentPath.Nodes.Count - 2) - directionsIndex;
@@ -281,13 +271,10 @@ namespace BTCom
                 // Check if the NXT updated its status
                 case TYPE_UPDATE_STATUS:
                 {
-                    bool statusChanged = false;
                     if (dataString[0] != GetStatusByte(forklift))
                     {
                         // Tell the user what the status the NXT updated to
                         Console.WriteLine("NXT-Status: " + dataString);
-                        statusChanged = true;
-                        
                     }
 
                     // Check what status the NXT told us
@@ -299,7 +286,6 @@ namespace BTCom
                             // Check if the nxt just completed a job
                             if (forklift.Status == Status.BUSY && CurrentJob != null)
                             {
-                                //TODO: Update the position of PALL-E
                                 Path p = CurrentJob.GetPath();
 
                                 Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
@@ -307,31 +293,21 @@ namespace BTCom
 
                                 Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
                                 f.UpdateNodes(frontNode, rearNode);
-                            }
 
+                                CurrentJob = null;
+                            }
 
                             // Check if there is any jobs to be performed
-                            if(DebugJobList.Count > 0)
-                            {
-                                // Peek in the queue
-                                DebugJob nextDebugJob = DebugJobList[0];
-
-                                // Tell the user what job was sent
-                                Console.WriteLine("Sending DebugJob -> NXT: " + nextDebugJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
-
-                                // Send the job to the NXT
-                                SendPackageBT(nextDebugJob.Type, nextDebugJob.GetBytes());
-                            }
-                            else if (JobList.Count > 0)
+                            if (JobList.Count > 0)
                             {
                                 // Peek in the queue
                                 Job nextJob = JobList.First().Value;
 
                                 // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (DebugJobList.Count + JobList.Count - 1) + " jobs left in the JobList");
+                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count - 1) + " jobs left in the JobList");
 
                                 // Send the job to the NXT
-                                SendPackageBT(nextJob.Type, nextJob.GetBytes(statusChanged));
+                                SendPackageBT(nextJob.GetJobTypeBytes(), nextJob.GetBytes());
                             }
 
                             // Update the internal status
@@ -346,19 +322,11 @@ namespace BTCom
                             if (forklift.Status == Status.IDLE)
                             {
                                 // Debug jobs has highe priority
-                                if (DebugJobList.Count > 0)
-                                {
-                                    // Remove the job that is being executed currently
-                                    CurrentDebugJob = DebugJobList.First().Value;
-                                    JobList.Remove(CurrentDebugJob.Identifier);
-                                    CurrentJob = null;
-                                }
-                                else
+                                if(JobList.Count > 0)
                                 {
                                     // Remove the job that is being executed currently
                                     CurrentJob = JobList.First().Value;
-                                    JobList.Remove(CurrentJob.Identifier);
-                                    CurrentDebugJob = null;
+                                    Database.Instance.Data.Jobs.Remove(CurrentJob.Identifier);
                                 }   
                             }
 
@@ -369,19 +337,15 @@ namespace BTCom
 
                         case STATUS_OBSTACLE:
 
-                            if (CurrentDebugJob != null)
+                            if (CurrentJob != null)
                             {
-                                throw new Exception("Cannot recover from obstacle while doing a debug job");
-                            }
-                            else if (CurrentJob != null)
-                            {
-                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (DebugJobList.Count + JobList.Count) + " jobs left in the JobList");
+                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (JobList.Count) + " jobs left in the JobList");
                                 // Send an alternative path to avoid obstacle
-                                SendPackageBT(CurrentJob.Type, CurrentJob.GetBytes(statusChanged));
+                                SendPackageBT(CurrentJob.GetJobTypeBytes(), CurrentJob.GetBytes());
                             }
                             else
                             {
-                                throw new Exception("No current job or debugjob");
+                                throw new Exception("No current jobs");
                             }
 
                             // Update the internal status

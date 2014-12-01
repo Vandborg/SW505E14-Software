@@ -11,8 +11,9 @@
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_structs/utility_structs.h"
 
-
 #define COLOR_THRESHOLD 50
+#define MOTOR_COUNT_PER_DEGREE 3
+#define MOTOR_INSECURITY 30
 // Used to navigate
 navigation Navigation;
 
@@ -39,6 +40,7 @@ void cross_intersection(void);
 void line_recover(void);
 void line_following(void);
 void swap(U8* a, U8* b);
+void turn_arround(void);
 
 
 // Persistent variables for PID, and color_scan/swap
@@ -81,6 +83,8 @@ TASK(TASK_update_color_reg)
     TerminateTask();
 }
 
+
+bool first_instruction = true;
 TASK(TASK_color_scan)
 {
     // There is some path left to follow
@@ -94,36 +98,31 @@ TASK(TASK_color_scan)
                 // Debugging sound
                 play_sound(SOUND_TICK);
 
-                // If the NXT is driving on an edge in the graph and not an vertex
-                if(on_edge)
-                {
-                    // The next direction in the navigation
-                    char next_direction = Navigation.directions[Navigation.next];
+                // The next direction in the navigation
+                char next_direction = Navigation.directions[Navigation.next];
 
-                    switch(next_direction)
-                    {
-                        case 'L':
-                            turn_direction(LEFT_TURN);
-                            break;
-                        case 'R':
-                            turn_direction(RIGHT_TURN);
-                            break;
-                        case 'S':
-                            first_iteration = true;
-                            drive_mode = CROSS_INTERSECTION;
-                            break;
-                        default :
-                            Status = ERROR;
-                    }
-                }
-                else
+                switch(next_direction)
                 {
-                    drive_mode = LINE_FOLLOW;
-                    Navigation.next = Navigation.next - 1;
+                    case 'L':
+                        turn_direction(LEFT_TURN);
+                        drive_mode = LINE_RECOVER;
+                        break;
+                    case 'R':
+                        turn_direction(RIGHT_TURN);
+                        drive_mode = LINE_RECOVER;
+                        break;
+                    case 'S':
+                        first_iteration = true;
+                        drive_mode = CROSS_INTERSECTION;
+                        break;
+                    case 'N':
+                        break;
+                    default :
+                        Status = ERROR;
                 }
-                on_edge = !on_edge;
+
+                Navigation.next = Navigation.next - 1;
             }
-            
             // The color was red
             last_color_red = true;
         }
@@ -156,6 +155,9 @@ TASK(TASK_drive_control)
         case CROSS_INTERSECTION:
             cross_intersection();
             break;
+        case TURN_ARROUND:
+            turn_arround();
+            break;
         case NO_MODE:
         default:
             nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
@@ -166,11 +168,6 @@ TASK(TASK_drive_control)
 
 TASK(TASK_check_navigation)
 {   
-    if(Navigation.next > -1 && !executing_task)
-    {
-        start_line_following();
-    }
-
     if (first_time)
     {
         SetRelAlarm(ALARM_drive_control, 1, 50);
@@ -206,8 +203,81 @@ TASK(TASK_check_navigation)
         first_time = false;
     }
 
+    if(Navigation.next > -1 && !executing_task)
+    {
+        char next_direction = Navigation.directions[Navigation.next];
+
+        switch(next_direction)
+        {
+            case 'L':
+                turn_direction(LEFT_TURN);
+                Navigation.next -= 1;
+                break;
+            case 'R':
+                turn_direction(RIGHT_TURN);
+                Navigation.next -= 1;
+                break;
+            default:
+                break;
+        }
+
+        start_line_following();
+    }
+
     TerminateTask();
 }
+
+void turn_arround(void)
+{
+    if(first_iteration)
+    {
+        init_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
+        init_motor_count_left  = nxt_motor_get_count(LEFT_MOTOR);
+
+        first_iteration = false;
+    }
+
+    // Calculate at which motor count the motors should stop at
+    int degrees_on_wheel_right = 180 * 
+                                 MOTOR_COUNT_PER_DEGREE + 
+                                 init_motor_count_right;
+
+    int degrees_on_wheel_left  = 180 * 
+                                 MOTOR_COUNT_PER_DEGREE -
+                                 MOTOR_INSECURITY +
+                                 init_motor_count_left;
+
+    if (nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right + 5 ||
+        nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right - 5)
+    {
+        nxt_motor_set_speed(RIGHT_MOTOR, 60, 1);
+    }
+    else 
+    {
+        nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+    }
+
+    if (nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left + 5 ||
+        nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left - 5)
+    {
+        nxt_motor_set_speed(LEFT_MOTOR, 60, 1);
+    }
+    else 
+    {
+        nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+    }
+
+    if((nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right + 5  ||
+        nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right - 5) &&
+       (nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left + 5    ||
+        nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left - 5))
+    {
+        drive_mode = NO_MODE;
+    }
+
+    return;
+}
+
 
 void cross_intersection(void)
 {
@@ -324,7 +394,7 @@ void start_line_following(void)
     GetResource(RES_SCHEDULER);
 
     executing_task = true;
-    drive_mode = LINE_FOLLOW;
+    drive_mode = LINE_RECOVER;
 
     ReleaseResource(RES_SCHEDULER);
 }
@@ -418,9 +488,6 @@ void switch_sensors(void)
 
     swap(&color_sensor, &light_sensor);
     swap(&color_motor, &light_motor);
-
-    first_iteration = true;
-    drive_mode = LINE_RECOVER;
 }
 
 bool line_found = false;
