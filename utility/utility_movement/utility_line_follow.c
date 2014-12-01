@@ -156,10 +156,10 @@ TASK(TASK_drive_control)
         case CROSS_INTERSECTION:
             cross_intersection();
             break;
+        case NO_MODE:
         default:
             nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
             nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
-            break;
     }
     TerminateTask();
 }
@@ -376,6 +376,13 @@ bool is_red_color_colorsensor(void)
     }
 
     return false;
+}
+
+void emergency_stop(void) 
+{
+    drive_mode = NO_MODE;
+
+    return;
 }
 
 void turn_direction(U8 direction) 

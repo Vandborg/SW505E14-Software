@@ -123,11 +123,11 @@
     #define LINE_FOLLOW_SPEED       60
 
     #define KP_RIGHT                21//35//27
-    #define KI_RIGHT                 4.2//0// 2
+    #define KI_RIGHT                4.2//0// 2
     #define KD_RIGHT                26.25//0//30
 
     #define KP_LEFT                 21//35//27
-    #define KI_LEFT                  4.2//0// 2
+    #define KI_LEFT                 4.2//0// 2
     #define KD_LEFT                 26.25//0//30
 
     #define INTEGRAL_MAX          1000     
@@ -146,8 +146,8 @@
     #define IDLE 'I'
     #define BUSY 'B'
     #define ERROR 'E'
-	#define OBSTACLE 'O'
-
+    #define OBSTACLE 'O'
+    
     // Driving modes
     #define LINE_FOLLOW         0
     #define LINE_RECOVER        1
