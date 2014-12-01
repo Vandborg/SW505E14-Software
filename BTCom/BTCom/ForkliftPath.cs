@@ -111,6 +111,9 @@ namespace BTCom
                 }
             }
 
+            // Add an N in the end of the string
+            dir = dir.Insert(dir.Count(), "N");
+
             // Reverse the string
             char[] dirCharArray = dir.ToCharArray();
             string reverseDir = String.Empty;
