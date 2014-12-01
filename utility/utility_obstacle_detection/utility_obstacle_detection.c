@@ -25,12 +25,13 @@ DeclareTask(TASK_obstacle_detection);
 
 S32 distance_front = MAX_DISTANCE;
 S32 distance_rear = MAX_DISTANCE;
-bool driving_forward;
+bool use_front_sonar_sensor;
+bool use_rear_sonar_sensor;
 
 TASK(TASK_obstacle_detection)
 {
     
-    if(driving_forward)
+    if(use_front_sonar_sensor)
     {
         distance_rear = MAX_DISTANCE;
         distance_front += ecrobot_get_sonar_sensor(SONAR_SENSOR_FRONT);
@@ -45,7 +46,8 @@ TASK(TASK_obstacle_detection)
             report_obstacle_bt();
         }
     }
-    else
+
+    if(use_rear_sonar_sensor)
     {
         distance_front = MAX_DISTANCE;
         distance_rear += ecrobot_get_sonar_sensor(SONAR_SENSOR_REAR);   
