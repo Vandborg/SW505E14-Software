@@ -19,7 +19,7 @@ namespace BTComTest
             ForkliftPath fp = new ForkliftPath(p, g.getNode("b"));
 
             string actual = fp.getDirections();
-            string expected = "LSSLL";
+            string expected = "NNLSNSNNLNL";
 
             Assert.IsTrue(actual == expected);
 

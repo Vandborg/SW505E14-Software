@@ -23,7 +23,7 @@ namespace BTCom
             if(true) // Set to false if you want to communication with NXT 
             {
                 // Open the bt-connection
-                BluetoothConnection bt = new BluetoothConnection("COM5");
+                BluetoothConnection bt = new BluetoothConnection("COM3");
 
                 // TODO: Fix this peace of code
                 // bt.FetchPallet(new Path());
@@ -144,15 +144,10 @@ namespace BTCom
                 Node B = new Node("B");
                 Node C = new Node("C");
                 Node D = new Node("D");
-                Node E = new Node("E");
-                Node F = new Node("F");
                 Node G = new Node("G");
                 Node H = new Node("H");
                 Node I = new Node("I");
                 Node J = new Node("J");
-                Node K = new Node("K");
-                Node L = new Node("L");
-                Node M = new Node("M");
                 Node N = new Node("N");
                 Node O = new Node("O");
                 Node P = new Node("P");
@@ -163,15 +158,10 @@ namespace BTCom
                 warehouse.AddNode(B);
                 warehouse.AddNode(C);
                 warehouse.AddNode(D);
-                warehouse.AddNode(E);
-                warehouse.AddNode(F);
                 warehouse.AddNode(G);
                 warehouse.AddNode(H);
                 warehouse.AddNode(I);
                 warehouse.AddNode(J);
-                warehouse.AddNode(K);
-                warehouse.AddNode(L);
-                warehouse.AddNode(M);
                 warehouse.AddNode(N);
                 warehouse.AddNode(O);
                 warehouse.AddNode(P);
@@ -185,11 +175,7 @@ namespace BTCom
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 2), new Tuple<Node, int>(H, 0), 24);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 1), new Tuple<Node, int>(D, 3), 11);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 2), new Tuple<Node, int>(F, 0), 6);
-
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(E, 3), new Tuple<Node, int>(F, 1), 11);
-
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(F, 2), new Tuple<Node, int>(G, 1), 42);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 2), new Tuple<Node, int>(G, 1), 6);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 0), new Tuple<Node, int>(H, 2), 24);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 3), new Tuple<Node, int>(Q, 1), 12);
@@ -198,13 +184,8 @@ namespace BTCom
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(I, 2), new Tuple<Node, int>(J, 0), 11);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 3), new Tuple<Node, int>(L, 1), 26);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 3), new Tuple<Node, int>(N, 1), 26);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 2), new Tuple<Node, int>(Q, 0), 24);
-
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(K, 2), new Tuple<Node, int>(L, 0), 11);
-
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(L, 2), new Tuple<Node, int>(M, 0), 11);
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(L, 3), new Tuple<Node, int>(N, 1), 13);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 2), new Tuple<Node, int>(O, 0), 11);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 3), new Tuple<Node, int>(P, 1), 12);
