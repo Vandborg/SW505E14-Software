@@ -290,7 +290,7 @@ namespace BTCom
                             {
                                 Path p = CurrentJob.GetPath();
 
-                                if (p.Nodes.Count > 2)
+                                if (p.Nodes.Count >= 2)
                                 {
                                     Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
                                     Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
@@ -298,7 +298,18 @@ namespace BTCom
                                     Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
                                     f.UpdateNodes(frontNode, rearNode);
 
-                                    CurrentJob = null;   
+                                    CurrentJob = null;
+                                }
+                                else if(p.Nodes.Count == 1)
+                                {
+                                    Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+                                    Node frontNode = p.Nodes[0];
+                                    Node rearNode = f.FrontNode;
+
+                                    f.UpdateNodes(frontNode, rearNode);
+
+                                    CurrentJob = null;
                                 }
                             }
 
