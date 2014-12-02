@@ -120,7 +120,8 @@
     #define AMOUNT_OF_COLORS    10
     
     // Linefollow PID-controller definitions
-    #define LINE_FOLLOW_SPEED       60
+    #define LINE_FOLLOW_SPEED          60
+    #define LINE_FOLLOW_SPEED_REVERSE -50
 
     #define KP_RIGHT                21//35//27
     #define KI_RIGHT                4.2//0// 2
@@ -153,6 +154,7 @@
     #define LINE_RECOVER        1
     #define CROSS_INTERSECTION  2
     #define TURN_ARROUND        3
-    #define NO_MODE             4
+    #define REVERSE_FOLLOW      4
+    #define NO_MODE             5
 
 #endif

@@ -41,6 +41,7 @@ void line_recover(void);
 void line_following(void);
 void swap(U32* a, U32* b);
 void turn_arround(void);
+void reverse_follow(void);
 
 // Persistent variables for PID, and color_scan/swap
 U8 color_sensor = COLOR_SENSOR_LEFT;
@@ -153,6 +154,7 @@ TASK(TASK_drive_control)
     {
         case LINE_FOLLOW:
             line_following();
+            // reverse_follow();
             break;
         case LINE_RECOVER:
             line_recover();
@@ -162,6 +164,9 @@ TASK(TASK_drive_control)
             break;
         case TURN_ARROUND:
             turn_arround();
+            break;
+        case REVERSE_FOLLOW:
+            reverse_follow();
             break;
         case NO_MODE:
         default:
@@ -388,6 +393,40 @@ void line_following(void)
 
     nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
     nxt_motor_set_speed(RIGHT_MOTOR, powerB, 1);
+
+    last_error = error;
+
+    return;
+}
+
+void reverse_follow(void) 
+{
+    int powerA = 0;
+    int powerB = 0;
+
+    int error = 0;
+    int derivative = 0;
+    int turn = 0;
+
+    int lightLevel = get_light_level(light_sensor);
+
+    error = lightLevel - offset_left; 
+    integral = integral + error;
+    derivative = error - last_error;
+
+    turn = 
+        200 * error + 
+         0 * integral + 
+         0 * derivative;
+    
+    // This is needed because the k's are multiplied by a hundred
+    turn = turn / 100; 
+
+    powerA = LINE_FOLLOW_SPEED - turn;
+    powerB = LINE_FOLLOW_SPEED + turn; 
+
+    nxt_motor_set_speed(LEFT_MOTOR, -powerA, 1);
+    nxt_motor_set_speed(RIGHT_MOTOR, -powerB, 1);
 
     last_error = error;
 
