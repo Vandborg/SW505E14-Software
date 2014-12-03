@@ -715,11 +715,19 @@ namespace BTCom
                         return;
                     }
 
-                    Pallet p = new Pallet(Database.Instance.Data.GetNewPalletIdentifier(), name.ToUpper(), null);
-                    Database.Instance.Data.AddPallet(p);
-                    f.Payload = p;
+                    try
+                    {
+                        Pallet p = new Pallet(Database.Instance.Data.GetNewPalletIdentifier(), name.ToUpper(), null);
+                        Database.Instance.Data.AddPallet(p);
+                        f.Payload = p;
 
-                    printSuccess("Pallet added.");
+                        printSuccess("Pallet added.");
+                    }
+                    catch (PalletException e)
+                    {
+                        printError(e.Message);
+                        return;
+                    }
                 }
                 else
                 {
@@ -728,14 +736,30 @@ namespace BTCom
                     try
                     {
                         Node n = g.getNode(location);
-                        Pallet p = new Pallet(Database.Instance.Data.GetNewPalletIdentifier(), name.ToUpper(), n);
-                        Database.Instance.Data.AddPallet(p);
 
-                        printSuccess("Pallet added.");
+                        if (n.HasPallet)
+                        {
+                            printError("Node '" + n.Name + "' is already containing a pallet.");
+                            return; 
+                        }
+
+                        try
+                        {
+                            Pallet p = new Pallet(Database.Instance.Data.GetNewPalletIdentifier(), name.ToUpper(), n);
+                            Database.Instance.Data.AddPallet(p);
+
+                            printSuccess("Pallet added.");
+                        }
+                        catch (PalletException e)
+                        {
+                            printError(e.Message);
+                            return;
+                        }
                     }
                     catch (NodeException e)
                     {
                         printError(e.Message);
+                        return;
                     }
                 }
             }

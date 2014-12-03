@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
+using BTCom.Exceptions;
 
 namespace BTCom
 {
     public class Pallet : DataEntry
     {
         public String Name { get; set; }
-
         public Node Location { get; set; }
 
         public Pallet()
@@ -15,6 +16,11 @@ namespace BTCom
 
         public Pallet(int identifier, String name, Node location)
         {
+            if (Database.Instance.Data.Pallets.Any(x => String.Equals(x.Value.Name, name, StringComparison.CurrentCultureIgnoreCase)))
+            {
+                throw new PalletException("Pallet with name '" + name + "' already exists.");
+            }
+
             Identifier = identifier;
             Name = name;
             Location = location;

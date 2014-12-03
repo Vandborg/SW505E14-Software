@@ -34,6 +34,11 @@ namespace BTCom
             set { _blockedNeighbours = value; }
         }
 
+        public bool HasPallet {
+            get{ return Database.Instance.Data.Pallets.Any(palletPair => palletPair.Value.Location.Equals(this)); }
+            set {} 
+        }
+
         public Node(string name)
         {
             Name = name;
