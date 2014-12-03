@@ -10,8 +10,8 @@ namespace BTCom
 {
     public class ForkliftPath
     {
-        private static readonly char[,] navigationTable = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
-                                                                           {'S','R','#','L'}, {'L','S','R','#'} };
+        public static readonly char[,] navigationTable = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
+                                                                          {'S','R','#','L'}, {'L','S','R','#'} };
 
         private readonly List<Char> forkliftPath = new List<Char>();
 
@@ -41,7 +41,8 @@ namespace BTCom
             }
 
             // Check if the initial node is a neighbour of the first node in the path
-            if (path.Nodes.FirstOrDefault().Neighbours.FindAll(x => x.Key != null && x.Key.Equals(this.initialNode)).Count == 0)
+            if (path.Nodes.FirstOrDefault().Neighbours.FindAll(x => x.Key != null && x.Key.Equals(this.initialNode)).Count == 0
+                && path.Nodes.FirstOrDefault().BlockedNeighbours.FindAll(x => x.Key != null && x.Key.Equals(this.initialNode)).Count == 0)
             {
                 throw new NodeException("Could not find initial node '" + this.initialNode.Name + "' in the neighbours of node '" + path.Nodes.FirstOrDefault().Name + "'");
             }
@@ -53,7 +54,18 @@ namespace BTCom
                 return;
             }
 
-            int initialIndex = path.Nodes[0].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
+            int initialIndex = 0;
+            
+            // Check if the initial node is in neighbours
+            if (path.Nodes[0].Neighbours.FindAll(x => x.Key != null && x.Key.Equals(initialNode)).Count > 0)
+            {
+                initialIndex = path.Nodes[0].Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
+            }
+            // The initial node was not in neighbours, then it must be in blocked neighbours
+            else
+            {
+                initialIndex = path.Nodes[0].BlockedNeighbours.FindIndex(x => x.Key != null && x.Key.Equals(initialNode));
+            }
 
             int fromIndex = initialIndex;
             int toIndex = -1;
@@ -78,12 +90,38 @@ namespace BTCom
 
         // Method to convert a ForkliftPath to the desired NXT format
         public string getDirections()
-        {
-            forkliftPath.Reverse();
-            String s = new string(forkliftPath.ToArray());
-            forkliftPath.Reverse();
+        {            
+            String dir = new string(forkliftPath.ToArray());
 
-            return s;
+            // Insert a N after each L or R
+            for (int i = 0; i < dir.Count(); i++)
+            {
+                if (dir[i] == 'L' || dir[i] == 'R')
+                {
+                    dir = dir.Insert(i + 1, "N");
+                }
+            }
+            // Insert an S before each S unless it is the first S
+            for (int i = 0; i < dir.Count(); i++)
+            {
+                if (i > 0 && dir[i] == 'S')
+                {
+                    dir = dir.Insert(i, "N");
+                    i++;
+                }
+            }
+
+            // Add an N in the end of the string
+            dir = dir.Insert(dir.Count(), "N");
+
+            // Reverse the string
+            char[] dirCharArray = dir.ToCharArray();
+            string reverseDir = String.Empty;
+            for (int i = dirCharArray.Length - 1; i > -1; i--)
+            {
+                reverseDir += dirCharArray[i];
+            }
+            return reverseDir;
         }
 
         public override string ToString()

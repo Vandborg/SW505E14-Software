@@ -120,20 +120,41 @@
     #define AMOUNT_OF_COLORS    10
     
     // Linefollow PID-controller definitions
-    #define LINE_FOLLOW_SPEED  60
+    #define LINE_FOLLOW_SPEED          60
+    #define LINE_FOLLOW_SPEED_REVERSE -50
 
-    #define KP                 27
-    #define KI                  2
-    #define KD                 30
+    #define KP_RIGHT                21//35//27
+    #define KI_RIGHT                4.2//0// 2
+    #define KD_RIGHT                26.25//0//30
+
+    #define KP_LEFT                 21//35//27
+    #define KI_LEFT                 4.2//0// 2
+    #define KD_LEFT                 26.25//0//30
+
+    #define INTEGRAL_MAX          1000     
+    #define INTEGRAL_MIN -INTEGRAL_MAX
+
+    // Cross intersection PID controller
+    #define KP_STRAIGHT              1//35//27
+    #define KI_STRAIGHT              0.5//0// 2
+    #define KD_STRAIGHT              2//0//30      
 
     // Turn directions
     #define RIGHT_TURN          1
     #define LEFT_TURN           0 
 
     // Device statuses
-    #define IDLE 'I'
-    #define BUSY 'B'
-    #define ERROR 'E'
+    #define IDLE     'I'
+    #define BUSY     'B'
+    #define ERROR    'E'
+    #define OBSTACLE 'O'
     
+    // Driving modes
+    #define LINE_FOLLOW         0
+    #define LINE_RECOVER        1
+    #define CROSS_INTERSECTION  2
+    #define TURN_ARROUND        3
+    #define REVERSE_FOLLOW      4
+    #define NO_MODE             5
 
 #endif

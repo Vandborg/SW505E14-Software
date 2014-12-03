@@ -19,5 +19,12 @@
      */
     void stop_line_following(void);
 
+
+    /* 
+     * Function that stops PALL-E.
+     * Returns nothing
+     * Takes no parameters
+     */
+     void emergency_stop(void);
 #endif
 

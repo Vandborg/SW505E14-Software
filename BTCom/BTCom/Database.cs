@@ -80,7 +80,7 @@ namespace BTCom
             // Make sure that the file exists
             if (!System.IO.File.Exists((DatabaseName)))
             {
-                this.Save();
+                Save();
             }
 
             string json = System.IO.File.ReadAllText(DatabaseName);

@@ -24,14 +24,12 @@ int current_distance(void)
     int distance_left = (nxt_motor_get_count(LEFT_MOTOR) -
                         start_motor_count_left) * 
                         WHEEL_CIRCUMFERENCE_MM / 
-                        DEGREES_IN_CIRCLE / 
-                        MM_TO_CM;
+                        DEGREES_IN_CIRCLE;
 
     int distance_right = (nxt_motor_get_count(RIGHT_MOTOR) - 
                          start_motor_count_right) *
                          WHEEL_CIRCUMFERENCE_MM / 
-                         DEGREES_IN_CIRCLE / 
-                         MM_TO_CM;
+                         DEGREES_IN_CIRCLE;
 
     int distance_average = (distance_left + distance_right) / 2;
 

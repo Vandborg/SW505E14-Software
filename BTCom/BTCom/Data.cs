@@ -12,7 +12,6 @@ namespace BTCom
         public Dictionary<int, Path> Paths = new Dictionary<int, Path>();
         public Dictionary<int, Forklift> Forklifts = new Dictionary<int, Forklift>();
         public Dictionary<int, Job> Jobs = new Dictionary<int, Job>();
-        public Dictionary<int, DebugJob> DebugJobs = new Dictionary<int, DebugJob>();
 
         public Data()
         { 
@@ -30,18 +29,12 @@ namespace BTCom
                 Colors.Remove(color.Identifier);
                 Colors.Add(color.Identifier, color);
             }
-            Database.Instance.Save();
         }
 
         public bool RemoveColor(Color color)
         {
             bool result = Colors.Remove(color.Identifier);
             
-            if (result)
-            {
-                Database.Instance.Save();
-            }
-
             return result;
         }
 
@@ -56,18 +49,12 @@ namespace BTCom
                 Lights.Remove(light.Identifier);
                 Lights.Add(light.Identifier, light);
             }
-            Database.Instance.Save();   
         }
 
         public bool RemoveLight(Light light)
         {
             bool result = Lights.Remove(light.Identifier);
-
-            if (result)
-            {
-                Database.Instance.Save();
-            }
-
+            
             return result;
         }
 
@@ -82,18 +69,12 @@ namespace BTCom
                 Graphs.Remove(graph.Identifier);
                 Graphs.Add(graph.Identifier, graph);
             }
-            Database.Instance.Save();
         }
 
         public bool RemoveGraph(Graph graph)
         {
             bool result = Graphs.Remove(graph.Identifier);
-
-            if (result)
-            {
-                Database.Instance.Save();
-            }
-
+            
             return result;
         }
 
@@ -108,18 +89,12 @@ namespace BTCom
                 Paths.Remove(path.Identifier);
                 Paths.Add(path.Identifier, path);
             }
-            Database.Instance.Save();
         }
 
         public bool RemovePath(Path path)
         {
             bool result = Paths.Remove(path.Identifier);
-
-            if (result)
-            {
-                Database.Instance.Save();
-            }
-
+            
             return result;
         }
 
@@ -134,18 +109,12 @@ namespace BTCom
                 Forklifts.Remove(forklift.Identifier);
                 Forklifts.Add(forklift.Identifier, forklift);
             }
-            Database.Instance.Save();
         }
 
         public bool RemoveForklift(Forklift forklift)
         {
             bool result = Forklifts.Remove(forklift.Identifier);
-
-            if (result)
-            {
-                Database.Instance.Save();
-            }
-
+            
             return result;
         }
 
@@ -160,17 +129,11 @@ namespace BTCom
                 Jobs.Remove(job.Identifier);
                 Jobs.Add(job.Identifier, job);
             }
-            Database.Instance.Save();
         }
 
         public bool RemoveJob(Job job)
         {
             bool result = Jobs.Remove(job.Identifier);
-
-            if (result)
-            {
-                Database.Instance.Save();
-            }
 
             return result;
         }
@@ -189,47 +152,5 @@ namespace BTCom
 
             return max + 1;
         }
-
-        public void AddDebugJob(DebugJob debugJob)
-        {
-            try
-            {
-                DebugJobs.Add(debugJob.Identifier, debugJob);
-            }
-            catch (ArgumentException)
-            {
-                DebugJobs.Remove(debugJob.Identifier);
-                DebugJobs.Add(debugJob.Identifier, debugJob);
-            }
-            Database.Instance.Save();
-        }
-
-        public bool RemoveDebugJob(DebugJob debugJob)
-        {
-            bool result = DebugJobs.Remove(debugJob.Identifier);
-
-            if (result)
-            {
-                Database.Instance.Save();
-            }
-
-            return result;
-        }
-
-        public int GetNewDebugJobIdentifier()
-        {
-            int max = -1;
-
-            foreach (KeyValuePair<int, DebugJob> debugJob in DebugJobs)
-            {
-                if (debugJob.Key > max)
-                {
-                    max = debugJob.Key;
-                }
-            }
-
-            return max + 1;
-        }
-
     }
 }

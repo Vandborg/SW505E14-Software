@@ -198,8 +198,6 @@ void create_path_bt(char* package)
     // we are currently doing. 
     Navigation.next = direction_count-1;
     Navigation.type_of_task = package[1];
-    Status = BUSY;
-    update_status_bt();
 }
 
 void update_status_bt(void)
@@ -225,31 +223,48 @@ void report_obstacle_bt(void)
 
     // Send report obstacle package with the current job index to the pc.
     send_package_bt(TYPE_REPORT_OBSTACLE, index_str);
+
+    Status = OBSTACLE;
+    Navigation.next = -1;
 }
 
 TASK(TASK_consume_bluetooth) 
 {   
     // If the NXT is idling, tell the pc and get a new task. 
-    if(Status == IDLE)
+    if(Status == IDLE || Status == OBSTACLE)
     {
         update_status_bt();
 
-        // random wait for stuff to work
+        // random wait for stuff to work. DO NOT REMOVE THIS EVER
         systick_wait_ms(100);
 
         // Array containing new task from PC
         char new_task[128] = {0};
         if(read_buffer_bt(new_task) != 0)
         {
+            // If stuff read on the bt buffer, make status busy and tell the pc.
+            Status = BUSY;
+            update_status_bt();
+            
             // If a new task has been fetched, call function to compute path.
             create_path_bt(new_task);
         }
     }
-    // If the status is error, tell the pc. 
-    else if(Status == ERROR)
+    // If the status is error or busy, tell the pc. 
+    else if(Status == ERROR || Status == BUSY)
     {
         update_status_bt();
+        char garbage[128] = {0};
+        read_buffer_bt(garbage);
     }
+
+    char buffer[15];
+    char buffer2[2];
+    lcd_display_line(LCD_LINE_ONE, Navigation.directions, true);
+    lcd_display_line(LCD_LINE_TWO, int_to_string(Navigation.next, buffer), true);
+    buffer2[0] = Status;
+    buffer2[1] = '\0';
+    lcd_display_line(LCD_LINE_THREE, buffer2, true);
 
     TerminateTask();
 }

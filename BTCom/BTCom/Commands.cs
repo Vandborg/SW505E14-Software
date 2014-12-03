@@ -18,12 +18,16 @@ namespace BTCom
 
         private const String COMMAND_STATUS = "status";
         private const String COMMAND_JOBLIST = "joblist";
-        private const String COMMAND_DEBUG_NAVIGATE = "debug";
         private const String COMMAND_DELIVER = "deliver";
+        private const String COMMAND_DIRECTIONS = "directions";
+        private const String COMMAND_DEBUG = "debug";
         private const String COMMAND_FETCH = "fetch";
         private const String COMMAND_NAVIGATE = "navigate";
         private const String COMMAND_POSITION = "position";
+        private const String COMMAND_CURRENTJOB = "currentjob";
         private const String COMMAND_CLEAR = "clear";
+        private const String COMMAND_SAVE = "save";
+        private const String COMMAND_EXIT = "exit";
 
         private const String COMMAND_ARGUMENT_CLEAR = "clear";
 
@@ -166,16 +170,15 @@ namespace BTCom
                     joblist_help();
                 }
             }
-            // Check if the command is to add a new debug job
-            else if (commandIdentifier == COMMAND_DEBUG_NAVIGATE)
+            else if (commandIdentifier == COMMAND_CURRENTJOB)
             {
-                if (arguments == 1)
+                if (arguments == 0)
                 {
-                    Commands.debug_navigate(commandSplit[0]);
+                    Commands.current_job();
                 }
                 else
                 {
-                    debug_navigate_help();
+                    current_job_help();
                 }
             }
             // Check if the command is "deliver", "fetch" or "navigate"
@@ -185,11 +188,25 @@ namespace BTCom
             {
                 if (arguments == 1)
                 {
-                    movement(commandIdentifier, commandSplit[0]);
+                    moveNode(commandIdentifier, commandSplit[0]);
                 }
                 else
                 {
-                    movement_help();
+                    moveNode_help();
+                }
+            }
+            else if (commandIdentifier == COMMAND_DIRECTIONS)
+            {
+                if (arguments == 1)
+                {
+                    directions(commandSplit[0]);
+                }
+            }
+            else if (commandIdentifier == COMMAND_DEBUG)
+            {
+                if (arguments == 1)
+                {
+                    debug(commandSplit[0]);
                 }
             }
             else if (commandIdentifier == COMMAND_POSITION)
@@ -218,6 +235,28 @@ namespace BTCom
                     clear_help();
                 }
             }
+            else if (commandIdentifier == COMMAND_SAVE)
+            {
+                if (arguments == 0)
+                {
+                    Commands.save();
+                }
+                else
+                {
+                    save_help();
+                }
+            }
+            else if (commandIdentifier == COMMAND_EXIT)
+            {
+                if (arguments == 0)
+                {
+                    Commands.exit();
+                }
+                else
+                {
+                    exit_help();
+                }
+            }
             // Some unknown command, show the help
             else
             {
@@ -230,10 +269,13 @@ namespace BTCom
             help_help(false);
             status_help(false);
             joblist_help(false);
-            debug_navigate_help(false);
-            movement_help(false);
+            moveNode_help(false);
+            directions_help(false);
+            debug_help(false);
             position_help(false);
             clear_help(false);
+            save_help(false);
+            exit_help(false);
         }
 
         private static void help_help(bool incorrect_use = true)
@@ -268,7 +310,7 @@ namespace BTCom
             int c = 0;
             foreach (KeyValuePair<int, Job> job in Database.Instance.Data.Jobs)
             {
-                Console.WriteLine("Job #" + job.Key + ": " + job.Value.ToString());
+                Console.WriteLine(job.Value.ToString());
                 c++;
             }
 
@@ -285,7 +327,6 @@ namespace BTCom
             {
                 // Remove all jobs
                 Database.Instance.Data.Jobs = new Dictionary<int, Job>();
-                Database.Instance.Save();
 
                 printSuccess("Joblist was cleared");
             }
@@ -348,23 +389,7 @@ namespace BTCom
             Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\" / \"help\"]");
         }
 
-        private static void debug_navigate(string directions)
-        {
-            DebugJob d = new DebugJob(Database.Instance.Data.GetNewDebugJobIdentifier(), BluetoothConnection.TYPE_NAVIGATE_TO, directions);
-            Database.Instance.Data.AddDebugJob(d);
-            printSuccess("Debug job added");
-        }
-
-        private static void debug_navigate_help(bool incorrect_use = true)
-        {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
-            Console.WriteLine("\"debug\" {directions}");
-        }
-
-        private static void movement(string type, string node)
+        private static void moveNode(string type, string node)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -380,31 +405,98 @@ namespace BTCom
                 return;
             }
 
-            byte movementType = 0;
-
             if (type == COMMAND_DELIVER)
             {
-                movementType = BluetoothConnection.TYPE_DELIVER_PALLET;
+                try
+                {
+                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.deliver));
+                    printSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    printError(e.Message);
+                }
             }
             else if (type == COMMAND_FETCH)
             {
-                movementType = BluetoothConnection.TYPE_FETCH_PALLET;
+                try 
+                {
+                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.fetch));
+                    printSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    printError(e.Message);
+                }
             }
             else if (type == COMMAND_NAVIGATE)
             {
-                movementType = BluetoothConnection.TYPE_NAVIGATE_TO;
+                try
+                {
+                    Database.Instance.Data.AddJob(new NavigateJob(Database.Instance.Data.GetNewJobIdentifier(), destination));
+                    printSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    printError(e.Message);
+                }
+                
             }
-
-            Database.Instance.Data.AddJob((new Job(Database.Instance.Data.GetNewJobIdentifier(), movementType, destination)));
         }
 
-        private static void movement_help(bool incorrect_use = true)
+        private static void moveNode_help(bool incorrect_use = true)
         {
             if (incorrect_use)
             {
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"fetch\" / \"deliver\" / \"navigate\" {node}");
+        }
+
+        private static void directions(string directions)
+        {
+            try
+            {
+                Database.Instance.Data.AddJob(new NavigateJob(Database.Instance.Data.GetNewJobIdentifier(), directions));
+                printSuccess("Job added");
+            }
+            catch (Exception e)
+            {
+                printError(e.Message);
+            }
+            
+        }
+
+        private static void directions_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"directions\" {L | S | R}*");
+        }
+
+        private static void debug(string directions)
+        {
+            try
+            {
+                DebugJob dj = new DebugJob(Database.Instance.Data.GetNewJobIdentifier(), directions);
+                Database.Instance.Data.AddJob(dj);
+            }
+            catch (FormatException e)
+            {
+                printError(e.Message);
+            }
+            
+        }
+
+        private static void debug_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"debug\" {L | S | R}*");
         }
 
         private static void position()
@@ -456,6 +548,27 @@ namespace BTCom
             Console.WriteLine("\"position\" [FrontNode RearNode]");
         }
 
+        private static void current_job()
+        {
+            if (BluetoothConnection.CurrentJob != null)
+            {
+                Console.WriteLine("Current job: '" + BluetoothConnection.CurrentJob.ToString() + "'");
+            }
+            else
+            {
+                Console.WriteLine("No current job");
+            }
+        }
+
+        private static void current_job_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"currentjob\"");
+        }
+
         private static void clear()
         {
             Console.Clear();
@@ -468,6 +581,44 @@ namespace BTCom
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"clear\"");
+        }
+
+        private static void save()
+        {
+            Database.Instance.Save();
+
+            printSuccess("Saved database");
+        }
+
+        private static void save_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"save\"");
+        }
+
+        private static void exit()
+        {
+            printSuccess("Saving database...");
+
+            Database.Instance.Save();
+
+            printSuccess("Database saved, bye bye");
+
+            System.Threading.Thread.Sleep(251);
+
+            Environment.Exit(1);
+        }
+
+        private static void exit_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"exit\"");
         }
     }
 }

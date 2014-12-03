@@ -7,7 +7,7 @@ using BTCom.Exceptions;
 
 namespace BTCom
 {
-    public enum Status { UNKNOWN, IDLE, BUSY, ERROR }
+    public enum Status { UNKNOWN, IDLE, BUSY, OBSTACLE, ERROR }
 
     public class Forklift : DataEntry
     {
@@ -28,10 +28,8 @@ namespace BTCom
                 throw new NodeException("Front- and rear-nodes are not neighbours");
             }
 
-            this.RearNode = rearNode;
-            this.FrontNode = frontNode;
-
-            Database.Instance.Save();
+            RearNode = rearNode;
+            FrontNode = frontNode;
 
             return true;
         }

@@ -51,6 +51,7 @@ namespace BTComTest
             var expected = new Color();
             
             Database.Instance.Data.AddColor(expected);
+            Database.Instance.Save();
             Database.Instance.Load();
 
             var actual = Database.Instance.Data.Colors.First().Value;
@@ -64,6 +65,7 @@ namespace BTComTest
             var expected = new Color("testcolor", 1);
 
             Database.Instance.Data.AddColor(expected);
+            Database.Instance.Save();
             Database.Instance.Load();
 
             var actual = Database.Instance.Data.Colors.First().Value;
@@ -77,6 +79,7 @@ namespace BTComTest
             var expected = new Color("testcolor", 1, 1, 2, 3);
 
             Database.Instance.Data.AddColor(expected);
+            Database.Instance.Save();
             Database.Instance.Load();
 
             var actual = Database.Instance.Data.Colors.First().Value;
@@ -126,6 +129,7 @@ namespace BTComTest
             var expected = new Light();
 
             Database.Instance.Data.AddLight(expected);
+            Database.Instance.Save();
             Database.Instance.Load();
 
             var actual = Database.Instance.Data.Lights.First().Value;
@@ -139,6 +143,7 @@ namespace BTComTest
             var expected = new Light("testlight", 1);
 
             Database.Instance.Data.AddLight(expected);
+            Database.Instance.Save();
             Database.Instance.Load();
 
             var actual = Database.Instance.Data.Lights.First().Value;
@@ -152,13 +157,13 @@ namespace BTComTest
             var expected = new Light("testlight", 1, 255);
 
             Database.Instance.Data.AddLight(expected);
+            Database.Instance.Save();
             Database.Instance.Load();
 
             var actual = Database.Instance.Data.Lights.First().Value;
 
             Assert.IsTrue(expected.Equals(actual));
         }
-
 
         [TestCleanup()]
         public void Cleanup()

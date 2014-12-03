@@ -110,7 +110,7 @@ int play_sound(int sound)
 			break;
 
 		case SOUND_TICK:
-			play_note(NOTE_D_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_LOW, false);
+			play_note(NOTE_D_4, NOTE_WAIT_EIGHTH, SOUND_LEVEL_HIGH, false);
 			break;
 
 		default:
