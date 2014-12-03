@@ -35,7 +35,7 @@ namespace BTCom
         }
 
         public bool HasPallet {
-            get{ return Database.Instance.Data.Pallets.Any(palletPair => palletPair.Value.Location.Equals(this)); }
+            get { return Database.Instance.Data.Pallets.Any(palletPair => palletPair.Value.Location != null && palletPair.Value.Location.Equals(this)); }
             set {} 
         }
 
