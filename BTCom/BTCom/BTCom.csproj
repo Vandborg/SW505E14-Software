@@ -79,6 +79,7 @@
     <Compile Include="DebugJob.cs" />
     <Compile Include="Edge.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
+    <Compile Include="Pallet.cs" />
     <Compile Include="PalletJob.cs" />
     <Compile Include="Forklift.cs" />
     <Compile Include="ForkliftPath.cs" />
