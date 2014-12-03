@@ -14,23 +14,23 @@ namespace BTCom
         public Node RearNode { get; set; }
         public Node FrontNode { get; set; }
         public Status Status { get; set; }
-        private Pallet _pallet;
-        public Pallet Pallet
+        private Pallet _payload;
+        public Pallet Payload
         {
-            get { return _pallet; }
+            get { return _payload; }
             set
             {
-                _pallet = value;
-                if (_pallet != null)
+                _payload = value;
+                if (_payload != null)
                 {
-                    _pallet.Location = null;
+                    _payload.Location = null;
                 }
             }
         }
 
         public bool HasPallet
         {
-            get { return Pallet != null; }
+            get { return Payload != null; }
             set { }
         }
 

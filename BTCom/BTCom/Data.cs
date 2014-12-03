@@ -173,5 +173,20 @@ namespace BTCom
 
             return result;
         }
+
+        public int GetNewPalletIdentifier()
+        {
+            int max = -1;
+
+            foreach (KeyValuePair<int, Pallet> pallet in Pallets)
+            {
+                if (pallet.Key > max)
+                {
+                    max = pallet.Key;
+                }
+            }
+
+            return max + 1;
+        }
     }
 }

@@ -13,8 +13,9 @@ namespace BTCom
     {
         private const String HELP = "help";
 
-        private const String JOBLIST_REMOVE = "remove";
-        private const String JOBLIST_CLEAR = "clear";
+        private const String SUBCOMMAND_ADD = "add";
+        private const String SUBCOMMAND_REMOVE = "remove";
+        private const String SUBCOMMAND_CLEAR = "clear";
 
         private const String COMMAND_STATUS = "status";
         private const String COMMAND_JOBLIST = "joblist";
@@ -279,6 +280,10 @@ namespace BTCom
                 {
                     Commands.palletlist(commandSplit[0]);
                 }
+                else if (arguments == 3)
+                {
+                    Commands.palletlist(commandSplit[0], commandSplit[1], commandSplit[2]);
+                }
                 else
                 {
                     printIncorrectUse();
@@ -386,7 +391,7 @@ namespace BTCom
 
         public static void joblist(string subCommand)
         {
-            if (subCommand.ToLower() == JOBLIST_CLEAR)
+            if (subCommand.ToLower() == SUBCOMMAND_CLEAR)
             {
                 // Remove all jobs
                 Database.Instance.Data.Jobs = new Dictionary<int, Job>();
@@ -402,7 +407,7 @@ namespace BTCom
 
         public static void joblist(string subCommand, string identifier)
         {
-            if (subCommand.ToLower() == JOBLIST_REMOVE)
+            if (subCommand.ToLower() == SUBCOMMAND_REMOVE)
             {
                 int i;
 
@@ -696,13 +701,58 @@ namespace BTCom
             }
         }
 
+        private static void palletlist(string subcommand, string name, string location)
+        {
+            if (subcommand == SUBCOMMAND_ADD)
+            {
+                if (location == "forklift")
+                {
+                    Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+                    if (f.HasPallet)
+                    {
+                        printError("Forklift is already carrying pallet: '" + f.Payload.Name + "'");
+                        return;
+                    }
+
+                    Pallet p = new Pallet(Database.Instance.Data.GetNewPalletIdentifier(), name.ToUpper(), null);
+                    Database.Instance.Data.AddPallet(p);
+                    f.Payload = p;
+
+                    printSuccess("Pallet added.");
+                }
+                else
+                {
+                    Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+
+                    try
+                    {
+                        Node n = g.getNode(location);
+                        Pallet p = new Pallet(Database.Instance.Data.GetNewPalletIdentifier(), name.ToUpper(), n);
+                        Database.Instance.Data.AddPallet(p);
+
+                        printSuccess("Pallet added.");
+                    }
+                    catch (NodeException e)
+                    {
+                        printError(e.Message);
+                    }
+                }
+            }
+            else
+            {
+                printIncorrectUse();
+                palletlist_help();
+            }
+        }
+
         private static void payload()
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
             if (f.HasPallet)
             {
-                Console.WriteLine(f.Pallet.ToString());
+                Console.WriteLine(f.Payload.ToString());
             }
             else
             {
@@ -716,7 +766,7 @@ namespace BTCom
 
             if (f.HasPallet)
             {
-                printError("Forklift is already carrying pallet: '" + f.Pallet.Name + "'");
+                printError("Forklift is already carrying pallet: '" + f.Payload.Name + "'");
                 return;
             }
 
@@ -737,7 +787,7 @@ namespace BTCom
                 return;
             }
 
-            Database.Instance.Data.Forklifts.FirstOrDefault().Value.Pallet = pallet;
+            Database.Instance.Data.Forklifts.FirstOrDefault().Value.Payload = pallet;
             printSuccess("Payload updated");
         }
 
@@ -748,7 +798,7 @@ namespace BTCom
 
         private static void palletlist_help()
         {
-            Console.WriteLine("\"palletlist\" [\"clear\"]");
+            Console.WriteLine("\"palletlist\" [\"clear\" / (\"add\" {name} (\"forklift\" / {node})) / (\"remove\" {pallet})]");
         }
 
         private static void clear()
