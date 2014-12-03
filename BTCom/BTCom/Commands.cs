@@ -25,6 +25,8 @@ namespace BTCom
         private const String COMMAND_NAVIGATE = "navigate";
         private const String COMMAND_POSITION = "position";
         private const String COMMAND_CURRENTJOB = "currentjob";
+        private const String COMMAND_LIST = "list";
+        private const String COMMAND_LIST_PALLETS = "pallets";
         private const String COMMAND_CLEAR = "clear";
         private const String COMMAND_SAVE = "save";
         private const String COMMAND_EXIT = "exit";
@@ -190,13 +192,26 @@ namespace BTCom
                      || commandIdentifier == COMMAND_FETCH
                      || commandIdentifier == COMMAND_NAVIGATE)
             {
-                if (arguments == 1)
+                if (arguments == 2)
                 {
-                    moveNode(commandIdentifier, commandSplit[0]);
+                    if (commandSplit[0] == "node")
+                    {
+                        moveNode(commandIdentifier, commandSplit[1]);    
+                    }
+                    else if(commandSplit[0] == "pallet")
+                    {
+                        movePallet(commandIdentifier, commandSplit[1]);
+                    }
+                    else
+                    {
+                        moveNode_help();
+                        movePallet_help(false);
+                    }
                 }
                 else
                 {
                     moveNode_help();
+                    movePallet_help(false);
                 }
             }
             else if (commandIdentifier == COMMAND_DIRECTIONS)
@@ -239,6 +254,17 @@ namespace BTCom
                     clear_help();
                 }
             }
+            else if (commandIdentifier == COMMAND_LIST)
+            {
+                if (arguments == 1)
+                {
+                    Commands.list(commandSplit[0]);
+                }
+                else
+                {
+                    clear_help();
+                }
+            }
             else if (commandIdentifier == COMMAND_SAVE)
             {
                 if (arguments == 0)
@@ -274,9 +300,11 @@ namespace BTCom
             status_help(false);
             joblist_help(false);
             moveNode_help(false);
+            movePallet_help(false);
             directions_help(false);
             debug_help(false);
             position_help(false);
+            list_help(false);
             clear_help(false);
             save_help(false);
             exit_help(false);
@@ -334,10 +362,6 @@ namespace BTCom
 
                 printSuccess("Joblist was cleared");
             }
-            else if (subCommand.ToLower() == HELP)
-            {
-                joblist_help(false);
-            }
             else
             {
                 joblist_help();
@@ -390,7 +414,7 @@ namespace BTCom
             {
                 Console.WriteLine("Incorrect use.");
             }
-            Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\" / \"help\"]");
+            Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\"]");
         }
 
         private static void moveNode(string type, string node)
@@ -454,9 +478,67 @@ namespace BTCom
             {
                 Console.WriteLine("Incorrect use.");
             }
-            Console.WriteLine("\"fetch\" / \"deliver\" / \"navigate\" {node}");
+            Console.WriteLine("[\"fetch\" / \"deliver\" / \"navigate\"] \"node\" {node}");
         }
 
+        private static void movePallet(string type, string palletName)
+        {
+            Pallet pallet = null;
+
+            foreach (KeyValuePair<int, Pallet> palletPair in Database.Instance.Data.Pallets)
+            {
+                if (palletPair.Value.Name.ToLower() == palletName.ToLower())
+                {
+                    pallet = palletPair.Value;
+                    break;
+                }
+            }
+
+            if (pallet == null)
+            {
+                printError("Could not find pallet with name '" + palletName + "'");
+                return;
+            }
+
+            if (type == COMMAND_DELIVER)
+            {
+                try
+                {
+                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), pallet, PalletJobType.deliver));
+                    printSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    printError(e.Message);
+                }
+            }
+            else if (type == COMMAND_FETCH)
+            {
+                try 
+                {
+                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), pallet, PalletJobType.fetch));
+                    printSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    printError(e.Message);
+                }
+            }
+            else if (type == COMMAND_NAVIGATE)
+            {
+                movePallet_help();
+            }
+        }
+
+        private static void movePallet_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"fetch\" \"pallet\" {pallet}");
+        }
+       
         private static void directions(string directions)
         {
             try
@@ -571,6 +653,37 @@ namespace BTCom
                 Console.WriteLine("Incorrect use.");
             }
             Console.WriteLine("\"currentjob\"");
+        }
+
+        private static void list(string listIdentifier)
+        {
+            if (listIdentifier == COMMAND_LIST_PALLETS)
+            {
+                Dictionary<int, Pallet> pallets = Database.Instance.Data.Pallets;
+
+                if (pallets.Count == 0)
+                {
+                    Console.WriteLine("No pallets");
+                }
+
+                foreach (KeyValuePair<int, Pallet> pallet in pallets)
+                {
+                    Console.WriteLine("#" + pallet.Key + " - " + pallet.Value.ToString());
+                }
+            }
+            else
+            {
+                list_help();
+            }
+        }
+
+        private static void list_help(bool incorrect_use = true)
+        {
+            if (incorrect_use)
+            {
+                Console.WriteLine("Incorrect use.");
+            }
+            Console.WriteLine("\"list\" \"pallets\"");
         }
 
         private static void clear()

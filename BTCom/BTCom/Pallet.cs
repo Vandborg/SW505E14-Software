@@ -1,15 +1,23 @@
-﻿namespace BTCom
+﻿using System;
+
+namespace BTCom
 {
     public class Pallet : DataEntry
     {
+        public String Name { get; set; }
+
+        public Node Location { get; set; }
+
         public Pallet()
         {
             
         }
 
-        public Pallet(int identifier)
+        public Pallet(int identifier, String name, Node location)
         {
             Identifier = identifier;
+            Name = name;
+            Location = location;
         }
 
         public override bool Equals(object obj)
@@ -25,6 +33,11 @@
 
             // Check if all properties are the same
             return sameIdentifier;
+        }
+
+        public override string ToString()
+        {
+            return "Name '" + Name + "', Location: '" + Location.Name + "'";
         }
     }
 }
