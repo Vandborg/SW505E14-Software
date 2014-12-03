@@ -12,6 +12,7 @@ namespace BTCom
         public Dictionary<int, Path> Paths = new Dictionary<int, Path>();
         public Dictionary<int, Forklift> Forklifts = new Dictionary<int, Forklift>();
         public Dictionary<int, Job> Jobs = new Dictionary<int, Job>();
+        public Dictionary<int, Pallet> Pallets = new Dictionary<int, Pallet>();
 
         public Data()
         { 
@@ -151,6 +152,26 @@ namespace BTCom
             }
 
             return max + 1;
+        }
+
+        public void AddPallet(Pallet pallet)
+        {
+            try
+            {
+                Pallets.Add(pallet.Identifier, pallet);
+            }
+            catch (ArgumentException)
+            {
+                Pallets.Remove(pallet.Identifier);
+                Pallets.Add(pallet.Identifier, pallet);
+            }
+        }
+
+        public bool RemovePallet(Pallet pallet)
+        {
+            bool result = Pallets.Remove(pallet.Identifier);
+
+            return result;
         }
     }
 }
