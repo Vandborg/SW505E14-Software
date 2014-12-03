@@ -37,7 +37,18 @@ namespace BTCom
 
         public override string ToString()
         {
-            return "Name '" + Name + "', Location: '" + Location.Name + "'";
+            String location;
+
+            if (Location != null)
+            {
+                location = "Location: '" + Location.Name + "'";
+            }
+            else
+            {
+                location = "Location: 'Carried'";
+            }
+            
+            return "Name '" + Name + "', " + location;
         }
     }
 }

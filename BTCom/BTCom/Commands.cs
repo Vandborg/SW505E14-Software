@@ -26,6 +26,7 @@ namespace BTCom
         private const String COMMAND_POSITION = "position";
         private const String COMMAND_CURRENTJOB = "currentjob";
         private const String COMMAND_PALLETLIST = "palletlist";
+        private const String COMMAND_PAYLOAD = "payload";
         private const String COMMAND_CLEAR = "clear";
         private const String COMMAND_SAVE = "save";
         private const String COMMAND_EXIT = "exit";
@@ -122,7 +123,7 @@ namespace BTCom
             // Check if there are unprocessed arguments
             if (argumentList.Count > 0)
             {
-                Console.Write("Unknown command arguments: ");
+                printError("Unknown command arguments: ");
 
                 foreach (string s in argumentList)
                 {
@@ -274,7 +275,7 @@ namespace BTCom
                 {
                     Commands.palletlist();
                 }
-                if (arguments == 1)
+                else if (arguments == 1)
                 {
                     Commands.palletlist(commandSplit[0]);
                 }
@@ -282,6 +283,22 @@ namespace BTCom
                 {
                     printIncorrectUse();
                     palletlist_help();
+                }
+            }
+            else if (commandIdentifier == COMMAND_PAYLOAD)
+            {
+                if (arguments == 0)
+                {
+                    payload();
+                }
+                else if (arguments == 1)
+                {
+                    payload(commandSplit[0]);
+                }
+                else
+                {
+                    printIncorrectUse();
+                    payload_help();
                 }
             }
             else if (commandIdentifier == COMMAND_SAVE)
@@ -326,6 +343,7 @@ namespace BTCom
             debug_help();
             position_help();
             palletlist_help();
+            payload_help();
             clear_help();
             save_help();
             exit_help();
@@ -498,7 +516,7 @@ namespace BTCom
 
             foreach (KeyValuePair<int, Pallet> palletPair in Database.Instance.Data.Pallets)
             {
-                if (palletPair.Value.Name.ToLower() == palletName.ToLower())
+                if (String.Equals(palletPair.Value.Name, palletName, StringComparison.CurrentCultureIgnoreCase))
                 {
                     pallet = palletPair.Value;
                     break;
@@ -676,6 +694,48 @@ namespace BTCom
                 printIncorrectUse();
                 palletlist_help();
             }
+        }
+
+        private static void payload()
+        {
+            Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+            if (f.HasPallet)
+            {
+                Console.WriteLine(f.Pallet.ToString());
+            }
+            else
+            {
+                Console.WriteLine("No current payload");
+            }
+        }
+
+        private static void payload(String newPayload)
+        {
+            Pallet pallet = null;
+
+            foreach (KeyValuePair<int, Pallet> palletPair in Database.Instance.Data.Pallets)
+            {
+                if (String.Equals(palletPair.Value.Name, newPayload, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    pallet = palletPair.Value;
+                    break;
+                }
+            }
+
+            if (pallet == null)
+            {
+                printError("Could not find pallet with name '" + newPayload + "'");
+                return;
+            }
+
+            Database.Instance.Data.Forklifts.FirstOrDefault().Value.Pallet = pallet;
+            printSuccess("Payload updated");
+        }
+
+        private static void payload_help()
+        {
+            Console.WriteLine("\"payload\" [\"pallet\"]");
         }
 
         private static void palletlist_help()
