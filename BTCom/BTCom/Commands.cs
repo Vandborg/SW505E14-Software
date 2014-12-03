@@ -33,12 +33,16 @@ namespace BTCom
 
         private static void printError(string s)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Error: " + s);
+            Console.ResetColor();
         }
 
         private static void printSuccess(string s)
         {
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Success: " + s);
+            Console.ResetColor();
         }
 
         private static void printInvalidCommand()
