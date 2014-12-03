@@ -25,8 +25,7 @@ namespace BTCom
         private const String COMMAND_NAVIGATE = "navigate";
         private const String COMMAND_POSITION = "position";
         private const String COMMAND_CURRENTJOB = "currentjob";
-        private const String COMMAND_LIST = "list";
-        private const String COMMAND_LIST_PALLETS = "pallets";
+        private const String COMMAND_PALLETLIST = "palletlist";
         private const String COMMAND_CLEAR = "clear";
         private const String COMMAND_SAVE = "save";
         private const String COMMAND_EXIT = "exit";
@@ -44,6 +43,13 @@ namespace BTCom
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Success: " + s);
+            Console.ResetColor();
+        }
+
+        private static void printIncorrectUse()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Incorrect use.");
             Console.ResetColor();
         }
 
@@ -142,6 +148,7 @@ namespace BTCom
                 }
                 else
                 {
+                    printIncorrectUse();
                     help_help();
                 }
             } 
@@ -153,6 +160,7 @@ namespace BTCom
                 }
                 else
                 {
+                    printIncorrectUse();
                     status_help();
                 }
             }
@@ -173,6 +181,7 @@ namespace BTCom
                 }
                 else
                 {
+                    printIncorrectUse();
                     joblist_help();
                 }
             }
@@ -184,6 +193,7 @@ namespace BTCom
                 }
                 else
                 {
+                    printIncorrectUse();
                     current_job_help();
                 }
             }
@@ -204,14 +214,16 @@ namespace BTCom
                     }
                     else
                     {
+                        printIncorrectUse();
                         moveNode_help();
-                        movePallet_help(false);
+                        movePallet_help();
                     }
                 }
                 else
                 {
+                    printIncorrectUse();
                     moveNode_help();
-                    movePallet_help(false);
+                    movePallet_help();
                 }
             }
             else if (commandIdentifier == COMMAND_DIRECTIONS)
@@ -240,6 +252,7 @@ namespace BTCom
                 }
                 else
                 {
+                    printIncorrectUse();
                     position_help();
                 }
             }
@@ -251,18 +264,24 @@ namespace BTCom
                 }
                 else
                 {
+                    printIncorrectUse();
                     clear_help();
                 }
             }
-            else if (commandIdentifier == COMMAND_LIST)
+            else if (commandIdentifier == COMMAND_PALLETLIST)
             {
+                if (arguments == 0)
+                {
+                    Commands.palletlist();
+                }
                 if (arguments == 1)
                 {
-                    Commands.list(commandSplit[0]);
+                    Commands.palletlist(commandSplit[0]);
                 }
                 else
                 {
-                    clear_help();
+                    printIncorrectUse();
+                    palletlist_help();
                 }
             }
             else if (commandIdentifier == COMMAND_SAVE)
@@ -273,6 +292,7 @@ namespace BTCom
                 }
                 else
                 {
+                    printIncorrectUse();
                     save_help();
                 }
             }
@@ -284,6 +304,7 @@ namespace BTCom
                 }
                 else
                 {
+                    printIncorrectUse();
                     exit_help();
                 }
             }
@@ -296,26 +317,22 @@ namespace BTCom
 
         private static void help()
         {
-            help_help(false);
-            status_help(false);
-            joblist_help(false);
-            moveNode_help(false);
-            movePallet_help(false);
-            directions_help(false);
-            debug_help(false);
-            position_help(false);
-            list_help(false);
-            clear_help(false);
-            save_help(false);
-            exit_help(false);
+            help_help();
+            status_help();
+            joblist_help();
+            moveNode_help();
+            movePallet_help();
+            directions_help();
+            debug_help();
+            position_help();
+            palletlist_help();
+            clear_help();
+            save_help();
+            exit_help();
         }
 
-        private static void help_help(bool incorrect_use = true)
+        private static void help_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"help\"");
         }
 
@@ -326,12 +343,8 @@ namespace BTCom
             Console.WriteLine("Status: " + f.Status);
         }
 
-        public static void status_help(bool incorrect_use = true)
+        public static void status_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"status\"");
         }
 
@@ -364,6 +377,7 @@ namespace BTCom
             }
             else
             {
+                printIncorrectUse();
                 joblist_help();
             }
         }
@@ -404,16 +418,13 @@ namespace BTCom
             }
             else
             {
+                printIncorrectUse();
                 joblist_help();
             }
         }
 
-        private static void joblist_help(bool incorrect_use = true)
+        private static void joblist_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\"]");
         }
 
@@ -468,16 +479,16 @@ namespace BTCom
                 {
                     printError(e.Message);
                 }
-                
+            }
+            else
+            {
+                printIncorrectUse();
+                moveNode_help();
             }
         }
 
-        private static void moveNode_help(bool incorrect_use = true)
+        private static void moveNode_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("[\"fetch\" / \"deliver\" / \"navigate\"] \"node\" {node}");
         }
 
@@ -526,16 +537,13 @@ namespace BTCom
             }
             else if (type == COMMAND_NAVIGATE)
             {
+                printIncorrectUse();
                 movePallet_help();
             }
         }
 
-        private static void movePallet_help(bool incorrect_use = true)
+        private static void movePallet_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"fetch\" \"pallet\" {pallet}");
         }
        
@@ -553,12 +561,8 @@ namespace BTCom
             
         }
 
-        private static void directions_help(bool incorrect_use = true)
+        private static void directions_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"directions\" {L | S | R}*");
         }
 
@@ -576,12 +580,8 @@ namespace BTCom
             
         }
 
-        private static void debug_help(bool incorrect_use = true)
+        private static void debug_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"debug\" {L | S | R}*");
         }
 
@@ -625,12 +625,8 @@ namespace BTCom
             printSuccess("Position updated");
         }
 
-        private static void position_help(bool incorrect_use = true)
+        private static void position_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"position\" [FrontNode RearNode]");
         }
 
@@ -646,44 +642,45 @@ namespace BTCom
             }
         }
 
-        private static void current_job_help(bool incorrect_use = true)
+        private static void current_job_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"currentjob\"");
         }
 
-        private static void list(string listIdentifier)
+        private static void palletlist()
         {
-            if (listIdentifier == COMMAND_LIST_PALLETS)
+            Dictionary<int, Pallet> pallets = Database.Instance.Data.Pallets;
+
+            if (pallets.Count == 0)
             {
-                Dictionary<int, Pallet> pallets = Database.Instance.Data.Pallets;
-
-                if (pallets.Count == 0)
-                {
-                    Console.WriteLine("No pallets");
-                }
-
-                foreach (KeyValuePair<int, Pallet> pallet in pallets)
-                {
-                    Console.WriteLine("#" + pallet.Key + " - " + pallet.Value.ToString());
-                }
+                Console.WriteLine("No pallets");
+                return;
             }
-            else
+
+            foreach (KeyValuePair<int, Pallet> pallet in pallets)
             {
-                list_help();
+                Console.WriteLine("#" + pallet.Key + " - " + pallet.Value.ToString());
             }
         }
 
-        private static void list_help(bool incorrect_use = true)
+        private static void palletlist(string subcommand)
         {
-            if (incorrect_use)
+            if (subcommand == COMMAND_CLEAR)
             {
-                Console.WriteLine("Incorrect use.");
+                Database.Instance.Data.Pallets = new Dictionary<int, Pallet>();
+
+                printSuccess("Pallet list cleared");
             }
-            Console.WriteLine("\"list\" \"pallets\"");
+            else
+            {
+                printIncorrectUse();
+                palletlist_help();
+            }
+        }
+
+        private static void palletlist_help()
+        {
+            Console.WriteLine("\"palletlist\" [\"clear\"]");
         }
 
         private static void clear()
@@ -691,12 +688,8 @@ namespace BTCom
             Console.Clear();
         }
 
-        private static void clear_help(bool incorrect_use = true)
+        private static void clear_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"clear\"");
         }
 
@@ -707,12 +700,8 @@ namespace BTCom
             printSuccess("Saved database");
         }
 
-        private static void save_help(bool incorrect_use = true)
+        private static void save_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"save\"");
         }
 
@@ -729,12 +718,8 @@ namespace BTCom
             Environment.Exit(1);
         }
 
-        private static void exit_help(bool incorrect_use = true)
+        private static void exit_help()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"exit\"");
         }
     }
