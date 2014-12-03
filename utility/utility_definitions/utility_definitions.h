@@ -153,8 +153,7 @@
     #define LINE_FOLLOW         0
     #define LINE_RECOVER        1
     #define CROSS_INTERSECTION  2
-    #define TURN_ARROUND        3
-    #define REVERSE_FOLLOW      4
-    #define NO_MODE             5
+    #define TURN_AROUND         3
+    #define NO_MODE             4
 
 #endif

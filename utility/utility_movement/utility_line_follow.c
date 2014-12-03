@@ -10,6 +10,7 @@
 #include "utility/utility_lcd/utility_lcd.h"
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_structs/utility_structs.h"
+#include "utility/utility_bluetooth/utility_bluetooth.h"
 
 #define COLOR_THRESHOLD 50
 #define MOTOR_COUNT_PER_DEGREE 3
@@ -40,8 +41,7 @@ void cross_intersection(void);
 void line_recover(void);
 void line_following(void);
 void swap(U32* a, U32* b);
-void turn_arround(void);
-void reverse_follow(void);
+void turn_around(void);
 
 // Persistent variables for PID, and color_scan/swap
 U8 color_sensor = COLOR_SENSOR_LEFT;
@@ -85,7 +85,8 @@ TASK(TASK_update_color_reg)
 }
 
 
-bool first_instruction = true;
+bool n_added = false;
+
 TASK(TASK_color_scan)
 {
     // There is some path left to follow
@@ -101,6 +102,10 @@ TASK(TASK_color_scan)
 
                 // The next direction in the navigation
                 char next_direction = Navigation.directions[Navigation.next];
+
+                char string[2] = {next_direction, '\0'};
+
+                lcd_display_line(LCD_LINE_SIX, string, true);
 
                 switch(next_direction)
                 {
@@ -123,6 +128,11 @@ TASK(TASK_color_scan)
                             drive_mode = LINE_RECOVER;
                         }
                         break;
+                    case 'T':
+                        first_iteration = true;
+                        // crossing_intersection = true;
+                        drive_mode = TURN_AROUND;
+                        break;
                     default :
                         Status = ERROR;
                 }
@@ -138,10 +148,44 @@ TASK(TASK_color_scan)
             last_color_red = false;
         }
     }
+    else if(Navigation.next <= -1)
+    {
+        // TODO: Handle type of task (Fetch or deliver pallet)
+        switch(Navigation.type_of_task)
+        {
+            case TYPE_DELIVER_PALLET:
+                if(!n_added)
+                {
+                    Navigation.directions[0] = 'N';
+                    Navigation.next = 0;
+                    n_added = true;
+                }
+                else
+                {
+                    
+                    // Lower fork
+                }
+                break;
+            case TYPE_FETCH_PALLET:
+                if(!n_added)
+                {
+                    // Lower
+                }
+                else 
+                {
+                    // Raise
+                }
+                break;
+            case TYPE_NAVIGATE_TO:
+                break;
+            default:
+                Status = ERROR;
+                break;
+        }
+    }
     else
     {
         stop_line_following();
-        // TODO: Handle type of task (Fetch or deliver pallet)
         Status = IDLE;
     }
     
@@ -154,7 +198,6 @@ TASK(TASK_drive_control)
     {
         case LINE_FOLLOW:
             line_following();
-            // reverse_follow();
             break;
         case LINE_RECOVER:
             line_recover();
@@ -162,11 +205,8 @@ TASK(TASK_drive_control)
         case CROSS_INTERSECTION:
             cross_intersection();
             break;
-        case TURN_ARROUND:
-            turn_arround();
-            break;
-        case REVERSE_FOLLOW:
-            reverse_follow();
+        case TURN_AROUND:
+            turn_around();
             break;
         case NO_MODE:
         default:
@@ -213,6 +253,10 @@ TASK(TASK_check_navigation)
         first_time = false;
     }
 
+    display_goto_xy(0,5);
+    display_int(drive_mode, 1);
+    display_update();
+
     if(Navigation.next > -1 && !executing_task)
     {
         char next_direction = Navigation.directions[Navigation.next];
@@ -237,7 +281,7 @@ TASK(TASK_check_navigation)
     TerminateTask();
 }
 
-void turn_arround(void)
+void turn_around(void)
 {
     if(first_iteration)
     {
@@ -248,17 +292,16 @@ void turn_arround(void)
     }
 
     // Calculate at which motor count the motors should stop at
-    int degrees_on_wheel_right = 180 * 
-                                 MOTOR_COUNT_PER_DEGREE + 
+    int degrees_on_wheel_right = (180 * 
+                                 MOTOR_COUNT_PER_DEGREE) -
+                                 MOTOR_INSECURITY + 
                                  init_motor_count_right;
 
-    int degrees_on_wheel_left  = 180 * 
-                                 MOTOR_COUNT_PER_DEGREE -
-                                 MOTOR_INSECURITY +
+    int degrees_on_wheel_left  = -(180 * 
+                                 MOTOR_COUNT_PER_DEGREE) +
                                  init_motor_count_left;
 
-    if (nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right + 5 ||
-        nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right - 5)
+    if (nxt_motor_get_count(RIGHT_MOTOR) <= degrees_on_wheel_right)
     {
         nxt_motor_set_speed(RIGHT_MOTOR, 60, 1);
     }
@@ -267,24 +310,22 @@ void turn_arround(void)
         nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
     }
 
-    if (nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left + 5 ||
-        nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left - 5)
+    if (nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left)
     {
-        nxt_motor_set_speed(LEFT_MOTOR, 60, 1);
+        nxt_motor_set_speed(LEFT_MOTOR, -60, 1);
     }
     else 
     {
-        nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+        nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
     }
 
-    if((nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right + 5  ||
-        nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right - 5) &&
-       (nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left + 5    ||
-        nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left - 5))
+    if(nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right &&
+       nxt_motor_get_count(LEFT_MOTOR)  <= degrees_on_wheel_left)
     {
         drive_mode = NO_MODE;
+        Navigation.next -= 1;
     }
-
+    
     return;
 }
 
@@ -393,40 +434,6 @@ void line_following(void)
 
     nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
     nxt_motor_set_speed(RIGHT_MOTOR, powerB, 1);
-
-    last_error = error;
-
-    return;
-}
-
-void reverse_follow(void) 
-{
-    int powerA = 0;
-    int powerB = 0;
-
-    int error = 0;
-    int derivative = 0;
-    int turn = 0;
-
-    int lightLevel = get_light_level(light_sensor);
-
-    error = lightLevel - offset_left; 
-    integral = integral + error;
-    derivative = error - last_error;
-
-    turn = 
-        200 * error + 
-         0 * integral + 
-         0 * derivative;
-    
-    // This is needed because the k's are multiplied by a hundred
-    turn = turn / 100; 
-
-    powerA = LINE_FOLLOW_SPEED - turn;
-    powerB = LINE_FOLLOW_SPEED + turn; 
-
-    nxt_motor_set_speed(LEFT_MOTOR, -powerA, 1);
-    nxt_motor_set_speed(RIGHT_MOTOR, -powerB, 1);
 
     last_error = error;
 
