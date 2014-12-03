@@ -280,6 +280,10 @@ namespace BTCom
                 {
                     Commands.palletlist(commandSplit[0]);
                 }
+                else if (arguments == 2)
+                {
+                    Commands.palletlist(commandSplit[0], commandSplit[1]);
+                }
                 else if (arguments == 3)
                 {
                     Commands.palletlist(commandSplit[0], commandSplit[1], commandSplit[2]);
@@ -762,6 +766,30 @@ namespace BTCom
                         return;
                     }
                 }
+            }
+            else
+            {
+                printIncorrectUse();
+                palletlist_help();
+            }
+        }
+
+        private static void palletlist(string subcommand, string name)
+        {
+            if (subcommand == SUBCOMMAND_REMOVE)
+            {
+                foreach (KeyValuePair<int, Pallet> palletPair in Database.Instance.Data.Pallets)
+                {
+                    if (String.Equals(palletPair.Value.Name, name, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        Database.Instance.Data.RemovePallet(palletPair.Value);
+                        Database.Instance.Data.Forklifts.FirstOrDefault().Value.Payload = null;
+                        printSuccess("Pallet removed");
+                        return;
+                    }
+                }
+
+                printError("Could not find pallet with name '" + name + "'");
             }
             else
             {
