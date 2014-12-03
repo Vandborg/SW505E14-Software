@@ -712,6 +712,14 @@ namespace BTCom
 
         private static void payload(String newPayload)
         {
+            Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+            if (f.HasPallet)
+            {
+                printError("Forklift is already carrying pallet: '" + f.Pallet.Name + "'");
+                return;
+            }
+
             Pallet pallet = null;
 
             foreach (KeyValuePair<int, Pallet> palletPair in Database.Instance.Data.Pallets)
