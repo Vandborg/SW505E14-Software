@@ -538,19 +538,7 @@ namespace BTCom
                 return;
             }
 
-            if (type == COMMAND_DELIVER)
-            {
-                try
-                {
-                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), pallet, PalletJobType.deliver));
-                    PrintSuccess("Job added");
-                }
-                catch (Exception e)
-                {
-                    PrintError(e.Message);
-                }
-            }
-            else if (type == COMMAND_FETCH)
+            if (type == COMMAND_FETCH)
             {
                 try 
                 {
