@@ -741,6 +741,12 @@ namespace BTCom
                     {
                         Node n = g.getNode(location);
 
+                        if (!n.IsPalletNode)
+                        {
+                            PrintError("Node '" + n.Name + "' is not a pallet-node.");
+                            return; 
+                        }
+
                         if (n.HasPallet)
                         {
                             PrintError("Node '" + n.Name + "' is already containing a pallet.");
