@@ -45,9 +45,12 @@ namespace BTCom
             set { }
         }
 
-        public Node(string name)
+        public bool IsPalletNode { get; set; }
+
+        public Node(string name, bool isPalletNode = false)
         {
             Name = name;
+            IsPalletNode = isPalletNode;
         }
 
         public bool Equals(Node other)
