@@ -475,6 +475,12 @@ namespace BTCom
             {
                 try
                 {
+                    if (!destination.IsPalletNode)
+                    {
+                        PrintError("Node '" + destination.Name + "' is not a pallet node");
+                        return;
+                    }
+
                     Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.deliver));
                     PrintSuccess("Job added");
                 }
@@ -487,6 +493,12 @@ namespace BTCom
             {
                 try 
                 {
+                    if (!destination.IsPalletNode)
+                    {
+                        PrintError("Node '" + destination.Name + "' is not a pallet node");
+                        return;
+                    }
+
                     Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.fetch));
                     PrintSuccess("Job added");
                 }
