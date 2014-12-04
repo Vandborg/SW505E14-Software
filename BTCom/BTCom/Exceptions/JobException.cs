@@ -12,7 +12,7 @@ namespace BTCom.Exceptions
         {
         }
 
-        public JobException(Node n, String s) : this(n.ToString() + s)
+        public JobException(Job j, String s) : this(j.ToString() + s)
         {
         }
     }
