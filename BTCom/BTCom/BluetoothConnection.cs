@@ -310,6 +310,25 @@ namespace BTCom
                                         // Update the payload of the forklift
                                         forklift.Payload = null;
                                     }
+                                    else if (job.Type == PalletJobType.fetch)
+                                    {
+                                        // To finalize the job, the pallet must be updates
+                                        if (forklift.HasPallet)
+                                        {
+                                            throw new JobException(CurrentJob, forklift.Payload, "Trying to fetch pallet, but forklift already has a pallet.");
+                                        }
+
+                                        Node n = p.Nodes.Last();
+
+                                        // To fetch a pallet from a node, the last node must have a pallet
+                                        if (!n.HasPallet)
+                                        {
+                                            throw new JobException(CurrentJob, "Trying to fetch pallet, but last node in path does not have one");
+                                        }
+
+                                        // Update the payload (Which will also update the location of the pallet)
+                                        forklift.Payload = n.Pallet;
+                                    }
                                 }
                                 
                                 // Update the position of the forklift
