@@ -287,9 +287,31 @@ namespace BTCom
                             // Check if the nxt just completed a job
                             if (forklift.Status == Status.BUSY && CurrentJob != null)
                             {
-                                
                                 Path p = CurrentJob.GetPath();
 
+                                if (CurrentJob is PalletJob)
+                                {
+                                    PalletJob job = (PalletJob) CurrentJob;
+
+                                    // Check if the forklift just finished a deliver pallet job
+                                    if (job.Type == PalletJobType.deliver)
+                                    {
+                                        // To finalize the job, the pallet of the fork must be updated
+                                        if (!forklift.HasPallet)
+                                        {
+                                            throw new JobException(CurrentJob, "Trying to deliver pallet, but forklift has none.");
+                                        }
+
+                                        Pallet pallet = forklift.Payload;
+
+                                        // Update the location of the pallet
+                                        pallet.Location = p.Nodes.Last();
+
+                                        // Update the payload of the forklift
+                                        forklift.Payload = null;
+                                    }
+                                }
+                                
                                 // Update the position of the forklift
                                 if (p.Nodes.Count >= 2)
                                 {
