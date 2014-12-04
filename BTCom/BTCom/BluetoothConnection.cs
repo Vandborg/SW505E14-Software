@@ -287,8 +287,10 @@ namespace BTCom
                             // Check if the nxt just completed a job
                             if (forklift.Status == Status.BUSY && CurrentJob != null)
                             {
+                                
                                 Path p = CurrentJob.GetPath();
 
+                                // Update the position of the forklift
                                 if (p.Nodes.Count >= 2)
                                 {
                                     Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
