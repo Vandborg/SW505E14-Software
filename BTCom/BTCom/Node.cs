@@ -39,6 +39,12 @@ namespace BTCom
             set {} 
         }
 
+        public Pallet Pallet
+        {
+            get { return Database.Instance.Data.Pallets.FirstOrDefault(palletPair => palletPair.Value.Location != null && palletPair.Value.Location.Equals(this)).Value; }
+            set { }
+        }
+
         public Node(string name)
         {
             Name = name;
