@@ -11,10 +11,22 @@
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_structs/utility_structs.h"
 #include "utility/utility_bluetooth/utility_bluetooth.h"
+#include "utility/utility_movement/utility_distance.h"
+
 
 #define COLOR_THRESHOLD 50
 #define MOTOR_COUNT_PER_DEGREE 3
 #define MOTOR_INSECURITY 30
+
+#define LIFTING_SPEED_UP 70      // This is an arbitrary value. Change if needed
+#define LIFTING_SPEED_DOWN -55   // This is an arbitrary value. Change if needed
+#define LIFTING_MODE_MAX 800     // This is an arbitrary value. Change if needed
+#define LIFTING_MODE_MID 275     // This is an arbitrary value. Change if needed
+#define LIFTING_MODE_LOW 35      // This is an arbitrary value. Change if needed
+
+#define WHEEL_CIRCUMFERENCE_MM 134
+#define DEGREES_IN_CIRCLE 360
+
 // Used to navigate
 navigation Navigation;
 
@@ -42,6 +54,9 @@ void line_recover(void);
 void line_following(void);
 void swap(U32* a, U32* b);
 void turn_around(void);
+void move_fork(int lifting_height);
+void drive_back(int a);
+
 
 // Persistent variables for PID, and color_scan/swap
 U8 color_sensor = COLOR_SENSOR_LEFT;
@@ -84,28 +99,47 @@ TASK(TASK_update_color_reg)
     TerminateTask();
 }
 
-
-bool n_added = false;
-
 TASK(TASK_color_scan)
 {
     // There is some path left to follow
     if(Navigation.next > -1)
     {
+        // The next direction in the navigation
+        char next_direction = Navigation.directions[Navigation.next];
+
+        if(next_direction == 'U' ||
+           next_direction == 'D' ||
+           next_direction == 'T' ||
+           next_direction == 'B')
+        {
+            switch(next_direction)
+            {
+                case 'U':
+                    drive_mode = RAISE_FORK;
+                    break;
+                case 'D':
+                    drive_mode = LOWER_FORK;
+                    break;
+                case 'T':
+                    drive_mode = TURN_AROUND;
+                    break;
+                case 'B':
+                    drive_mode = DRIVE_BACKWARDS;
+                    break;
+            }
+        }
         // Is the meassured color red and was the last color meassured not red
-        if(is_red_color_colorsensor())
+        else if(is_red_color_colorsensor())
         {
             if(!last_color_red)
             {
                 // Debugging sound
                 play_sound(SOUND_TICK);
 
-                // The next direction in the navigation
-                char next_direction = Navigation.directions[Navigation.next];
 
-                char string[2] = {next_direction, '\0'};
+                // char string[2] = {next_direction, '\0'};
 
-                lcd_display_line(LCD_LINE_SIX, string, true);
+                // lcd_display_line(LCD_LINE_SIX, string, true);
 
                 switch(next_direction)
                 {
@@ -125,19 +159,15 @@ TASK(TASK_color_scan)
                         {
                             crossing_intersection = false;
                             first_iteration = true;
-                            drive_mode = LINE_RECOVER;
-                        }
-                        break;
-                    case 'T':
-                        first_iteration = true;
-                        // crossing_intersection = true;
-                        drive_mode = TURN_AROUND;
+                            drive_mode = LINE_RECOVER;  
+                        }                      
                         break;
                     default :
                         Status = ERROR;
                 }
-
+                
                 Navigation.next = Navigation.next - 1;
+                
             }
             // The color was red
             last_color_red = true;
@@ -148,42 +178,7 @@ TASK(TASK_color_scan)
             last_color_red = false;
         }
     }
-    else if(Navigation.next <= -1)
-    {
-        // TODO: Handle type of task (Fetch or deliver pallet)
-        switch(Navigation.type_of_task)
-        {
-            case TYPE_DELIVER_PALLET:
-                if(!n_added)
-                {
-                    Navigation.directions[0] = 'N';
-                    Navigation.next = 0;
-                    n_added = true;
-                }
-                else
-                {
-                    
-                    // Lower fork
-                }
-                break;
-            case TYPE_FETCH_PALLET:
-                if(!n_added)
-                {
-                    // Lower
-                }
-                else 
-                {
-                    // Raise
-                }
-                break;
-            case TYPE_NAVIGATE_TO:
-                break;
-            default:
-                Status = ERROR;
-                break;
-        }
-    }
-    else
+    else 
     {
         stop_line_following();
         Status = IDLE;
@@ -207,6 +202,15 @@ TASK(TASK_drive_control)
             break;
         case TURN_AROUND:
             turn_around();
+            break;
+        case RAISE_FORK:
+            move_fork(LIFTING_MODE_MAX);
+            break;
+        case LOWER_FORK:
+            move_fork(LIFTING_MODE_LOW);
+            break;
+        case DRIVE_BACKWARDS:
+            drive_back(45);
             break;
         case NO_MODE:
         default:
@@ -253,9 +257,13 @@ TASK(TASK_check_navigation)
         first_time = false;
     }
 
-    display_goto_xy(0,5);
-    display_int(drive_mode, 1);
-    display_update();
+    // display_goto_xy(0,5);
+    // display_int(drive_mode, 1);
+
+
+    // display_goto_xy(0, 3);
+    // display_int(nxt_motor_get_count(FORK_MOTOR), 7);
+    // display_update();
 
     if(Navigation.next > -1 && !executing_task)
     {
@@ -322,7 +330,6 @@ void turn_around(void)
     if(nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right &&
        nxt_motor_get_count(LEFT_MOTOR)  <= degrees_on_wheel_left)
     {
-        drive_mode = NO_MODE;
         Navigation.next -= 1;
     }
     
@@ -362,6 +369,56 @@ void cross_intersection(void)
     nxt_motor_set_speed(LEFT_MOTOR, powerB, 1);
 
     last_error_straight = error_straight;
+
+    return;
+}
+
+void drive_back(int mm_to_drive)
+{
+    if(first_iteration) 
+    {
+        init_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
+        init_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
+        first_iteration = false;
+    }
+
+    int current_count_left = 
+        nxt_motor_get_count(LEFT_MOTOR) - init_motor_count_left;
+    int current_count_right = 
+        nxt_motor_get_count(RIGHT_MOTOR) - init_motor_count_right;
+    
+    int distance = (current_count_left + current_count_right) / 
+                    2 *  
+                    WHEEL_CIRCUMFERENCE_MM / 
+                    DEGREES_IN_CIRCLE; 
+
+    if(distance >= -mm_to_drive)
+    {
+
+        int error_straight = current_count_right - current_count_left;
+
+        integral_straight = (2/3) * integral_straight + error_straight;
+
+        int derivative_straight = error_straight - last_error_straight;
+
+        int output = 
+            KP_STRAIGHT * error_straight + 
+            KI_STRAIGHT * integral_straight + 
+            KD_STRAIGHT * derivative_straight;
+
+        int powerA = LINE_FOLLOW_SPEED + output;
+        int powerB = LINE_FOLLOW_SPEED - output;
+
+        nxt_motor_set_speed(RIGHT_MOTOR, -powerA, 1);
+        nxt_motor_set_speed(LEFT_MOTOR, -powerB, 1);
+
+        last_error_straight = error_straight;
+    }
+    else
+    {
+        first_iteration = true;
+        Navigation.next -= 1;
+    }
 
     return;
 }
@@ -493,7 +550,6 @@ bool is_red_color_colorsensor(void)
        g_diff < COLOR_THRESHOLD && 
        b_diff < COLOR_THRESHOLD)
     {
-        // play_sound(SOUND_NOTIFICATION);
         return true;
     }
 
@@ -543,22 +599,22 @@ void switch_sensors(void)
     swap(&color_sensor, &light_sensor);
     swap(&color_motor, &light_motor);
 
-    if(light_sensor == COLOR_SENSOR_LEFT)
-    {
-        lcd_display_line(LCD_LINE_FOUR, "LC", 1);
-    }
-    else
-    {
-        lcd_display_line(LCD_LINE_FOUR, "RC", 1);
-    }
-    if(light_motor == LEFT_MOTOR)
-    {
-        lcd_display_line(LCD_LINE_FIVE, "LM", 1);
-    }
-    else
-    {
-        lcd_display_line(LCD_LINE_FIVE, "RM", 1);
-    }
+    // if(light_sensor == COLOR_SENSOR_LEFT)
+    // {
+    //     lcd_display_line(LCD_LINE_FOUR, "LC", 1);
+    // }
+    // else
+    // {
+    //     lcd_display_line(LCD_LINE_FOUR, "RC", 1);
+    // }
+    // if(light_motor == LEFT_MOTOR)
+    // {
+    //     lcd_display_line(LCD_LINE_FIVE, "LM", 1);
+    // }
+    // else
+    // {
+    //     lcd_display_line(LCD_LINE_FIVE, "RM", 1);
+    // }
 }
 
 bool line_found = false;
@@ -624,4 +680,42 @@ void line_recover(void)
         }
     }  
     return;        
+}
+
+//Function that moves the fork either up or down to a desired height
+void move_fork(int lifting_height)
+{
+    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
+    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+    // Gets the current height of the fork. Assuming you calibrated
+    int current_height = nxt_motor_get_count(FORK_MOTOR);
+
+    // Checks if the desired height is higher than the current
+    if (lifting_height > current_height + 10)
+    {
+        nxt_motor_set_speed(FORK_MOTOR, LIFTING_SPEED_UP, 0);
+    }
+    // Or lower
+    else if(lifting_height < current_height - 10)
+    {
+        nxt_motor_set_speed(FORK_MOTOR, LIFTING_SPEED_DOWN, 0);
+    }
+    // Or just right
+    else
+    {
+        nxt_motor_set_speed(FORK_MOTOR, 0, 1);
+
+        if (lifting_height == LIFTING_MODE_LOW)
+        {
+            drive_mode = LINE_FOLLOW;
+            first_iteration = true;
+            Navigation.next -= 1;
+        }
+        else
+        {
+            first_iteration = true;
+            drive_mode = NO_MODE;
+            Navigation.next -= 1;
+        }
+    }
 }

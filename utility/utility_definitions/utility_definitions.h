@@ -121,7 +121,6 @@
     
     // Linefollow PID-controller definitions
     #define LINE_FOLLOW_SPEED          60
-    #define LINE_FOLLOW_SPEED_REVERSE -50
 
     #define KP_RIGHT                21//35//27
     #define KI_RIGHT                4.2//0// 2
@@ -154,6 +153,9 @@
     #define LINE_RECOVER        1
     #define CROSS_INTERSECTION  2
     #define TURN_AROUND         3
-    #define NO_MODE             4
+    #define RAISE_FORK          4
+    #define LOWER_FORK          5
+    #define DRIVE_BACKWARDS     6
+    #define NO_MODE             7
 
 #endif

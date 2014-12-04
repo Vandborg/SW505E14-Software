@@ -17,7 +17,7 @@ namespace BTCom
 
             string dir = directions.ToUpper();
 
-            Regex lrsRegex = new Regex("^[LRSN]*$");
+            Regex lrsRegex = new Regex("^[LRSNTUDB]*$");
 
             if (!lrsRegex.IsMatch(dir))
             {
