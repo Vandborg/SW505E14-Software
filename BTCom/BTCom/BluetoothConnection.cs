@@ -188,9 +188,8 @@ namespace BTCom
             switch (byteType)
             {
                 case TYPE_UPDATE_COLOR:
-                     
-                     // Tell the user that the color is being fetched 
-                     // dataString contains the id of the color
+                    // Tell the user that the color is being fetched 
+                    // dataString contains the id of the color
                     Console.WriteLine("Fetching color with ID: \'" + dataString + "\'");
 
                     // Get the color from the database
