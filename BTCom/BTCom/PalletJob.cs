@@ -38,7 +38,26 @@ namespace BTCom
 
             ForkliftPath fp = new ForkliftPath(GetPath(), ignore);
 
-            return Encoding.ASCII.GetBytes(fp.getDirections());
+            string directions = fp.getDirections();
+
+            // We add some special instructions to handle the different job types
+            // D - forklift down
+            // N - move to next red tape
+            // U - forklift up
+            // T - Turn around
+            // B - Back off small step
+
+            // The instructions is inserted in reversed order
+            if (Type == PalletJobType.fetch)
+            {
+                directions = directions.Insert(0, "TUND");
+            }
+            else if (Type == PalletJobType.deliver)
+            {
+                directions = directions.Insert(0, "TUBDN");
+            }
+
+            return Encoding.ASCII.GetBytes(directions);
         }
 
         public override byte GetJobTypeBytes()
