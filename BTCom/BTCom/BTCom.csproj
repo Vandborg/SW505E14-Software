@@ -78,6 +78,7 @@
     <Compile Include="DataEntry.cs" />
     <Compile Include="DebugJob.cs" />
     <Compile Include="Edge.cs" />
+    <Compile Include="Exceptions\JobException.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="Exceptions\PalletException.cs" />
     <Compile Include="Pallet.cs" />
