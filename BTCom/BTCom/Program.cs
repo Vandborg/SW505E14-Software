@@ -29,7 +29,7 @@ namespace BTCom
                 // bt.FetchPallet(new Path());
 
                 // Instantiate threads
-                Thread ConsoleInputThread = new Thread(() => Commands.execute());
+                Thread ConsoleInputThread = new Thread(() => Commands.Execute());
                 Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
 
                 // Start the threads
