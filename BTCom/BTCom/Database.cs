@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Threading;
+using Newtonsoft.Json;
 using System;
 using System.Diagnostics;
 //using System.Web.Script.Serialization;
@@ -10,6 +11,8 @@ namespace BTCom
         static Database _instance = null;
         static readonly object padlock = new object();
         private string _databaseName = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/PALL-E_database.json";
+
+        private readonly Mutex databaseMutex = new Mutex();
 
         private bool _debugMode = false;
         public bool DebugMode
@@ -51,6 +54,9 @@ namespace BTCom
 
         public void Save()
         {
+            // Acquire the database mutex
+            databaseMutex.WaitOne();
+
             var json = JsonConvert.SerializeObject(Data, Formatting.None, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
 
             if (DebugMode)
@@ -61,10 +67,16 @@ namespace BTCom
             System.IO.StreamWriter file = new System.IO.StreamWriter(DatabaseName);
             file.Write(json);
             file.Close();
+
+            // Release the database mutex
+            databaseMutex.ReleaseMutex();
         }
 
         public void Load()
         {
+            // Acquire the database mutex
+            databaseMutex.WaitOne();
+
             // Make sure that the file exists
             if (!System.IO.File.Exists((DatabaseName)))
             {
@@ -74,6 +86,9 @@ namespace BTCom
             string json = System.IO.File.ReadAllText(DatabaseName);
             
             Data = JsonConvert.DeserializeObject<Data>(json);
+
+            // Release the database mutex
+            databaseMutex.ReleaseMutex();
         }
     }
 }
