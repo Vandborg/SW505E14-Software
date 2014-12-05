@@ -42,7 +42,7 @@ namespace BTCom
             Destination = destination;
         }
 
-        private static readonly List<List<Char>> navigationTable = new List<List<char>>()
+        private static readonly List<List<Char>> navigationMatrix = new List<List<char>>()
         {
             new List<Char>() { '#','L','S','R' }, // 0
             new List<Char>() { 'R','#','L','S' }, // 1
@@ -65,7 +65,7 @@ namespace BTCom
                 {
                     int index = frontNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(rearNode));
 
-                    int outIndex = navigationTable[index].FindIndex(x => x.Equals(character));
+                    int outIndex = navigationMatrix[index].FindIndex(x => x.Equals(character));
 
                     Node newFrontNode = frontNode.Neighbours[outIndex].Key;
                     Node newRearNode = frontNode;

@@ -10,7 +10,7 @@ namespace BTCom
 {
     public class ForkliftPath
     {
-        public static readonly char[,] navigationTable = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
+        public static readonly char[,] navigationMatrix = new char[4, 4] { {'#','L','S','R'}, {'R','#','L','S'},
                                                                           {'S','R','#','L'}, {'L','S','R','#'} };
 
         private readonly List<Char> forkliftPath = new List<Char>();
@@ -84,7 +84,7 @@ namespace BTCom
 
                 toIndex = thisNode.Neighbours.FindIndex(x => x.Key != null && x.Key.Equals(toNode));
 
-                forkliftPath.Add(navigationTable[fromIndex, toIndex]);
+                forkliftPath.Add(navigationMatrix[fromIndex, toIndex]);
             }
         }
 
