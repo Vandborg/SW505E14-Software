@@ -25,9 +25,6 @@ namespace BTCom
                 // Open the bt-connection
                 BluetoothConnection bt = new BluetoothConnection("COM3");
 
-                // TODO: Fix this peace of code
-                // bt.FetchPallet(new Path());
-
                 // Instantiate threads
                 Thread ConsoleInputThread = new Thread(() => Commands.Execute());
                 Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
