@@ -358,8 +358,8 @@ namespace BTCom
                             // Check if there is any jobs to be performed
                             if (JobList.Count > 0)
                             {
-                                // Peek in the queue
-                                Job nextJob = JobList.First().Value;
+                                // Get the next job (job with lowest id)
+                                Job nextJob = JobList.Aggregate((l, r) => l.Key < r.Key ? l : r).Value;
 
                                 // Tell the user what job was sent
                                 Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count - 1) + " jobs left in the JobList");
