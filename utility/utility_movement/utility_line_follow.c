@@ -193,7 +193,12 @@ TASK(TASK_color_scan)
     else 
     {
         stop_line_following();
-        Status = IDLE;
+
+        // Only set status to idle if status is not obstacle
+        if(Status != OBSTACLE)
+        {
+            Status = IDLE;
+        }
     }
     
     TerminateTask();

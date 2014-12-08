@@ -30,7 +30,7 @@ bool use_rear_sonar_sensor;
 
 TASK(TASK_obstacle_detection)
 {
-    /*
+    
     if(use_front_sonar_sensor)
     {
         distance_rear = MAX_DISTANCE;
@@ -41,9 +41,9 @@ TASK(TASK_obstacle_detection)
         {
             emergency_stop();
 
-            turn_degrees(HALF_ROTATION_DEGREES);
-
             report_obstacle_bt();
+
+            use_front_sonar_sensor = false;
         }
     }
 
@@ -57,12 +57,12 @@ TASK(TASK_obstacle_detection)
         {
             emergency_stop();
 
-            turn_degrees(HALF_ROTATION_DEGREES);
-
             report_obstacle_bt();
+
+            use_rear_sonar_sensor = false;
         }
     }
-    */
+    
     TerminateTask();
 }
 
