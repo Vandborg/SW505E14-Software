@@ -58,7 +58,14 @@ namespace BTCom
             Node from = f.FrontNode;
             Node ignore = f.RearNode;
 
-            return g.ShortestPath(from, target, ignore);
+            Path p = g.ShortestPath(from, target, ignore);
+
+            if (p.Nodes.Last().Equals(f.FrontNode))
+            {
+                throw new JobException("PALL-E already at destination '" + f.FrontNode.Name + "'");
+            }
+
+            return p;
         }
 
         public override byte[] GetBytes()

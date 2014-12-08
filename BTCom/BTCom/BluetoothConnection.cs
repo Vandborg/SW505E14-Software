@@ -237,9 +237,8 @@ namespace BTCom
 
                     if (CurrentJob != null)
                     {
-
-
                         Path currentPath = CurrentJob.GetPath();
+                        
                         int newRearNodeIndex = (currentPath.Nodes.Count - 2) - directionsIndex;
 
                         // The new rear node is the node right infront of the truck
@@ -361,11 +360,22 @@ namespace BTCom
                                 // Get the next job (job with lowest id)
                                 Job nextJob = JobList.Aggregate((l, r) => l.Key < r.Key ? l : r).Value;
 
-                                // Tell the user what job was sent
-                                Console.WriteLine("Sending Job -> NXT: " + nextJob.ToString() + ". " + (JobList.Count - 1) + " jobs left in the JobList");
+                                try
+                                {
+                                    // Test if the path can be generated
+                                    nextJob.GetPath();
 
-                                // Send the job to the NXT
-                                SendPackageBT(nextJob.GetJobTypeBytes(), nextJob.GetBytes());
+                                    // Tell the user what job was sent
+                                    Commands.PrintSuccess("Sending Job #" + nextJob.ID() + " to PALL-E. " + (JobList.Count - 1) + " jobs left");
+
+                                    // Send the job to the NXT
+                                    SendPackageBT(nextJob.GetJobTypeBytes(), nextJob.GetBytes());
+                                }
+                                catch (JobException e)
+                                {
+                                    Database.Instance.Data.RemoveJob(nextJob);
+                                    Commands.PrintError("Job #" + nextJob.ID() + " cancelled: '" + e.Message + "'");
+                                }
                             }
 
                             // Update the internal status
@@ -382,7 +392,7 @@ namespace BTCom
                                 if(JobList.Count > 0)
                                 {
                                     // Remove the job that is being executed currently
-                                    CurrentJob = JobList.First().Value;
+                                    CurrentJob = JobList.Aggregate((l, r) => l.Key < r.Key ? l : r).Value;
                                     Database.Instance.Data.Jobs.Remove(CurrentJob.Identifier);
                                 }   
                             }

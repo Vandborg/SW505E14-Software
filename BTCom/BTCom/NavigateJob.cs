@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using BTCom.Exceptions;
 
 namespace BTCom
 {
@@ -82,11 +83,16 @@ namespace BTCom
                 }
 
                 p.Nodes.Add(frontNode);
-                
-                return p;
 
+                if (p.Nodes.Last().Equals(f.FrontNode))
+                {
+                    throw new JobException("PALL-E already at destination '" + f.FrontNode.Name + "'");
+                }
+
+                return p;
             }
-            else if(Destination != null)
+            
+            if(Destination != null)
             {
                 Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -95,7 +101,14 @@ namespace BTCom
                 Node from = f.FrontNode;
                 Node ignore = f.RearNode;
 
-                return g.ShortestPath(from, Destination, ignore);
+                Path p =  g.ShortestPath(from, Destination, ignore);
+
+                if (p.Nodes.Last().Equals(f.FrontNode))
+                {
+                    throw new JobException("PALL-E already at destination '" + f.FrontNode.Name + "'");
+                }
+
+                return p;
             }
 
             // Neither directions or destination is set, cannot generate path
