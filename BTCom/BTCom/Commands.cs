@@ -379,10 +379,13 @@ namespace BTCom
         {
             Console.WriteLine("Current Joblist:");
 
+            List<int> IDlist = Database.Instance.Data.Jobs.Keys.ToList();
+            IDlist.Sort();
+
             int c = 0;
-            foreach (KeyValuePair<int, Job> job in Database.Instance.Data.Jobs)
+            foreach (int key in IDlist)
             {
-                Console.WriteLine(job.Value.ToString());
+                Console.WriteLine(Database.Instance.Data.Jobs[key].ToString());
                 c++;
             }
 
