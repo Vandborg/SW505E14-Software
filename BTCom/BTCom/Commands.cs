@@ -34,14 +34,14 @@ namespace BTCom
 
         private const String COMMAND_ARGUMENT_CLEAR = "clear";
 
-        private static void PrintError(string s)
+        public static void PrintError(string s)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Error: " + s);
             Console.ResetColor();
         }
 
-        private static void PrintSuccess(string s)
+        public static void PrintSuccess(string s)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Success: " + s);
