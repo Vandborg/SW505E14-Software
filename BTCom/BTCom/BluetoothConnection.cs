@@ -288,6 +288,16 @@ namespace BTCom
                             {
                                 Path p = CurrentJob.GetPath();
 
+                                // Update the position of the forklift
+                                if (p.Nodes.Count >= 2)
+                                {
+                                    Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
+                                    Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
+
+                                    Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+                                    f.UpdateNodes(frontNode, rearNode);
+                                }
+
                                 if (CurrentJob is PalletJob)
                                 {
                                     PalletJob job = (PalletJob) CurrentJob;
@@ -328,30 +338,12 @@ namespace BTCom
                                         // Update the payload (Which will also update the location of the pallet)
                                         forklift.Payload = n.Pallet;
                                     }
+
+                                    // Swap front and rear node
+                                    forklift.UpdateNodes(forklift.RearNode, forklift.FrontNode);
                                 }
-                                
-                                // Update the position of the forklift
-                                if (p.Nodes.Count >= 2)
-                                {
-                                    Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);
-                                    Node rearNode = p.Nodes.ElementAt(p.Nodes.Count - 2);
 
-                                    Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
-                                    f.UpdateNodes(frontNode, rearNode);
-
-                                    CurrentJob = null;
-                                }
-                                else if(p.Nodes.Count == 1)
-                                {
-                                    Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
-
-                                    Node frontNode = p.Nodes[0];
-                                    Node rearNode = f.FrontNode;
-
-                                    f.UpdateNodes(frontNode, rearNode);
-
-                                    CurrentJob = null;
-                                }
+                                CurrentJob = null;
                             }
 
                             // Check if there is any jobs to be performed
