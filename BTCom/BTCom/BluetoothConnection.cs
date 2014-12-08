@@ -239,28 +239,34 @@ namespace BTCom
                     {
                         Path currentPath = CurrentJob.GetPath();
                         
-                        int newRearNodeIndex = (currentPath.Nodes.Count - 2) - directionsIndex;
+                        String directions = new ForkliftPath(currentPath, forklift.RearNode).getDirections();
 
-                        // The new rear node is the node right infront of the truck
-                        newRearNode = currentPath.Nodes[newRearNodeIndex];
-
-                        // If the path is blocked immediatly the new front node is the old rear node.
-                        if (newRearNodeIndex == 0)
+                        if (CurrentJob is PalletJob)
                         {
-                            newFrontNode = forklift.RearNode;
-                        }
-                        else
-                        {
-                            // The new front node is the node right behind the truck
-                            newFrontNode = currentPath.Nodes[newRearNodeIndex - 1];
+                            PalletJob pj = (PalletJob) CurrentJob;
+
+                            if (pj.Type == PalletJobType.fetch)
+                            {
+                                directions = directions.Insert(0, "TUND");
+                            }
+                            else if (pj.Type == PalletJobType.deliver)
+                            {
+                                directions = directions.Insert(0, "TUBDN");
+                            }
                         }
 
-                        // Update the values of the front and rear nodes
+                        directions = directions.Substring(directionsIndex, directions.Length - 1);
+
+                        int count = directions.Count(c => c == 'L' || c == 'R' || c == 'S');
+
+                        newFrontNode = currentPath.Nodes[count - 2];
+                        newRearNode = currentPath.Nodes[count - 1];
+
+                        // Update forklift nodes
                         forklift.UpdateNodes(newFrontNode, newRearNode);
 
                         // Update edge the NXT is standing on
                         Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
-
                     }
                     else
                     {
@@ -394,11 +400,21 @@ namespace BTCom
                             break;
 
                         case STATUS_OBSTACLE:
-
                             if (CurrentJob != null)
                             {
-                                Console.WriteLine("Sending alternative path -> NXT: " + CurrentJob.ToString() + ". " + (JobList.Count) + " jobs left in the JobList");
-                                // Send an alternative path to avoid obstacle
+                                if (!(CurrentJob is TurnJob))
+                                {
+                                    Database.Instance.Data.AddJob(CurrentJob);
+                                    CurrentJob = new TurnJob(Database.Instance.Data.Jobs.Keys.Min() - 1);
+
+                                    Commands.PrintSuccess("Sending turn-job to PALL-E...");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Resending turn-job to PALL-E...");
+                                }
+
+                                // Send turn job
                                 SendPackageBT(CurrentJob.GetJobTypeBytes(), CurrentJob.GetBytes());
                             }
                             else
