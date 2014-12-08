@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BTCom.Exceptions;
 
 namespace BTCom
 {
@@ -10,17 +11,46 @@ namespace BTCom
     {
         public Node Destination { get; set; }
 
+        public Pallet PalletLocation { get; set; }
+
         public PalletJobType Type { get; set; }
 
-        public PalletJob(int identifier, Node destination, PalletJobType type)
+        private PalletJob(int identifier, PalletJobType type)
         {
+            Destination = null;
+            PalletLocation = null;
+
             Identifier = identifier;
-            Destination = destination;
             Type = type;
+        }
+
+        public PalletJob(int identifier, Node destination, PalletJobType type) : this(identifier, type)
+        {
+            Destination = destination;
+        }
+
+        public PalletJob(int identifier, Pallet palletLocation, PalletJobType type) : this(identifier, type)
+        {
+            PalletLocation = palletLocation;
         }
 
         public override Path GetPath()
         {
+            Node target = null;
+
+            if (Destination != null)
+            {
+                target = Destination;
+            }
+            else if (PalletLocation != null)
+            {
+                target = PalletLocation.Location;
+            }
+            else
+            {
+                throw new NodeException("Cannot get path because of missing destination or pallet location (both are null)");
+            }
+            
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
@@ -28,7 +58,7 @@ namespace BTCom
             Node from = f.FrontNode;
             Node ignore = f.RearNode;
 
-            return g.ShortestPath(from, Destination, ignore);
+            return g.ShortestPath(from, target, ignore);
         }
 
         public override byte[] GetBytes()

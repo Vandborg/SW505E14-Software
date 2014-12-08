@@ -188,9 +188,8 @@ namespace BTCom
             switch (byteType)
             {
                 case TYPE_UPDATE_COLOR:
-                     
-                     // Tell the user that the color is being fetched 
-                     // dataString contains the id of the color
+                    // Tell the user that the color is being fetched 
+                    // dataString contains the id of the color
                     Console.WriteLine("Fetching color with ID: \'" + dataString + "\'");
 
                     // Get the color from the database
@@ -290,6 +289,49 @@ namespace BTCom
                             {
                                 Path p = CurrentJob.GetPath();
 
+                                if (CurrentJob is PalletJob)
+                                {
+                                    PalletJob job = (PalletJob) CurrentJob;
+
+                                    // Check if the forklift just finished a deliver pallet job
+                                    if (job.Type == PalletJobType.deliver)
+                                    {
+                                        // To finalize the job, the pallet of the fork must be updated
+                                        if (!forklift.HasPallet)
+                                        {
+                                            throw new JobException(CurrentJob, "Trying to deliver pallet, but forklift has none.");
+                                        }
+
+                                        Pallet pallet = forklift.Payload;
+
+                                        // Update the location of the pallet
+                                        pallet.Location = p.Nodes.Last();
+
+                                        // Update the payload of the forklift
+                                        forklift.Payload = null;
+                                    }
+                                    else if (job.Type == PalletJobType.fetch)
+                                    {
+                                        // To finalize the job, the pallet must be updates
+                                        if (forklift.HasPallet)
+                                        {
+                                            throw new JobException(CurrentJob, forklift.Payload, "Trying to fetch pallet, but forklift already has a pallet.");
+                                        }
+
+                                        Node n = p.Nodes.Last();
+
+                                        // To fetch a pallet from a node, the last node must have a pallet
+                                        if (!n.HasPallet)
+                                        {
+                                            throw new JobException(CurrentJob, "Trying to fetch pallet, but last node in path does not have one");
+                                        }
+
+                                        // Update the payload (Which will also update the location of the pallet)
+                                        forklift.Payload = n.Pallet;
+                                    }
+                                }
+                                
+                                // Update the position of the forklift
                                 if (p.Nodes.Count >= 2)
                                 {
                                     Node frontNode = p.Nodes.ElementAt(p.Nodes.Count - 1);

@@ -34,9 +34,23 @@ namespace BTCom
             set { _blockedNeighbours = value; }
         }
 
-        public Node(string name)
+        public bool HasPallet {
+            get { return Database.Instance.Data.Pallets.Any(palletPair => palletPair.Value.Location != null && palletPair.Value.Location.Equals(this)); }
+            set {} 
+        }
+
+        public Pallet Pallet
+        {
+            get { return Database.Instance.Data.Pallets.FirstOrDefault(palletPair => palletPair.Value.Location != null && palletPair.Value.Location.Equals(this)).Value; }
+            set { }
+        }
+
+        public bool IsPalletNode { get; set; }
+
+        public Node(string name, bool isPalletNode = false)
         {
             Name = name;
+            IsPalletNode = isPalletNode;
         }
 
         public bool Equals(Node other)

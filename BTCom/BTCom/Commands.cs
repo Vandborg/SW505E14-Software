@@ -13,8 +13,9 @@ namespace BTCom
     {
         private const String HELP = "help";
 
-        private const String JOBLIST_REMOVE = "remove";
-        private const String JOBLIST_CLEAR = "clear";
+        private const String SUBCOMMAND_ADD = "add";
+        private const String SUBCOMMAND_REMOVE = "remove";
+        private const String SUBCOMMAND_CLEAR = "clear";
 
         private const String COMMAND_STATUS = "status";
         private const String COMMAND_JOBLIST = "joblist";
@@ -25,43 +26,56 @@ namespace BTCom
         private const String COMMAND_NAVIGATE = "navigate";
         private const String COMMAND_POSITION = "position";
         private const String COMMAND_CURRENTJOB = "currentjob";
+        private const String COMMAND_PALLETLIST = "palletlist";
+        private const String COMMAND_PAYLOAD = "payload";
         private const String COMMAND_CLEAR = "clear";
         private const String COMMAND_SAVE = "save";
         private const String COMMAND_EXIT = "exit";
 
         private const String COMMAND_ARGUMENT_CLEAR = "clear";
 
-        private static void printError(string s)
+        private static void PrintError(string s)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Error: " + s);
+            Console.ResetColor();
         }
 
-        private static void printSuccess(string s)
+        private static void PrintSuccess(string s)
         {
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("Success: " + s);
+            Console.ResetColor();
         }
 
-        private static void printInvalidCommand()
+        private static void PrintIncorrectUse()
         {
-            printError("Invalid command. Type \"help\" for help.");
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine("Incorrect use.");
+            Console.ResetColor();
         }
 
-        public static void execute()
+        private static void PrintInvalidCommand()
+        {
+            PrintError("Invalid command. Type \"help\" for help.");
+        }
+
+        public static void Execute()
         {
             while (true)
             {
-                Commands.execute(Console.ReadLine());
+                Commands.Execute(Console.ReadLine());
             }
         }
 
-        private static void execute(string command)
+        private static void Execute(string command)
         {
             command = command.ToLower();
 
             // No command provided, user must need help
             if (String.IsNullOrEmpty(command))
             {
-                printInvalidCommand();
+                PrintInvalidCommand();
                 return;
             }
 
@@ -71,7 +85,7 @@ namespace BTCom
             // No command provided, user must need help
             if (String.IsNullOrEmpty(commandAndArguments[0]))
             {
-                printInvalidCommand();
+                PrintInvalidCommand();
                 return;
             }
 
@@ -104,13 +118,13 @@ namespace BTCom
             if (argumentList.Contains(COMMAND_ARGUMENT_CLEAR))
             {
                 argumentList.RemoveAll(x => x == COMMAND_ARGUMENT_CLEAR);
-                clear();
+                Clear();
             }
 
             // Check if there are unprocessed arguments
             if (argumentList.Count > 0)
             {
-                Console.Write("Unknown command arguments: ");
+                PrintError("Unknown command arguments: ");
 
                 foreach (string s in argumentList)
                 {
@@ -132,22 +146,24 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.help();    
+                    Commands.Help();    
                 }
                 else
                 {
-                    help_help();
+                    PrintIncorrectUse();
+                    HelpHelp();
                 }
             } 
             else if (commandIdentifier == COMMAND_STATUS)
             {
                 if (arguments == 0)
                 {
-                    status();
+                    Status();
                 }
                 else
                 {
-                    status_help();
+                    PrintIncorrectUse();
+                    StatusHelp();
                 }
             }
             // Check if the command is "joblist"
@@ -155,30 +171,32 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.joblist();
+                    Commands.Joblist();
                 }
                 else if (arguments == 1)
                 {
-                    Commands.joblist(commandSplit[0]);
+                    Commands.Joblist(commandSplit[0]);
                 }
                 else if (arguments == 2)
                 {
-                    Commands.joblist(commandSplit[0], commandSplit[1]);
+                    Commands.Joblist(commandSplit[0], commandSplit[1]);
                 }
                 else
                 {
-                    joblist_help();
+                    PrintIncorrectUse();
+                    JoblistHelp();
                 }
             }
             else if (commandIdentifier == COMMAND_CURRENTJOB)
             {
                 if (arguments == 0)
                 {
-                    Commands.current_job();
+                    Commands.CurrentJob();
                 }
                 else
                 {
-                    current_job_help();
+                    PrintIncorrectUse();
+                    CurrentJobHelp();
                 }
             }
             // Check if the command is "deliver", "fetch" or "navigate"
@@ -186,124 +204,178 @@ namespace BTCom
                      || commandIdentifier == COMMAND_FETCH
                      || commandIdentifier == COMMAND_NAVIGATE)
             {
-                if (arguments == 1)
+                if (arguments == 2)
                 {
-                    moveNode(commandIdentifier, commandSplit[0]);
+                    if (commandSplit[0] == "node")
+                    {
+                        MoveNode(commandIdentifier, commandSplit[1]);    
+                    }
+                    else if(commandSplit[0] == "pallet")
+                    {
+                        MovePallet(commandIdentifier, commandSplit[1]);
+                    }
+                    else
+                    {
+                        PrintIncorrectUse();
+                        ModeNodeHelp();
+                        MovePalletHelp();
+                    }
                 }
                 else
                 {
-                    moveNode_help();
+                    PrintIncorrectUse();
+                    ModeNodeHelp();
+                    MovePalletHelp();
                 }
             }
             else if (commandIdentifier == COMMAND_DIRECTIONS)
             {
                 if (arguments == 1)
                 {
-                    directions(commandSplit[0]);
+                    Directions(commandSplit[0]);
                 }
             }
             else if (commandIdentifier == COMMAND_DEBUG)
             {
                 if (arguments == 1)
                 {
-                    debug(commandSplit[0]);
+                    Debug(commandSplit[0]);
                 }
             }
             else if (commandIdentifier == COMMAND_POSITION)
             {
                 if (arguments == 0)
                 {
-                    position();
+                    Position();
                 }
                 else if (arguments == 2)
                 {
-                    position(commandSplit[0], commandSplit[1]);
+                    Position(commandSplit[0], commandSplit[1]);
                 }
                 else
                 {
-                    position_help();
+                    PrintIncorrectUse();
+                    PositionHelp();
                 }
             }
             else if (commandIdentifier == COMMAND_CLEAR)
             {
                 if (arguments == 0)
                 {
-                    Commands.clear();
+                    Commands.Clear();
                 }
                 else
                 {
-                    clear_help();
+                    PrintIncorrectUse();
+                    ClearHelp();
+                }
+            }
+            else if (commandIdentifier == COMMAND_PALLETLIST)
+            {
+                if (arguments == 0)
+                {
+                    Commands.Palletlist();
+                }
+                else if (arguments == 1)
+                {
+                    Commands.Palletlist(commandSplit[0]);
+                }
+                else if (arguments == 2)
+                {
+                    Commands.Palletlist(commandSplit[0], commandSplit[1]);
+                }
+                else if (arguments == 3)
+                {
+                    Commands.Palletlist(commandSplit[0], commandSplit[1], commandSplit[2]);
+                }
+                else
+                {
+                    PrintIncorrectUse();
+                    PalletlistHelp();
+                }
+            }
+            else if (commandIdentifier == COMMAND_PAYLOAD)
+            {
+                if (arguments == 0)
+                {
+                    Payload();
+                }
+                else if (arguments == 1)
+                {
+                    Payload(commandSplit[0]);
+                }
+                else
+                {
+                    PrintIncorrectUse();
+                    PayloadHelp();
                 }
             }
             else if (commandIdentifier == COMMAND_SAVE)
             {
                 if (arguments == 0)
                 {
-                    Commands.save();
+                    Commands.Save();
                 }
                 else
                 {
-                    save_help();
+                    PrintIncorrectUse();
+                    SaveHelp();
                 }
             }
             else if (commandIdentifier == COMMAND_EXIT)
             {
                 if (arguments == 0)
                 {
-                    Commands.exit();
+                    Commands.Exit();
                 }
                 else
                 {
-                    exit_help();
+                    PrintIncorrectUse();
+                    ExitHelp();
                 }
             }
             // Some unknown command, show the help
             else
             {
-                printInvalidCommand();
+                PrintInvalidCommand();
             }
         }
 
-        private static void help()
+        private static void Help()
         {
-            help_help(false);
-            status_help(false);
-            joblist_help(false);
-            moveNode_help(false);
-            directions_help(false);
-            debug_help(false);
-            position_help(false);
-            clear_help(false);
-            save_help(false);
-            exit_help(false);
+            HelpHelp();
+            StatusHelp();
+            JoblistHelp();
+            ModeNodeHelp();
+            MovePalletHelp();
+            DirectionsHelp();
+            DebugHelp();
+            PositionHelp();
+            PalletlistHelp();
+            PayloadHelp();
+            ClearHelp();
+            SaveHelp();
+            ExitHelp();
         }
 
-        private static void help_help(bool incorrect_use = true)
+        private static void HelpHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"help\"");
         }
 
-        public static void status()
+        public static void Status()
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
             Console.WriteLine("Status: " + f.Status);
         }
 
-        public static void status_help(bool incorrect_use = true)
+        public static void StatusHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"status\"");
         }
 
-        public static void joblist()
+        public static void Joblist()
         {
             Console.WriteLine("Current Joblist:");
 
@@ -321,28 +393,25 @@ namespace BTCom
             
         }
 
-        public static void joblist(string subCommand)
+        public static void Joblist(string subCommand)
         {
-            if (subCommand.ToLower() == JOBLIST_CLEAR)
+            if (subCommand.ToLower() == SUBCOMMAND_CLEAR)
             {
                 // Remove all jobs
                 Database.Instance.Data.Jobs = new Dictionary<int, Job>();
 
-                printSuccess("Joblist was cleared");
-            }
-            else if (subCommand.ToLower() == HELP)
-            {
-                joblist_help(false);
+                PrintSuccess("Joblist was cleared");
             }
             else
             {
-                joblist_help();
+                PrintIncorrectUse();
+                JoblistHelp();
             }
         }
 
-        public static void joblist(string subCommand, string identifier)
+        public static void Joblist(string subCommand, string identifier)
         {
-            if (subCommand.ToLower() == JOBLIST_REMOVE)
+            if (subCommand.ToLower() == SUBCOMMAND_REMOVE)
             {
                 int i;
 
@@ -356,40 +425,37 @@ namespace BTCom
                     {
                         if (Database.Instance.Data.RemoveJob(j))
                         {
-                            printSuccess("Job removed");
+                            PrintSuccess("Job removed");
                         }
                         else
                         {
-                            printError("Could not find job");
+                            PrintError("Could not find job");
                         }
                     }
                     else
                     {
-                        printError("Could not find job with identifier '" + i + "'");
+                        PrintError("Could not find job with identifier '" + i + "'");
                     }
                 }
                 else
                 {
-                    printError("{ID} is not a correct identifier");
-                    joblist_help();
+                    PrintError("{ID} is not a correct identifier");
+                    JoblistHelp();
                 }
             }
             else
             {
-                joblist_help();
+                PrintIncorrectUse();
+                JoblistHelp();
             }
         }
 
-        private static void joblist_help(bool incorrect_use = true)
+        private static void JoblistHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
-            Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\" / \"help\"]");
+            Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\"]");
         }
 
-        private static void moveNode(string type, string node)
+        private static void MoveNode(string type, string node)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -401,7 +467,7 @@ namespace BTCom
             }
             catch (NodeException e)
             {
-                printError(e.Message);
+                PrintError(e.Message);
                 return;
             }
 
@@ -409,24 +475,36 @@ namespace BTCom
             {
                 try
                 {
+                    if (!destination.IsPalletNode)
+                    {
+                        PrintError("Node '" + destination.Name + "' is not a pallet node");
+                        return;
+                    }
+
                     Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.deliver));
-                    printSuccess("Job added");
+                    PrintSuccess("Job added");
                 }
                 catch (Exception e)
                 {
-                    printError(e.Message);
+                    PrintError(e.Message);
                 }
             }
             else if (type == COMMAND_FETCH)
             {
                 try 
                 {
+                    if (!destination.IsPalletNode)
+                    {
+                        PrintError("Node '" + destination.Name + "' is not a pallet node");
+                        return;
+                    }
+
                     Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.fetch));
-                    printSuccess("Job added");
+                    PrintSuccess("Job added");
                 }
                 catch (Exception e)
                 {
-                    printError(e.Message);
+                    PrintError(e.Message);
                 }
             }
             else if (type == COMMAND_NAVIGATE)
@@ -434,49 +512,88 @@ namespace BTCom
                 try
                 {
                     Database.Instance.Data.AddJob(new NavigateJob(Database.Instance.Data.GetNewJobIdentifier(), destination));
-                    printSuccess("Job added");
+                    PrintSuccess("Job added");
                 }
                 catch (Exception e)
                 {
-                    printError(e.Message);
+                    PrintError(e.Message);
                 }
-                
             }
-        }
-
-        private static void moveNode_help(bool incorrect_use = true)
-        {
-            if (incorrect_use)
+            else
             {
-                Console.WriteLine("Incorrect use.");
+                PrintIncorrectUse();
+                ModeNodeHelp();
             }
-            Console.WriteLine("\"fetch\" / \"deliver\" / \"navigate\" {node}");
         }
 
-        private static void directions(string directions)
+        private static void ModeNodeHelp()
+        {
+            Console.WriteLine("[\"fetch\" / \"deliver\" / \"navigate\"] \"node\" {node}");
+        }
+
+        private static void MovePallet(string type, string palletName)
+        {
+            Pallet pallet = null;
+
+            foreach (KeyValuePair<int, Pallet> palletPair in Database.Instance.Data.Pallets)
+            {
+                if (String.Equals(palletPair.Value.Name, palletName, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    pallet = palletPair.Value;
+                    break;
+                }
+            }
+
+            if (pallet == null)
+            {
+                PrintError("Could not find pallet with name '" + palletName + "'");
+                return;
+            }
+
+            if (type == COMMAND_FETCH)
+            {
+                try 
+                {
+                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), pallet, PalletJobType.fetch));
+                    PrintSuccess("Job added");
+                }
+                catch (Exception e)
+                {
+                    PrintError(e.Message);
+                }
+            }
+            else if (type == COMMAND_NAVIGATE)
+            {
+                PrintIncorrectUse();
+                MovePalletHelp();
+            }
+        }
+
+        private static void MovePalletHelp()
+        {
+            Console.WriteLine("\"fetch\" \"pallet\" {pallet}");
+        }
+       
+        private static void Directions(string directions)
         {
             try
             {
                 Database.Instance.Data.AddJob(new NavigateJob(Database.Instance.Data.GetNewJobIdentifier(), directions));
-                printSuccess("Job added");
+                PrintSuccess("Job added");
             }
             catch (Exception e)
             {
-                printError(e.Message);
+                PrintError(e.Message);
             }
             
         }
 
-        private static void directions_help(bool incorrect_use = true)
+        private static void DirectionsHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"directions\" {L | S | R}*");
         }
 
-        private static void debug(string directions)
+        private static void Debug(string directions)
         {
             try
             {
@@ -485,21 +602,17 @@ namespace BTCom
             }
             catch (FormatException e)
             {
-                printError(e.Message);
+                PrintError(e.Message);
             }
             
         }
 
-        private static void debug_help(bool incorrect_use = true)
+        private static void DebugHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"debug\" {L | S | R}*");
         }
 
-        private static void position()
+        private static void Position()
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
@@ -507,7 +620,7 @@ namespace BTCom
             Console.WriteLine("Rear-node:  " + f.RearNode.Name);
         }
 
-        private static void position(string frontNode, string rearNode)
+        private static void Position(string frontNode, string rearNode)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
@@ -522,7 +635,7 @@ namespace BTCom
             }
             catch (NodeException e)
             {
-                printError(e.Message);
+                PrintError(e.Message);
                 return;
             }
 
@@ -532,23 +645,19 @@ namespace BTCom
             }
             catch (NodeException e)
             {
-                printError(e.Message);
+                PrintError(e.Message);
                 return;
             }
 
-            printSuccess("Position updated");
+            PrintSuccess("Position updated");
         }
 
-        private static void position_help(bool incorrect_use = true)
+        private static void PositionHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"position\" [FrontNode RearNode]");
         }
 
-        private static void current_job()
+        private static void CurrentJob()
         {
             if (BluetoothConnection.CurrentJob != null)
             {
@@ -560,64 +669,233 @@ namespace BTCom
             }
         }
 
-        private static void current_job_help(bool incorrect_use = true)
+        private static void CurrentJobHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"currentjob\"");
         }
 
-        private static void clear()
+        private static void Palletlist()
+        {
+            Dictionary<int, Pallet> pallets = Database.Instance.Data.Pallets;
+
+            if (pallets.Count == 0)
+            {
+                Console.WriteLine("No pallets");
+                return;
+            }
+
+            foreach (KeyValuePair<int, Pallet> pallet in pallets)
+            {
+                Console.WriteLine("#" + pallet.Key + " - " + pallet.Value.ToString());
+            }
+        }
+
+        private static void Palletlist(string subcommand)
+        {
+            if (subcommand == COMMAND_CLEAR)
+            {
+                Database.Instance.Data.Pallets = new Dictionary<int, Pallet>();
+
+                PrintSuccess("Pallet list cleared");
+            }
+            else
+            {
+                PrintIncorrectUse();
+                PalletlistHelp();
+            }
+        }
+
+        private static void Palletlist(string subcommand, string name, string location)
+        {
+            if (subcommand == SUBCOMMAND_ADD)
+            {
+                if (location == "forklift")
+                {
+                    Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+                    if (f.HasPallet)
+                    {
+                        PrintError("Forklift is already carrying pallet: '" + f.Payload.Name + "'");
+                        return;
+                    }
+
+                    try
+                    {
+                        Pallet p = new Pallet(Database.Instance.Data.GetNewPalletIdentifier(), name.ToUpper(), null);
+                        Database.Instance.Data.AddPallet(p);
+                        f.Payload = p;
+
+                        PrintSuccess("Pallet added.");
+                    }
+                    catch (PalletException e)
+                    {
+                        PrintError(e.Message);
+                        return;
+                    }
+                }
+                else
+                {
+                    Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+
+                    try
+                    {
+                        Node n = g.getNode(location);
+
+                        if (!n.IsPalletNode)
+                        {
+                            PrintError("Node '" + n.Name + "' is not a pallet-node.");
+                            return; 
+                        }
+
+                        if (n.HasPallet)
+                        {
+                            PrintError("Node '" + n.Name + "' is already containing a pallet.");
+                            return; 
+                        }
+
+                        try
+                        {
+                            Pallet p = new Pallet(Database.Instance.Data.GetNewPalletIdentifier(), name.ToUpper(), n);
+                            Database.Instance.Data.AddPallet(p);
+
+                            PrintSuccess("Pallet added.");
+                        }
+                        catch (PalletException e)
+                        {
+                            PrintError(e.Message);
+                            return;
+                        }
+                    }
+                    catch (NodeException e)
+                    {
+                        PrintError(e.Message);
+                        return;
+                    }
+                }
+            }
+            else
+            {
+                PrintIncorrectUse();
+                PalletlistHelp();
+            }
+        }
+
+        private static void Palletlist(string subcommand, string name)
+        {
+            if (subcommand == SUBCOMMAND_REMOVE)
+            {
+                foreach (KeyValuePair<int, Pallet> palletPair in Database.Instance.Data.Pallets)
+                {
+                    if (String.Equals(palletPair.Value.Name, name, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        Database.Instance.Data.RemovePallet(palletPair.Value);
+                        Database.Instance.Data.Forklifts.FirstOrDefault().Value.Payload = null;
+                        PrintSuccess("Pallet removed");
+                        return;
+                    }
+                }
+
+                PrintError("Could not find pallet with name '" + name + "'");
+            }
+            else
+            {
+                PrintIncorrectUse();
+                PalletlistHelp();
+            }
+        }
+
+        private static void PalletlistHelp()
+        {
+            Console.WriteLine("\"palletlist\" [\"clear\" / (\"add\" {name} (\"forklift\" / {node})) / (\"remove\" {pallet})]");
+        }
+
+        private static void Payload()
+        {
+            Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+            if (f.HasPallet)
+            {
+                Console.WriteLine(f.Payload.ToString());
+            }
+            else
+            {
+                Console.WriteLine("No current payload");
+            }
+        }
+
+        private static void Payload(String newPayload)
+        {
+            Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+            if (f.HasPallet)
+            {
+                PrintError("Forklift is already carrying pallet: '" + f.Payload.Name + "'");
+                return;
+            }
+
+            Pallet pallet = null;
+
+            foreach (KeyValuePair<int, Pallet> palletPair in Database.Instance.Data.Pallets)
+            {
+                if (String.Equals(palletPair.Value.Name, newPayload, StringComparison.CurrentCultureIgnoreCase))
+                {
+                    pallet = palletPair.Value;
+                    break;
+                }
+            }
+
+            if (pallet == null)
+            {
+                PrintError("Could not find pallet with name '" + newPayload + "'");
+                return;
+            }
+
+            Database.Instance.Data.Forklifts.FirstOrDefault().Value.Payload = pallet;
+            PrintSuccess("Payload updated");
+        }
+
+        private static void PayloadHelp()
+        {
+            Console.WriteLine("\"payload\" [\"pallet\"]");
+        }
+
+        private static void Clear()
         {
             Console.Clear();
         }
 
-        private static void clear_help(bool incorrect_use = true)
+        private static void ClearHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"clear\"");
         }
 
-        private static void save()
+        private static void Save()
         {
             Database.Instance.Save();
 
-            printSuccess("Saved database");
+            PrintSuccess("Saved database");
         }
 
-        private static void save_help(bool incorrect_use = true)
+        private static void SaveHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"save\"");
         }
 
-        private static void exit()
+        private static void Exit()
         {
-            printSuccess("Saving database...");
+            PrintSuccess("Saving database...");
 
             Database.Instance.Save();
 
-            printSuccess("Database saved, bye bye");
+            PrintSuccess("Database saved, bye bye");
 
             System.Threading.Thread.Sleep(251);
 
             Environment.Exit(1);
         }
 
-        private static void exit_help(bool incorrect_use = true)
+        private static void ExitHelp()
         {
-            if (incorrect_use)
-            {
-                Console.WriteLine("Incorrect use.");
-            }
             Console.WriteLine("\"exit\"");
         }
     }
