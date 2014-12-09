@@ -52,5 +52,10 @@ namespace BTCom
         {
             Blocked *= decayRate;
         }
+
+        public override string ToString()
+        {
+            return "Distance: '" + Distance + "'. Blocked: '" + Blocked + "'. Visited: '" + Visited + "'. Weight: '" + Weight + "'";
+        }
     }
 }
