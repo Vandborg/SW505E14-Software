@@ -28,6 +28,7 @@ namespace BTCom
         private const String COMMAND_CURRENTJOB = "currentjob";
         private const String COMMAND_PALLETLIST = "palletlist";
         private const String COMMAND_PAYLOAD = "payload";
+        private const String COMMAND_NODE = "node";
         private const String COMMAND_CLEAR = "clear";
         private const String COMMAND_SAVE = "save";
         private const String COMMAND_EXIT = "exit";
@@ -310,6 +311,17 @@ namespace BTCom
                     PayloadHelp();
                 }
             }
+            else if (commandIdentifier == COMMAND_NODE)
+            {
+                if (arguments == 1)
+                {
+                    Node(commandSplit[0]);
+                }
+                else
+                {
+                    NodeHelp();
+                }
+            }
             else if (commandIdentifier == COMMAND_SAVE)
             {
                 if (arguments == 0)
@@ -353,6 +365,7 @@ namespace BTCom
             PositionHelp();
             PalletlistHelp();
             PayloadHelp();
+            NodeHelp();
             ClearHelp();
             SaveHelp();
             ExitHelp();
@@ -860,6 +873,45 @@ namespace BTCom
         private static void PayloadHelp()
         {
             Console.WriteLine("\"payload\" [\"pallet\"]");
+        }
+
+        private static void Node(String node)
+        {
+            Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+
+            try
+            {
+                Node n = g.getNode(node);
+
+                int neighbours = n.Neighbours.Count(x => x.Key != null);
+                int blockedNeighbours = n.BlockedNeighbours.Count(x => x.Key != null);
+
+                Console.WriteLine("Node '" + n.Name + "' has " + (neighbours + blockedNeighbours) + " neighbours, where " + blockedNeighbours + " is blocked.");
+                foreach (KeyValuePair<Node, Edge> nodeEdgePair in n.Neighbours)
+                {
+                    if (nodeEdgePair.Key != null)
+                    {
+                        Console.WriteLine("Edge |" + n.Name + " " + nodeEdgePair.Key.Name + "|: " + nodeEdgePair.Value.ToString() + ".");
+                    }
+                }
+
+                foreach (KeyValuePair<Node, Edge> nodeEdgePair in n.BlockedNeighbours)
+                {
+                    if (nodeEdgePair.Key != null)
+                    {
+                        Console.WriteLine("Edge |" + n.Name + " " + nodeEdgePair.Key.Name + "|: " + nodeEdgePair.Value.ToString() + ".");
+                    }
+                }
+            }
+            catch (NodeException e)
+            {
+                Commands.PrintError(e.Message);
+            }
+        }
+
+        private static void NodeHelp()
+        {
+            Console.WriteLine("\"node\" {node}");
         }
 
         private static void Clear()

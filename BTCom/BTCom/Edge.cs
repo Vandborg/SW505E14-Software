@@ -55,7 +55,7 @@ namespace BTCom
 
         public override string ToString()
         {
-            return "Distance: '" + Distance + "'. Blocked: '" + Blocked + "'. Visited: '" + Visited + "'. Weight: '" + Weight + "'";
+            return "Distance: '" + Distance + "'. \tBlocked: '" + Blocked + "'. \tVisited: '" + Visited + "'. \tWeight: '" + Weight + "'";
         }
     }
 }
