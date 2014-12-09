@@ -174,14 +174,16 @@ namespace BTCom
             if (!BlockedEdges.Contains(edge)) return false;
 
             BlockedEdges.Remove(edge);
-            var edgeOne = nodeOne.BlockedNeighbours.Single(x => x.Key != null && x.Key.Equals(nodeTwo));
-            nodeOne.Neighbours.Add(edgeOne);
-            nodeOne.BlockedNeighbours.Remove(edgeOne);
-            
 
-            var edgeTwo = nodeTwo.BlockedNeighbours.Single(x => x.Key != null && x.Key.Equals(nodeOne));
-            nodeTwo.Neighbours.Add(edgeTwo);
-            nodeTwo.BlockedNeighbours.Remove(edgeTwo);
+            KeyValuePair<Node, Edge> edgeOne = nodeOne.BlockedNeighbours.Single(x => x.Key != null && x.Key.Equals(nodeTwo));
+            int index = nodeOne.BlockedNeighbours.IndexOf(edgeOne);
+            nodeOne.Neighbours[index] = edgeOne;
+            nodeOne.BlockedNeighbours[index] = new KeyValuePair<Node, Edge>();
+
+            KeyValuePair<Node, Edge> edgeTwo = nodeTwo.BlockedNeighbours.Single(x => x.Key != null && x.Key.Equals(nodeOne));
+            index = nodeTwo.BlockedNeighbours.IndexOf(edgeTwo);
+            nodeTwo.Neighbours[index] = edgeTwo;
+            nodeTwo.BlockedNeighbours[index] = new KeyValuePair<Node, Edge>();
 
             return true;
         }

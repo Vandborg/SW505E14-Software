@@ -232,46 +232,78 @@ namespace BTCom
                     Console.WriteLine("Obstacle encountered! Calculating alternative path.");
 
                     int directionsIndex = int.Parse(dataString);
-                    Node newFrontNode = null;
-                    Node newRearNode = null;
 
-                    if (CurrentJob != null)
+                    if (!(CurrentJob is TurnJob))
                     {
-                        Path currentPath = CurrentJob.GetPath();
-                        
-                        String directions = new ForkliftPath(currentPath, forklift.RearNode).getDirections();
-
-                        if (CurrentJob is PalletJob)
+                        if (CurrentJob != null)
                         {
-                            PalletJob pj = (PalletJob) CurrentJob;
+                            Path currentPath = CurrentJob.GetPath();
 
-                            if (pj.Type == PalletJobType.fetch)
+                            String directions = new ForkliftPath(currentPath, forklift.RearNode).getDirections();
+
+                            if (CurrentJob is PalletJob)
                             {
-                                directions = directions.Insert(0, "TUND");
+                                PalletJob pj = (PalletJob) CurrentJob;
+
+                                if (pj.Type == PalletJobType.fetch)
+                                {
+                                    directions = directions.Insert(0, "TUND");
+                                }
+                                else if (pj.Type == PalletJobType.deliver)
+                                {
+                                    directions = directions.Insert(0, "TUBDN");
+                                }
                             }
-                            else if (pj.Type == PalletJobType.deliver)
+
+                            int max = directions.Length;
+                            int i = directionsIndex;
+
+                            if (directions[directions.Length - 1] == 'L' || directions[directions.Length - 1] == 'R')
                             {
-                                directions = directions.Insert(0, "TUBDN");
+                                max--;
+                            }
+
+                            double nodeRearIndex = (max - 1 - i)/2;
+
+                            if (Math.Abs(nodeRearIndex%1 - 0.5) < 0.1)
+                            {
+                                Commands.PrintError("PALL-E: Noget gik galt. fix mig");
+                                throw new Exception();
+                            }
+                            else
+                            {
+                                Node newRearNode = null;
+                                Node newFrontNode = null;
+                                int roundedIndex = (int) nodeRearIndex;
+
+                                if (roundedIndex == 0)
+                                {
+                                    newFrontNode = forklift.FrontNode;
+                                    newRearNode = forklift.RearNode;
+                                }
+                                else
+                                {
+                                    newFrontNode = currentPath.Nodes[roundedIndex];
+                                    newRearNode = currentPath.Nodes[roundedIndex - 1];
+                                }
+
+                                // Update forklift nodes
+                                forklift.UpdateNodes(newRearNode, newFrontNode);
+
+                                // Update edge the NXT is standing on
+                                Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
                             }
                         }
-
-                        directions = directions.Substring(directionsIndex, directions.Length - 1);
-
-                        int count = directions.Count(c => c == 'L' || c == 'R' || c == 'S');
-
-                        newFrontNode = currentPath.Nodes[count - 2];
-                        newRearNode = currentPath.Nodes[count - 1];
-
-                        // Update forklift nodes
-                        forklift.UpdateNodes(newFrontNode, newRearNode);
-
-                        // Update edge the NXT is standing on
-                        Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
+                        else
+                        {
+                            throw new Exception("No current job or debugjob");
+                        }
                     }
                     else
                     {
-                        throw new Exception("No current job or debugjob");
+                        Commands.PrintError("Already performing turn-job, ignoreing...");
                     }
+                    
                     break;
 
                 // Check if the NXT updated its status
@@ -302,6 +334,18 @@ namespace BTCom
 
                                     Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
                                     f.UpdateNodes(frontNode, rearNode);
+                                }
+
+                                if (!(CurrentJob is TurnJob))
+                                {
+                                    Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+
+                                    // Unblock all edges
+                                    for (int i = g.BlockedEdges.Count - 1; i >= 0; i--)
+                                    {
+                                        Tuple<Node, Node> edge = g.BlockedEdges[i];
+                                        g.UnblockEdge(edge.Item1, edge.Item2);
+                                    }
                                 }
 
                                 if (CurrentJob is PalletJob)
