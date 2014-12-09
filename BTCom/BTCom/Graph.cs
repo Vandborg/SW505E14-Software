@@ -141,7 +141,7 @@ namespace BTCom
             if (BlockedEdges.Contains(edge)) return false;
 
             BlockedEdges.Add(edge);
-
+            
             KeyValuePair<Node, Edge> edgeOne = nodeOne.Neighbours.Single(x => x.Key != null && x.Key.Equals(nodeTwo));
             int index = nodeOne.Neighbours.IndexOf(edgeOne);
             nodeOne.BlockedNeighbours[index] = edgeOne;
@@ -151,6 +151,9 @@ namespace BTCom
             index = nodeTwo.Neighbours.IndexOf(edgeTwo);
             nodeTwo.BlockedNeighbours[index] = edgeTwo;
             nodeTwo.Neighbours[index] = new KeyValuePair<Node, Edge>();
+
+            // Increment the blocked count on the edge
+            edgeTwo.Value.Blocked++;
 
             if (BreathFirstSearch().Count != Nodes.Count)
             {

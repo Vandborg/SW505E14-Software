@@ -265,9 +265,9 @@ namespace BTCom
 
                             double nodeRearIndex = (max - 1 - i)/2;
 
-                            if (Math.Abs(nodeRearIndex%1 - 0.5) < 0.1)
+                            if (Math.Abs(nodeRearIndex % 1 - 0.5) < 0.1)
                             {
-                                Commands.PrintError("PALL-E: Noget gik galt. fix mig");
+                                Commands.PrintError("PALL-E: Something went wront, please fix it");
                                 throw new Exception();
                             }
                             else
@@ -287,16 +287,39 @@ namespace BTCom
                                     newRearNode = currentPath.Nodes[roundedIndex - 1];
                                 }
 
-                                // Update forklift nodes
+                                // Update forklift nodes (Must be reversed because of PALL-E behaviour)
                                 forklift.UpdateNodes(newRearNode, newFrontNode);
 
                                 // Update edge the NXT is standing on
                                 Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
+
+                                // Update the visitied count on edges
+                                Node previousNode = null;
+
+                                foreach (Node n in currentPath.Nodes)
+                                {
+                                    if (previousNode == null)
+                                    {
+                                        previousNode = n;
+                                        continue;
+                                    }
+
+                                    // Find edge to the previous node and increment the visitied count
+                                    KeyValuePair<Node, Edge> nodeEdgePair = previousNode.Neighbours.Single(x => x.Key != null && x.Key.Equals(n));
+                                    nodeEdgePair.Value.Visited++;
+
+                                    if (n.Equals(newFrontNode))
+                                    {
+                                        break;
+                                    }
+
+                                    previousNode = n;
+                                }
                             }
                         }
                         else
                         {
-                            throw new Exception("No current job or debugjob");
+                            Commands.PrintError("No current job - Continuing...");
                         }
                     }
                     else
@@ -326,6 +349,24 @@ namespace BTCom
                             {
                                 Path p = CurrentJob.GetPath();
 
+                                // Update the visited count on traversed edges
+                                Node previousNode = null;
+
+                                foreach (Node n in p.Nodes)
+                                {
+                                    if (previousNode == null)
+                                    {
+                                        previousNode = n;
+                                        continue;
+                                    }
+
+                                    // Find edge to the previous node and increment the visitied count
+                                    KeyValuePair<Node, Edge> nodeEdgePair = previousNode.Neighbours.Single(x => x.Key != null && x.Key.Equals(n));
+                                    nodeEdgePair.Value.Visited++;
+
+                                    previousNode = n;
+                                }
+
                                 // Update the position of the forklift
                                 if (p.Nodes.Count >= 2)
                                 {
@@ -346,6 +387,9 @@ namespace BTCom
                                         Tuple<Node, Node> edge = g.BlockedEdges[i];
                                         g.UnblockEdge(edge.Item1, edge.Item2);
                                     }
+
+                                    // Decay the graph
+                                    g.Decay(0.75);
                                 }
 
                                 if (CurrentJob is PalletJob)
@@ -463,7 +507,7 @@ namespace BTCom
                             }
                             else
                             {
-                                throw new Exception("No current jobs");
+                                // throw new Exception("No current jobs");
                             }
 
                             // Update the internal status
