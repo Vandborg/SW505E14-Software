@@ -19,11 +19,13 @@ namespace BTCom
             get
             {
                 double blocked_probability = Blocked / (Visited == 0 ? 1 : Visited);
+                
+                if (Math.Abs(blocked_probability - 1) < 0.1)
+                {
+                    return Double.MaxValue; 
+                }
 
-                double recover = Distance * 2;
-                double cross = Distance;
-
-                return blocked_probability * recover + (1 - blocked_probability) * cross;
+                return Distance / (1 - blocked_probability);
             }
             set { ; }
         }
