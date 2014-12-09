@@ -12,6 +12,7 @@
 #include "utility/utility_structs/utility_structs.h"
 #include "utility/utility_bluetooth/utility_bluetooth.h"
 #include "utility/utility_movement/utility_distance.h"
+#include "utility/utility_variables/utility_variables.h"
 
 
 #define COLOR_THRESHOLD 50
@@ -29,6 +30,9 @@
 
 // Used to navigate
 navigation Navigation;
+
+// Sonar sensors
+bool use_front_sonar_sensor;
 
 // The status of the NXT
 char Status;
@@ -348,6 +352,7 @@ void turn_around(void)
        nxt_motor_get_count(LEFT_MOTOR)  <= degrees_on_wheel_left)
     {
         Navigation.next -= 1;
+        use_front_sonar_sensor = true;
     }
     
     return;
@@ -615,23 +620,6 @@ void switch_sensors(void)
 
     swap(&color_sensor, &light_sensor);
     swap(&color_motor, &light_motor);
-
-    // if(light_sensor == COLOR_SENSOR_LEFT)
-    // {
-    //     lcd_display_line(LCD_LINE_FOUR, "LC", 1);
-    // }
-    // else
-    // {
-    //     lcd_display_line(LCD_LINE_FOUR, "RC", 1);
-    // }
-    // if(light_motor == LEFT_MOTOR)
-    // {
-    //     lcd_display_line(LCD_LINE_FIVE, "LM", 1);
-    // }
-    // else
-    // {
-    //     lcd_display_line(LCD_LINE_FIVE, "RM", 1);
-    // }
 }
 
 bool line_found = false;

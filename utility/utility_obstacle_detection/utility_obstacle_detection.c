@@ -44,6 +44,7 @@ TASK(TASK_obstacle_detection)
             report_obstacle_bt();
 
             use_front_sonar_sensor = false;
+            distance_front = MAX_DISTANCE;
         }
     }
 
