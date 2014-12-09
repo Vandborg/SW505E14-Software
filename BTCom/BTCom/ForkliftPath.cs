@@ -20,6 +20,11 @@ namespace BTCom
 
         public ForkliftPath(Path path, Node initialNode = null)
         {
+            if (path == null)
+            {
+                throw new Exception("Cannot convert null-path to ForkliftPath");
+            }
+
             this.initialNode = initialNode;
 
             // If the initial node is null, check for the node in the forklift property
