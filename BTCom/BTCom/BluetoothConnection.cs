@@ -287,12 +287,6 @@ namespace BTCom
                                     newRearNode = currentPath.Nodes[roundedIndex - 1];
                                 }
 
-                                // Update forklift nodes (Must be reversed because of PALL-E behaviour)
-                                forklift.UpdateNodes(newRearNode, newFrontNode);
-
-                                // Update edge the NXT is standing on
-                                Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
-
                                 // Update the visitied count on edges
                                 Node previousNode = null;
 
@@ -315,6 +309,12 @@ namespace BTCom
 
                                     previousNode = n;
                                 }
+
+                                // Update forklift nodes (Must be reversed because of PALL-E behaviour)
+                                forklift.UpdateNodes(newRearNode, newFrontNode);
+
+                                // Update edge the NXT is standing on
+                                Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
                             }
                         }
                         else
@@ -389,7 +389,7 @@ namespace BTCom
                                     }
 
                                     // Decay the graph
-                                    g.Decay(0.75);
+                                    g.Decay(0.90);
                                 }
 
                                 if (CurrentJob is PalletJob)
