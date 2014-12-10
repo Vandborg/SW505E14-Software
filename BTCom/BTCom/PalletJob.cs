@@ -146,7 +146,17 @@ namespace BTCom
                     break;
             }
 
-            return "#" + ID() + ". Type: '" + type + "'. Destination: '" + Destination.Name + "'";
+            if (Destination != null)
+            {
+                return "#" + ID() + ". Type: '" + type + "'. Destination: '" + Destination.Name + "'";
+            }
+            
+            if(PalletLocation != null)
+            {
+                return "#" + ID() + ". Type: '" + type + "'. Pallet: '" + PalletLocation.Name + "'";
+            }
+
+            return "#" + ID() + ". Type: '" + type + "'";
         }
     }
 }

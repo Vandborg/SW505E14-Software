@@ -20,7 +20,6 @@ namespace BTCom
         private const String COMMAND_STATUS = "status";
         private const String COMMAND_JOBLIST = "joblist";
         private const String COMMAND_DELIVER = "deliver";
-        private const String COMMAND_DIRECTIONS = "directions";
         private const String COMMAND_DEBUG = "debug";
         private const String COMMAND_FETCH = "fetch";
         private const String COMMAND_NAVIGATE = "navigate";
@@ -201,39 +200,43 @@ namespace BTCom
                 }
             }
             // Check if the command is "deliver", "fetch" or "navigate"
-            else if (commandIdentifier == COMMAND_DELIVER
-                     || commandIdentifier == COMMAND_FETCH
-                     || commandIdentifier == COMMAND_NAVIGATE)
+            else if (commandIdentifier == COMMAND_FETCH)
             {
                 if (arguments == 2)
                 {
                     if (commandSplit[0] == "node")
                     {
-                        MoveNode(commandIdentifier, commandSplit[1]);    
+                        FetchNode(commandSplit[1]);    
                     }
                     else if(commandSplit[0] == "pallet")
                     {
-                        MovePallet(commandIdentifier, commandSplit[1]);
+                        FetchPallet(commandSplit[1]);
                     }
                     else
                     {
                         PrintIncorrectUse();
-                        ModeNodeHelp();
-                        MovePalletHelp();
+                        FetchNodeHelp();
+                        FetchPalletHelp();
                     }
                 }
                 else
                 {
                     PrintIncorrectUse();
-                    ModeNodeHelp();
-                    MovePalletHelp();
+                    FetchNodeHelp();
+                    FetchPalletHelp();
                 }
             }
-            else if (commandIdentifier == COMMAND_DIRECTIONS)
+            else if (commandIdentifier == COMMAND_DELIVER || 
+                     commandIdentifier == COMMAND_NAVIGATE)
             {
                 if (arguments == 1)
                 {
-                    Directions(commandSplit[0]);
+                    DeliverNavigate(commandIdentifier, commandSplit[0]);
+                }
+                else
+                {
+                    PrintIncorrectUse();
+                    DeliverNavigateHelp();
                 }
             }
             else if (commandIdentifier == COMMAND_DEBUG)
@@ -355,17 +358,15 @@ namespace BTCom
 
         private static void Help()
         {
-            HelpHelp();
-            StatusHelp();
-            JoblistHelp();
-            ModeNodeHelp();
-            MovePalletHelp();
-            DirectionsHelp();
-            DebugHelp();
             PositionHelp();
-            PalletlistHelp();
             PayloadHelp();
-            NodeHelp();
+            JoblistHelp();
+            PalletlistHelp();
+            DeliverNavigateHelp();
+            FetchNodeHelp();
+            FetchPalletHelp();
+            DebugHelp();
+            HelpHelp();
             ClearHelp();
             SaveHelp();
             ExitHelp();
@@ -468,10 +469,50 @@ namespace BTCom
 
         private static void JoblistHelp()
         {
-            Console.WriteLine("\"joblist\" [\"remove\" {ID} / \"clear\"]");
+            Console.WriteLine("\"joblist\"");
+            Console.WriteLine("\"joblist\" \"clear\"");
+            Console.WriteLine("\"joblist\" \"remove\" {[0-9]+}");
         }
 
-        private static void MoveNode(string type, string node)
+        private static void FetchNode(string node)
+        {
+            Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+
+            Node destination = null;
+
+            try
+            {
+                destination = g.getNode(node);
+            }
+            catch (NodeException e)
+            {
+                PrintError(e.Message);
+                return;
+            }
+
+            try
+            {
+                if (!destination.IsPalletNode)
+                {
+                    PrintError("Node '" + destination.Name + "' is not a pallet node");
+                    return;
+                }
+
+                Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.fetch));
+                PrintSuccess("Job added");
+            }
+            catch (Exception e)
+            {
+                PrintError(e.Message);
+            }
+        }
+
+        private static void FetchNodeHelp()
+        {
+            Console.WriteLine("\"fetch\" \"node\" {node}");
+        }
+
+        private static void DeliverNavigate(string type, string node)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -505,24 +546,6 @@ namespace BTCom
                     PrintError(e.Message);
                 }
             }
-            else if (type == COMMAND_FETCH)
-            {
-                try 
-                {
-                    if (!destination.IsPalletNode)
-                    {
-                        PrintError("Node '" + destination.Name + "' is not a pallet node");
-                        return;
-                    }
-
-                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), destination, PalletJobType.fetch));
-                    PrintSuccess("Job added");
-                }
-                catch (Exception e)
-                {
-                    PrintError(e.Message);
-                }
-            }
             else if (type == COMMAND_NAVIGATE)
             {
                 try
@@ -538,16 +561,17 @@ namespace BTCom
             else
             {
                 PrintIncorrectUse();
-                ModeNodeHelp();
+                FetchNodeHelp();
             }
         }
 
-        private static void ModeNodeHelp()
+        private static void DeliverNavigateHelp()
         {
-            Console.WriteLine("[\"fetch\" / \"deliver\" / \"navigate\"] \"node\" {node}");
+            Console.WriteLine("\"deliver\" {node}");
+            Console.WriteLine("\"navigate\" {node}");
         }
 
-        private static void MovePallet(string type, string palletName)
+        private static void FetchPallet(string palletName)
         {
             Pallet pallet = null;
 
@@ -566,47 +590,20 @@ namespace BTCom
                 return;
             }
 
-            if (type == COMMAND_FETCH)
-            {
-                try 
-                {
-                    Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), pallet, PalletJobType.fetch));
-                    PrintSuccess("Job added");
-                }
-                catch (Exception e)
-                {
-                    PrintError(e.Message);
-                }
-            }
-            else if (type == COMMAND_NAVIGATE)
-            {
-                PrintIncorrectUse();
-                MovePalletHelp();
-            }
-        }
-
-        private static void MovePalletHelp()
-        {
-            Console.WriteLine("\"fetch\" \"pallet\" {pallet}");
-        }
-       
-        private static void Directions(string directions)
-        {
             try
             {
-                Database.Instance.Data.AddJob(new NavigateJob(Database.Instance.Data.GetNewJobIdentifier(), directions));
+                Database.Instance.Data.AddJob(new PalletJob(Database.Instance.Data.GetNewJobIdentifier(), pallet, PalletJobType.fetch));
                 PrintSuccess("Job added");
             }
             catch (Exception e)
             {
                 PrintError(e.Message);
             }
-            
         }
 
-        private static void DirectionsHelp()
+        private static void FetchPalletHelp()
         {
-            Console.WriteLine("\"directions\" {L | S | R}*");
+            Console.WriteLine("\"fetch\" \"pallet\" {pallet}");
         }
 
         private static void Debug(string directions)
@@ -625,7 +622,7 @@ namespace BTCom
 
         private static void DebugHelp()
         {
-            Console.WriteLine("\"debug\" {L | S | R}*");
+            Console.WriteLine("\"debug\" {[BDLMRSTU]+}");
         }
 
         private static void Position()
@@ -670,7 +667,8 @@ namespace BTCom
 
         private static void PositionHelp()
         {
-            Console.WriteLine("\"position\" [FrontNode RearNode]");
+            Console.WriteLine("\"position\"");
+            Console.WriteLine("\"position\" <front node> <rear node>");
         }
 
         private static void CurrentJob()
@@ -822,7 +820,10 @@ namespace BTCom
 
         private static void PalletlistHelp()
         {
-            Console.WriteLine("\"palletlist\" [\"clear\" / (\"add\" {name} (\"forklift\" / {node})) / (\"remove\" {pallet})]");
+            Console.WriteLine("\"palletlist\"");
+            Console.WriteLine("\"palletlist\" \"add\" <name> <node>");
+            Console.WriteLine("\"palletlist\" \"add\" <name> \"forklift\"");
+            Console.WriteLine("\"palletlist\" \"remove\" <name>");
         }
 
         private static void Payload()
@@ -872,7 +873,8 @@ namespace BTCom
 
         private static void PayloadHelp()
         {
-            Console.WriteLine("\"payload\" [\"pallet\"]");
+            Console.WriteLine("\"payload\"");
+            Console.WriteLine("\"payload\" <pallet>");
         }
 
         private static void Node(String node)
@@ -911,7 +913,7 @@ namespace BTCom
 
         private static void NodeHelp()
         {
-            Console.WriteLine("\"node\" {node}");
+            Console.WriteLine("\"node\" <node>");
         }
 
         private static void Clear()
