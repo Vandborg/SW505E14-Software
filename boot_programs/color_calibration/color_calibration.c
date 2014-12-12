@@ -197,32 +197,6 @@ void color_calibration(void)
                 Colors[i] = color_left;
                 Colors[i+1] = color_right;
 
-                if(i == COLOR_BLACK_LEFT)
-                {
-                    drive_straight_distance(DISTANCE_BETWEEN_MEASUREMENTS);
-
-                    // Wait before scanning
-                    systick_wait_ms(500);
-
-                    // Scan the colors
-                    color_left = scan_color(COLOR_SENSOR_LEFT);
-                    color_right = scan_color(COLOR_SENSOR_RIGHT);
-
-                    // Get average of black tape and paper
-                    Colors[i].red = 
-                        (Colors[i].red + color_left.red) / 2;
-                    Colors[i].green = 
-                        (Colors[i].green + color_left.green) / 2;
-                    Colors[i].blue = 
-                        (Colors[i].blue + color_left.blue) / 2;
-
-                    Colors[i+1].red = 
-                        (Colors[i+1].red + color_right.red) / 2;
-                    Colors[i+1].green = 
-                        (Colors[i+1].green + color_right.green) / 2;
-                    Colors[i+1].blue = 
-                        (Colors[i+1].blue + color_right.blue) / 2;
-                }
 
                 // Display the colors to the display
                 display_colors(Colors[i], Colors[i+1], get_color_name(i, buf));
