@@ -135,9 +135,9 @@ TASK(TASK_color_scan)
             }
         }
         // Is the meassured color red and was the last color meassured not red
-        else if(is_red_color_colorsensor())
+        else if(!is_red_color_colorsensor())
         {
-            if(!last_color_red)
+            if(last_color_red)
             {
                 // Debugging sound
                 play_sound(SOUND_TICK);
@@ -183,12 +183,12 @@ TASK(TASK_color_scan)
                 
             }
             // The color was red
-            last_color_red = true;
+            last_color_red = false;
         }
         else
         {
             // The color was not red
-            last_color_red = false;
+            last_color_red = true;
         }
     }
     else 
