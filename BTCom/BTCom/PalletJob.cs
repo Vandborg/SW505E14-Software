@@ -60,6 +60,35 @@ namespace BTCom
 
             Path p = g.ShortestPath(from, target, ignore);
 
+            if (Type == PalletJobType.fetch)
+            {
+                // Cannot fetch pallets with payload
+                if (f.HasPallet)
+                {
+                    throw new JobException("Cannot fetch pallet with payload");
+                }
+
+                // To fetch a pallet from a node, the last node must have a pallet
+                if (!p.Nodes.Last().HasPallet)
+                {
+                    throw new JobException("Cannot fetch pallet where there is none (Node '" + p.Nodes.Last().Name + "')");
+                }
+            }
+
+            if (Type == PalletJobType.deliver)
+            {
+                // Cannot deliver without payload
+                if (!f.HasPallet)
+                {
+                    throw new JobException("Cannot deliver pallet without payload");
+                }
+
+                if (p.Nodes.Last().HasPallet)
+                {
+                    throw new JobException("Cannot deliver pallet where there is already one (Node '" + p.Nodes.Last().Name + "')");
+                }
+            }
+
             if (p.Nodes.Last().Equals(f.FrontNode))
             {
                 throw new JobException("PALL-E already at destination '" + f.FrontNode.Name + "'");

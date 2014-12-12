@@ -404,12 +404,6 @@ namespace BTCom
                                     // Check if the forklift just finished a deliver pallet job
                                     if (job.Type == PalletJobType.deliver)
                                     {
-                                        // To finalize the job, the pallet of the fork must be updated
-                                        if (!forklift.HasPallet)
-                                        {
-                                            throw new JobException(CurrentJob, "Trying to deliver pallet, but forklift has none.");
-                                        }
-
                                         Pallet pallet = forklift.Payload;
 
                                         // Update the location of the pallet
@@ -420,19 +414,7 @@ namespace BTCom
                                     }
                                     else if (job.Type == PalletJobType.fetch)
                                     {
-                                        // To finalize the job, the pallet must be updates
-                                        if (forklift.HasPallet)
-                                        {
-                                            throw new JobException(CurrentJob, forklift.Payload, "Trying to fetch pallet, but forklift already has a pallet.");
-                                        }
-
                                         Node n = p.Nodes.Last();
-
-                                        // To fetch a pallet from a node, the last node must have a pallet
-                                        if (!n.HasPallet)
-                                        {
-                                            throw new JobException(CurrentJob, "Trying to fetch pallet, but last node in path does not have one");
-                                        }
 
                                         // Update the payload (Which will also update the location of the pallet)
                                         forklift.Payload = n.Pallet;
@@ -457,26 +439,20 @@ namespace BTCom
 
                                     try
                                     {
-                                        if (nextJob.GetPath() != null) break;
+                                        nextJob.GetPath();
+                                        break;
                                     }
                                     catch (PathException e)
                                     {
                                         Commands.PrintError("Remove job #" + nextJob.ID() + ": '" + e.Message + "'");
-                                        Database.Instance.Data.RemoveJob(nextJob);
-                                        nextJob = null;
-                                        continue;
                                     }
                                     catch (JobException e)
                                     {
                                         Commands.PrintError("Remove job #" + nextJob.ID() + ": '" + e.Message + "'");
-                                        Database.Instance.Data.RemoveJob(nextJob);
-                                        nextJob = null;
-                                        continue;
                                     }
 
-                                    // Remove the nextJob job, because it's path is null
-                                    Commands.PrintError("Remove job #" + nextJob.ID() + " because path was empty");
                                     Database.Instance.Data.RemoveJob(nextJob);
+                                    nextJob = null;
                                 }
 
                                 // We removed all the jobs, nothing left to do!
@@ -498,8 +474,8 @@ namespace BTCom
                                 }
                                 catch (JobException e)
                                 {
-                                    Database.Instance.Data.RemoveJob(nextJob);
                                     Commands.PrintError("Job #" + nextJob.ID() + " cancelled: '" + e.Message + "'");
+                                    Database.Instance.Data.RemoveJob(nextJob);
                                 }
                             }
 
