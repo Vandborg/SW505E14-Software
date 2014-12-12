@@ -191,13 +191,32 @@ void create_path_bt(char* package)
     for (int i = 0; i < direction_count; ++i)
     {
         Navigation.directions[i] = package[i+2];
-    }
 
+        // Check that the instruction set is on the correct format
+        bool correct_instruction_set = true;
+        if(package[i+2] != 'L' &&
+           package[i+2] != 'R' &&
+           package[i+2] != 'S' &&
+           package[i+2] != 'T' &&
+           package[i+2] != 'B' &&
+           package[i+2] != 'U' &&
+           package[i+2] != 'D'
+        )
+        {
+            correct_instruction_set = false;
+        }
+    }
+    // Add endstring characeter
     Navigation.directions[direction_count] = '\0';
-    // Fill navigation with location of next direction and which type of task
-    // we are currently doing. 
-    Navigation.next = direction_count-1;
-    Navigation.type_of_task = package[1];
+
+    // If the instrutions are correct
+    if(correct_instruction_set)
+    {
+        // Fill navigation with location of next direction and which type of task
+        // we are currently doing. 
+        Navigation.next = direction_count-1;
+        Navigation.type_of_task = package[1];
+    }
 }
 
 void update_status_bt(void)
