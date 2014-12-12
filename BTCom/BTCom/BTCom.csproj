@@ -75,6 +75,7 @@
   <ItemGroup>
     <Compile Include="Color.cs" />
     <Compile Include="Commands.cs" />
+    <Compile Include="ConsoleHandler.cs" />
     <Compile Include="DataEntry.cs" />
     <Compile Include="DebugJob.cs" />
     <Compile Include="Edge.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="Exceptions\PalletException.cs" />
     <Compile Include="Exceptions\PathException.cs" />
+    <Compile Include="MessageType.cs" />
     <Compile Include="Pallet.cs" />
     <Compile Include="PalletJob.cs" />
     <Compile Include="Forklift.cs" />
