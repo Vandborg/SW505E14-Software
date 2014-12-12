@@ -81,6 +81,7 @@
     <Compile Include="Exceptions\JobException.cs" />
     <Compile Include="Exceptions\NodeException.cs" />
     <Compile Include="Exceptions\PalletException.cs" />
+    <Compile Include="Exceptions\PathException.cs" />
     <Compile Include="Pallet.cs" />
     <Compile Include="PalletJob.cs" />
     <Compile Include="Forklift.cs" />
