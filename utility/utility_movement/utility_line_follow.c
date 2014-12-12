@@ -90,6 +90,8 @@ bool last_color_red = false;
 // Indicates if the next has just come out of boot mode
 bool first_time = true;
 
+bool line_found = false;
+
 // Drive straight persistent variables
 bool first_iteration = true; // Indicates if the init count should be saved
 int integral_straight = 0;
@@ -609,7 +611,6 @@ void switch_sensors(void)
     swap(&color_motor, &light_motor);
 }
 
-bool line_found = false;
 
 void line_recover(void)
 {
