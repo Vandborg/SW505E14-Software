@@ -187,13 +187,14 @@ void create_path_bt(char* package)
     // and end
     int direction_count = strlen(package)-3;
 
+    bool correct_instruction_set = true;
+
     // Fill the Navigation struct with the correct directions
     for (int i = 0; i < direction_count; ++i)
     {
         Navigation.directions[i] = package[i+2];
 
         // Check that the instruction set is on the correct format
-        bool correct_instruction_set = true;
         if(package[i+2] != 'L' &&
            package[i+2] != 'R' &&
            package[i+2] != 'S' &&
