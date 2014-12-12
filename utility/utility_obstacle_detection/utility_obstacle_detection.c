@@ -21,12 +21,13 @@ DeclareTask(TASK_obstacle_detection);
 
 #define MAX_DISTANCE 255
 #define MIN_DISTANCE 0
-#define HALF_ROTATION_DEGREES 180
-#define NUMBER_OF_INSTRUCTIONS_FOR_DELIVER 5
-#define NUMBER_OF_INSTRUCTIONS_FOR_FETCH 4
+
+#define NUMBER_OF_INSTRUCTIONS_FOR_DELIVER 6
+#define NUMBER_OF_INSTRUCTIONS_FOR_FETCH 5
 
 S32 distance_front = MAX_DISTANCE;
 S32 distance_rear = MAX_DISTANCE;
+
 bool use_front_sonar_sensor;
 bool use_rear_sonar_sensor;
 
