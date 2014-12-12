@@ -73,7 +73,14 @@ namespace BTCom
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
             Node ignore = f.RearNode;
 
-            ForkliftPath fp = new ForkliftPath(GetPath(), ignore);
+            Path p = GetPath();
+
+            if (p == null)
+            {
+                throw new NullReferenceException("Path is empty (either at destination, or impossible)");
+            }
+
+            ForkliftPath fp = new ForkliftPath(p, ignore);
 
             string directions = fp.getDirections();
 

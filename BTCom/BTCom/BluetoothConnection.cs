@@ -443,8 +443,25 @@ namespace BTCom
                             // Check if there is any jobs to be performed
                             if (JobList.Count > 0)
                             {
-                                // Get the next job (job with lowest id)
-                                Job nextJob = JobList.Aggregate((l, r) => l.Key < r.Key ? l : r).Value;
+                                Job nextJob = null;
+
+                                while ((nextJob == null || nextJob.GetPath() != null) && JobList.Count > 0)
+                                {
+                                    // Get the next job (job with lowest id)
+                                    nextJob = JobList.Aggregate((l, r) => l.Key < r.Key ? l : r).Value;
+
+                                    if (nextJob == null) continue;
+
+                                    // Remove the nextJob job, because it's path is null
+                                    Commands.PrintError("Remove job #" + nextJob.ID() + " because path was empty");
+                                    Database.Instance.Data.RemoveJob(nextJob);
+                                }
+
+                                // We removed all the jobs, nothing left to do!
+                                if (JobList.Count < 1)
+                                {
+                                    break;
+                                }
 
                                 try
                                 {
