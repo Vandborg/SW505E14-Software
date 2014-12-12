@@ -11,6 +11,7 @@
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_structs/utility_structs.h"
 #include "utility/utility_lcd/utility_lcd.h"
+#include "utility/utility_variables/utility_variables.h"
 
 navigation Navigation;
 
@@ -97,6 +98,9 @@ TASK(TASK_boot)
 {   
     initialize_colors();
     boot_device();
+    Status = BUSY;
+    Navigation.directions[0] = 'U';
+    Navigation.next = 0;
     TerminateTask();
 }
 
