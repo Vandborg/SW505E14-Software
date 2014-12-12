@@ -5,6 +5,7 @@ using System.IO.Ports;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using BTCom.Exceptions;
 
 
@@ -12,27 +13,44 @@ namespace BTCom
 {   
     class Program
     {
+        public static bool HasConnection = false;
+
         // Main 
         private static void Main(string[] args)
         {
+            Console.Title = ConsoleHandler.DNS + " console";
+
+            Thread ConsoleThread = new Thread(() => ConsoleHandler.PrintMessages());
+            ConsoleThread.Start();
+
+            ConsoleHandler.AddMessage(MessageType.SUCCESS, "______    ___    _       _                _____ ");
+            ConsoleHandler.AddMessage(MessageType.SUCCESS, "| ___ \\  / _ \\  | |     | |              |  ___|");
+            ConsoleHandler.AddMessage(MessageType.SUCCESS, "| |_/ / / /_\\ \\ | |     | |      ______  | |__  ");
+            ConsoleHandler.AddMessage(MessageType.SUCCESS, "|  __/  |  _  | | |     | |     |______| |  __| ");
+            ConsoleHandler.AddMessage(MessageType.SUCCESS, "| |     | | | | | |____ | |____          | |___ ");
+            ConsoleHandler.AddMessage(MessageType.SUCCESS, "\\_|     \\_| |_/ \\_____/ \\_____/          \\_____|");
+            ConsoleHandler.AddMessage(MessageType.SUCCESS, "");
+
             // Make sure the database is populated
             PopulateDatabase();
 
+            // Test and set if we know where PALL-E is
             UpdatePositionInformation();
+            
+            // Instantiate threads
+            Thread ConsumeBTThread = new Thread(() => ConsumeBT(new BluetoothConnection("COM3")));
+            
+            // Start the threads
+            ConsumeBTThread.Start();
 
-            if(true) // Set to false if you want to communication with NXT 
+            // Wait until the device has bluetooth
+            while (!HasConnection)
             {
-                // Open the bt-connection
-                BluetoothConnection bt = new BluetoothConnection("COM3");
-
-                // Instantiate threads
-                Thread ConsoleInputThread = new Thread(() => Commands.Execute());
-                Thread ConsumeBTThread = new Thread(() => ConsumeBT(bt));
-
-                // Start the threads
-                ConsoleInputThread.Start();
-                ConsumeBTThread.Start();            
+                ; // Busy wait
             }
+
+            Thread CommandThread = new Thread(() => Commands.Execute());
+            CommandThread.Start();          
         }
 
         // Used to check if position information is required
@@ -43,7 +61,7 @@ namespace BTCom
             
             if (f.RearNode == null || f.FrontNode == null)
             {
-                Console.WriteLine("Information about PALL-E position is required.");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Information about PALL-E position is required.");
 
                 bool result = false;
 
@@ -57,15 +75,13 @@ namespace BTCom
                     {
                         try
                         {
-                            Console.Write("Front-node: ");
+                            ConsoleHandler.AddMessage(MessageType.REGULAR, "Enter name of front node...");
                             String faceing = Console.ReadLine();
                             frontNode = g.getNode(faceing);
                         }
                         catch (NodeException e)
                         {
-                            Console.WriteLine("Error when finding node: ");
-                            Console.WriteLine(e.Message);
-                            Console.WriteLine();
+                            ConsoleHandler.AddMessage(MessageType.ERROR, "Error when finding node: '" + e.Message + "'");
                         }
                     }
 
@@ -74,15 +90,13 @@ namespace BTCom
                     {
                         try
                         {
-                            Console.Write("Rear-node: ");
+                            ConsoleHandler.AddMessage(MessageType.REGULAR, "Enter name of rear node...");
                             String last = Console.ReadLine();
                             rearNode = g.getNode(last);
                         }
                         catch (NodeException e)
                         {
-                            Console.WriteLine("Error when finding node: ");
-                            Console.WriteLine(e.Message);
-                            Console.WriteLine();
+                            ConsoleHandler.AddMessage(MessageType.ERROR, "Error when finding node: '" + e.Message + "'");
                         }
                     }
 
@@ -93,9 +107,8 @@ namespace BTCom
             }
             else
             {
-                Console.WriteLine("PALL-E position information:");
-                Console.WriteLine("On the edge between nodes '" + f.RearNode.Name + "' and '" + f.FrontNode.Name + "', facing '" + f.FrontNode.Name + "'");
-                Console.WriteLine();
+                ConsoleHandler.AddMessage(MessageType.REGULAR, ConsoleHandler.DNS + " position information:");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Front-node: '" + f.RearNode.Name + "'. Rear-node: '" + f.FrontNode.Name + "'");
             }
         }
 

@@ -44,26 +44,26 @@ namespace BTCom
         private Forklift forklift = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
         // Constructor
-        public BluetoothConnection(string portName)
-            : base(portName)
+        public BluetoothConnection(string portName) : base(portName)
         {
             // If the connection is not established try to connect.
-            Console.WriteLine("Attempting to connect to NXT via BT.");
+            ConsoleHandler.AddMessage(MessageType.BLUETOOTH, "Attempting to connect to " + ConsoleHandler.DNS + "...");
             while (!this.IsOpen)
             {
                 try
                 {
-                    this.Open(); // Try to open the connection    
+                    this.Open(); // Try to open the connection 
+                    Program.HasConnection = true;
                 }
                 catch
                 {
                     // Catched by retrying after sleep
-                    Console.WriteLine("Connection failed. Attempting to connect to NXT via BT.");
+                    ConsoleHandler.AddMessage(MessageType.BLUETOOTH, "Connection failed. Trying again...");
                 }
             }
             
             // Tell the user that the connection was established
-            Console.WriteLine("Connection established.");
+            ConsoleHandler.AddMessage(MessageType.BLUETOOTH, "Connection established.");
 
             this.ReadTimeout = 10000; // Wait 10 sec before timeout on readbuffer
             this.WriteTimeout = 10000; // Wait 10 sec before timeout on writebuffer
@@ -190,7 +190,7 @@ namespace BTCom
                 case TYPE_UPDATE_COLOR:
                     // Tell the user that the color is being fetched 
                     // dataString contains the id of the color
-                    Console.WriteLine("Fetching color with ID: \'" + dataString + "\'");
+                    ConsoleHandler.AddMessage(MessageType.BLUETOOTH, "Sending color #" + dataString + "...");
 
                     // Get the color from the database
                     Color requestedColor = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == int.Parse(dataString)).Value;
@@ -212,11 +212,10 @@ namespace BTCom
                     int blue = int.Parse(dataString.Substring(9,3)); // Use the first char as blue value
 
                     // Tell the user that the color is being saved 
-                    Console.WriteLine("Saving the color with ID: \'" + colorId + "\' with values {" + red + ", " + green + ", " + blue + "}");
+                    ConsoleHandler.AddMessage(MessageType.BLUETOOTH, "Received color #" + colorId + ". (" + red + ", " + green + ", " + blue + ")");
 
                     // Find the old color
-                    Color color =
-                        Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == colorId).Value;
+                    Color color = Database.Instance.Data.Colors.FirstOrDefault(i => i.Value.Identifier == colorId).Value;
 
                     // Update the values
                     color.Red = red;
@@ -229,7 +228,8 @@ namespace BTCom
 
                 case TYPE_REPORT_OBSTACLE:
 
-                    Console.WriteLine("Obstacle encountered! Calculating alternative path.");
+                    ConsoleHandler.AddMessage(MessageType.ERROR, "Obstacle encountered!");
+                    ConsoleHandler.AddMessage(MessageType.REGULAR, "Calculating alternative path...");
 
                     int directionsIndex = int.Parse(dataString);
 
@@ -340,7 +340,7 @@ namespace BTCom
                     if (dataString[0] != GetStatusByte(forklift))
                     {
                         // Tell the user what the status the NXT updated to
-                        Console.WriteLine("NXT-Status: " + dataString);
+                        ConsoleHandler.AddMessage(MessageType.BLUETOOTH, "Received " + ConsoleHandler.DNS + "-status: " + dataString);
                     }
 
                     // Check what status the NXT told us
@@ -517,7 +517,7 @@ namespace BTCom
                                     }
                                     else
                                     {
-                                        Console.WriteLine("Resending turn-job to PALL-E...");
+                                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Resending turn-job to " + ConsoleHandler.DNS);
                                     }
 
                                     // Send turn job
@@ -550,7 +550,7 @@ namespace BTCom
                             forklift.Status = Status.ERROR;
                             
                             // Tell the user that the NXT encountered an error
-                            Console.WriteLine("The NXT has encountered an error!");
+                            ConsoleHandler.AddMessage(MessageType.ERROR, ConsoleHandler.DNS + " reported an error");
                             break;
 
                         default:

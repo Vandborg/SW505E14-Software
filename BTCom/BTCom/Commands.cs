@@ -4,6 +4,7 @@ using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BTCom.Exceptions;
 
@@ -36,23 +37,18 @@ namespace BTCom
 
         public static void PrintError(string s)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Error: " + s);
+            ConsoleHandler.AddMessage(MessageType.ERROR, "Error: " + s);
             Console.ResetColor();
         }
 
         public static void PrintSuccess(string s)
         {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Success: " + s);
-            Console.ResetColor();
+            ConsoleHandler.AddMessage(MessageType.SUCCESS, "Success: " + s);
         }
 
         private static void PrintIncorrectUse()
         {
-            Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine("Incorrect use.");
-            Console.ResetColor();
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "Incorrect use:");
         }
 
         private static void PrintInvalidCommand()
@@ -65,6 +61,7 @@ namespace BTCom
             while (true)
             {
                 Commands.Execute(Console.ReadLine());
+                Thread.Yield(); // Other threads should be able to run after each command
             }
         }
 
@@ -124,19 +121,21 @@ namespace BTCom
             // Check if there are unprocessed arguments
             if (argumentList.Count > 0)
             {
-                PrintError("Unknown command arguments: ");
+                String error = "Unknown command arguments: ";
 
                 foreach (string s in argumentList)
                 {
                     if (s != argumentList.FirstOrDefault())
                     {
-                        Console.Write(", ");
+                        error += ", ";
                     }
 
-                    Console.Write("'" + s + "'"); 
+                    error += "'" + s + "'";
                 }
 
-                Console.Write("\n");
+                error += "\n";
+
+                ConsoleHandler.AddMessage(MessageType.ERROR, error);
 
                 return;
             }
@@ -354,6 +353,8 @@ namespace BTCom
             {
                 PrintInvalidCommand();
             }
+
+            ConsoleHandler.ClearCommand();
         }
 
         private static void Help()
@@ -374,24 +375,24 @@ namespace BTCom
 
         private static void HelpHelp()
         {
-            Console.WriteLine("\"help\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"help\"");
         }
 
         public static void Status()
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
-            Console.WriteLine("Status: " + f.Status);
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "Status: " + f.Status);
         }
 
         public static void StatusHelp()
         {
-            Console.WriteLine("\"status\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"status\"");
         }
 
         public static void Joblist()
         {
-            Console.WriteLine("Current Joblist:");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "Current joblist:");
 
             List<int> IDlist = Database.Instance.Data.Jobs.Keys.ToList();
             IDlist.Sort();
@@ -399,13 +400,13 @@ namespace BTCom
             int c = 0;
             foreach (int key in IDlist)
             {
-                Console.WriteLine(Database.Instance.Data.Jobs[key].ToString());
+                ConsoleHandler.AddMessage(MessageType.REGULAR, Database.Instance.Data.Jobs[key].ToString());
                 c++;
             }
 
             if (c == 0)
             {
-                Console.WriteLine("(Empty)");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "(Empty)");
             }
             
         }
@@ -469,9 +470,9 @@ namespace BTCom
 
         private static void JoblistHelp()
         {
-            Console.WriteLine("\"joblist\"");
-            Console.WriteLine("\"joblist\" \"clear\"");
-            Console.WriteLine("\"joblist\" \"remove\" {[0-9]+}");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"joblist\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"joblist\" \"clear\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"joblist\" \"remove\" {[0-9]+}");
         }
 
         private static void FetchNode(string node)
@@ -509,7 +510,7 @@ namespace BTCom
 
         private static void FetchNodeHelp()
         {
-            Console.WriteLine("\"fetch\" \"node\" {node}");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"fetch\" \"node\" {node}");
         }
 
         private static void DeliverNavigate(string type, string node)
@@ -567,8 +568,8 @@ namespace BTCom
 
         private static void DeliverNavigateHelp()
         {
-            Console.WriteLine("\"deliver\" {node}");
-            Console.WriteLine("\"navigate\" {node}");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"deliver\" {node}");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"navigate\" {node}");
         }
 
         private static void FetchPallet(string palletName)
@@ -603,7 +604,7 @@ namespace BTCom
 
         private static void FetchPalletHelp()
         {
-            Console.WriteLine("\"fetch\" \"pallet\" {pallet}");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"fetch\" \"pallet\" {pallet}");
         }
 
         private static void Debug(string directions)
@@ -622,15 +623,15 @@ namespace BTCom
 
         private static void DebugHelp()
         {
-            Console.WriteLine("\"debug\" {[BDLMRSTU]+}");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"debug\" {[BDLMRSTU]+}");
         }
 
         private static void Position()
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
-            Console.WriteLine("Front-node: " + f.FrontNode.Name);
-            Console.WriteLine("Rear-node:  " + f.RearNode.Name);
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "Front-node: " + f.FrontNode.Name);
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "Rear-node:  " + f.RearNode.Name);
         }
 
         private static void Position(string frontNode, string rearNode)
@@ -667,25 +668,25 @@ namespace BTCom
 
         private static void PositionHelp()
         {
-            Console.WriteLine("\"position\"");
-            Console.WriteLine("\"position\" <front node> <rear node>");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"position\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"position\" <front node> <rear node>");
         }
 
         private static void CurrentJob()
         {
             if (BluetoothConnection.CurrentJob != null)
             {
-                Console.WriteLine("Current job: '" + BluetoothConnection.CurrentJob.ToString() + "'");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Current job: '" + BluetoothConnection.CurrentJob.ToString() + "'");
             }
             else
             {
-                Console.WriteLine("No current job");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "No current job");
             }
         }
 
         private static void CurrentJobHelp()
         {
-            Console.WriteLine("\"currentjob\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"currentjob\"");
         }
 
         private static void Palletlist()
@@ -694,13 +695,13 @@ namespace BTCom
 
             if (pallets.Count == 0)
             {
-                Console.WriteLine("No pallets");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "No pallets");
                 return;
             }
 
             foreach (KeyValuePair<int, Pallet> pallet in pallets)
             {
-                Console.WriteLine("#" + pallet.Key + " - " + pallet.Value.ToString());
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "#" + pallet.Key + " - " + pallet.Value.ToString());
             }
         }
 
@@ -820,10 +821,10 @@ namespace BTCom
 
         private static void PalletlistHelp()
         {
-            Console.WriteLine("\"palletlist\"");
-            Console.WriteLine("\"palletlist\" \"add\" <name> <node>");
-            Console.WriteLine("\"palletlist\" \"add\" <name> \"forklift\"");
-            Console.WriteLine("\"palletlist\" \"remove\" <name>");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"palletlist\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"palletlist\" \"add\" <name> <node>");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"palletlist\" \"add\" <name> \"forklift\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"palletlist\" \"remove\" <name>");
         }
 
         private static void Payload()
@@ -832,11 +833,11 @@ namespace BTCom
 
             if (f.HasPallet)
             {
-                Console.WriteLine(f.Payload.ToString());
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Payload: '" + f.Payload.Name + "'");
             }
             else
             {
-                Console.WriteLine("No current payload");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "No payload");
             }
         }
 
@@ -873,8 +874,8 @@ namespace BTCom
 
         private static void PayloadHelp()
         {
-            Console.WriteLine("\"payload\"");
-            Console.WriteLine("\"payload\" <pallet>");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"payload\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"payload\" <pallet>");
         }
 
         private static void Node(String node)
@@ -888,12 +889,13 @@ namespace BTCom
                 int neighbours = n.Neighbours.Count(x => x.Key != null);
                 int blockedNeighbours = n.BlockedNeighbours.Count(x => x.Key != null);
 
-                Console.WriteLine("Node '" + n.Name + "' has " + (neighbours + blockedNeighbours) + " neighbours, where " + blockedNeighbours + " is blocked.");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Node '" + n.Name + "' has " + (neighbours + blockedNeighbours) + " neighbours, where " + blockedNeighbours + " is blocked.");
+
                 foreach (KeyValuePair<Node, Edge> nodeEdgePair in n.Neighbours)
                 {
                     if (nodeEdgePair.Key != null)
                     {
-                        Console.WriteLine("Edge |" + n.Name + " " + nodeEdgePair.Key.Name + "|: " + nodeEdgePair.Value.ToString() + ".");
+                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Edge |" + n.Name + " " + nodeEdgePair.Key.Name + "|: " + nodeEdgePair.Value.ToString() + ".");
                     }
                 }
 
@@ -901,7 +903,7 @@ namespace BTCom
                 {
                     if (nodeEdgePair.Key != null)
                     {
-                        Console.WriteLine("Edge |" + n.Name + " " + nodeEdgePair.Key.Name + "|: " + nodeEdgePair.Value.ToString() + ".");
+                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Blocked edge |" + n.Name + " " + nodeEdgePair.Key.Name + "|: " + nodeEdgePair.Value.ToString() + ".");
                     }
                 }
             }
@@ -913,17 +915,17 @@ namespace BTCom
 
         private static void NodeHelp()
         {
-            Console.WriteLine("\"node\" <node>");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"node\" <node>");
         }
 
         private static void Clear()
         {
-            Console.Clear();
+            ConsoleHandler.Clear();
         }
 
         private static void ClearHelp()
         {
-            Console.WriteLine("\"clear\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"clear\"");
         }
 
         private static void Save()
@@ -935,7 +937,7 @@ namespace BTCom
 
         private static void SaveHelp()
         {
-            Console.WriteLine("\"save\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"save\"");
         }
 
         private static void Exit()
@@ -953,7 +955,7 @@ namespace BTCom
 
         private static void ExitHelp()
         {
-            Console.WriteLine("\"exit\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"exit\"");
         }
     }
 }
