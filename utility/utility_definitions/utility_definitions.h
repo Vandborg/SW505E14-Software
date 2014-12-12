@@ -136,7 +136,11 @@
     // Cross intersection PID controller
     #define KP_STRAIGHT              1//35//27
     #define KI_STRAIGHT              0.5//0// 2
-    #define KD_STRAIGHT              2//0//30      
+    #define KD_STRAIGHT              2//0//30    
+
+    #define RAMP_UP 1  
+
+    #define PALLET_DEPTH 50
 
     // Turn directions
     #define RIGHT_TURN          1

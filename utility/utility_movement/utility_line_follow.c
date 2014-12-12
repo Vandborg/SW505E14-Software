@@ -72,6 +72,8 @@ U32 light_motor = RIGHT_MOTOR;
 int offset_left = (416+140)/2;
 int offset_right = (513+220)/2;
 
+int ramp_up_decrementer = LINE_FOLLOW_SPEED / 2;
+
 int integral = 0;
 int last_error = 0;
 
@@ -228,9 +230,12 @@ TASK(TASK_drive_control)
             move_fork(LIFTING_MODE_LOW);
             break;
         case DRIVE_BACKWARDS:
-            drive_back(45);
+            drive_back(PALLET_DEPTH);
             break;
         case NO_MODE:
+            nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+            nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
+            break;
         default:
             nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
             nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
@@ -469,9 +474,18 @@ void line_following(void)
         
         // This is needed because the k's are multiplied by a hundred
         turn = turn / 100; 
+        int line_follow_speed = LINE_FOLLOW_SPEED - ramp_up_decrementer;
+        powerA = line_follow_speed + turn;
+        powerB = line_follow_speed - turn;
 
-        powerA = LINE_FOLLOW_SPEED + turn;
-        powerB = LINE_FOLLOW_SPEED - turn;
+        if(ramp_up_decrementer > 0)
+        {
+            ramp_up_decrementer -= RAMP_UP;
+        }
+        else
+        {
+            ramp_up_decrementer = 0;
+        }
     }
     else
     {
@@ -497,8 +511,18 @@ void line_following(void)
         // This is needed because the k's are multiplied by a hundred
         turn = turn / 100; 
 
-        powerA = LINE_FOLLOW_SPEED - turn;
-        powerB = LINE_FOLLOW_SPEED + turn;    
+        int line_follow_speed = LINE_FOLLOW_SPEED - ramp_up_decrementer;
+        powerA = line_follow_speed - turn;
+        powerB = line_follow_speed + turn;
+
+        if(ramp_up_decrementer > 0)
+        {
+            ramp_up_decrementer -= RAMP_UP;
+        }
+        else
+        {
+            ramp_up_decrementer = 0;
+        }  
     }
 
     nxt_motor_set_speed(LEFT_MOTOR, powerA, 1);
@@ -597,7 +621,14 @@ int get_light_level(U8 sensor)
     return light_level;
 }
 
-void swap(U32* a, U32* b)
+void swap8(U8* a, U8* b)
+{
+    U32 temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void swap32(U32* a, U32* b)
 {
     U32 temp = *a;
     *a = *b;
@@ -608,8 +639,8 @@ void switch_sensors(void)
 {
     drive_mode = NO_MODE;
 
-    swap(&color_sensor, &light_sensor);
-    swap(&color_motor, &light_motor);
+    swap8(&color_sensor, &light_sensor);
+    swap32(&color_motor, &light_motor);
 }
 
 
@@ -622,6 +653,7 @@ void line_recover(void)
 
         line_found = false;
         first_iteration = false;
+        ramp_up_decrementer = LINE_FOLLOW_SPEED / 2;
     }
 
     // Set offset to be the offset corresponding to the left motor and sensor
