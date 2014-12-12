@@ -140,11 +140,6 @@ TASK(TASK_color_scan)
                 // Debugging sound
                 play_sound(SOUND_TICK);
 
-
-                // char string[2] = {next_direction, '\0'};
-
-                // lcd_display_line(LCD_LINE_SIX, string, true);
-
                 switch(next_direction)
                 {
                     case 'L':
@@ -277,14 +272,6 @@ TASK(TASK_check_navigation)
 
         first_time = false;
     }
-
-    // display_goto_xy(0,5);
-    // display_int(drive_mode, 1);
-
-
-    // display_goto_xy(0, 3);
-    // display_int(nxt_motor_get_count(FORK_MOTOR), 7);
-    // display_update();
 
     if(Navigation.next > -1 && !executing_task)
     {
