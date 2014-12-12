@@ -32,7 +32,7 @@ namespace BTCom
             if (obj.GetType() != GetType()) return false;   // Compare types
             if (ReferenceEquals(this, obj)) return true;    // Compare reference to each other
 
-            var other = (NavigateJob)obj;
+            var other = (TurnJob) obj;
 
             // Compare properties of both objects
             var sameIdentifier = this.Identifier == other.Identifier;

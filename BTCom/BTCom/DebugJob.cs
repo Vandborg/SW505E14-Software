@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -49,7 +50,7 @@ namespace BTCom
             if (obj.GetType() != GetType()) return false;   // Compare types
             if (ReferenceEquals(this, obj)) return true;    // Compare reference to each other
 
-            var other = (NavigateJob)obj;
+            var other = (DebugJob) obj;
 
             // Compare properties of both objects
             var sameIdentifier = this.Identifier == other.Identifier;
