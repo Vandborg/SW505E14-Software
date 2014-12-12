@@ -233,7 +233,7 @@ namespace BTCom
 
                     int directionsIndex = int.Parse(dataString);
 
-                    if (!(CurrentJob is TurnJob))
+                    if (!(CurrentJob is TurnJob) && !(CurrentJob is DebugJob))
                     {
                         if (CurrentJob != null)
                         {
@@ -322,9 +322,14 @@ namespace BTCom
                             Commands.PrintError("No current job - Continuing...");
                         }
                     }
-                    else
+                    else if(CurrentJob is TurnJob)
                     {
                         Commands.PrintError("Already performing turn-job, ignoreing...");
+                    }
+                    else if (CurrentJob is DebugJob)
+                    {
+                        // TODO: Change to notification
+                        Commands.PrintError("Performing debug-job, ignoreing...");
                     }
                     
                     break;
@@ -450,7 +455,24 @@ namespace BTCom
                                     // Get the next job (job with lowest id)
                                     nextJob = JobList.Aggregate((l, r) => l.Key < r.Key ? l : r).Value;
 
-                                    if (nextJob == null) continue;
+                                    try
+                                    {
+                                        if (nextJob.GetPath() != null) break;
+                                    }
+                                    catch (PathException e)
+                                    {
+                                        Commands.PrintError("Remove job #" + nextJob.ID() + ": '" + e.Message + "'");
+                                        Database.Instance.Data.RemoveJob(nextJob);
+                                        nextJob = null;
+                                        continue;
+                                    }
+                                    catch (JobException e)
+                                    {
+                                        Commands.PrintError("Remove job #" + nextJob.ID() + ": '" + e.Message + "'");
+                                        Database.Instance.Data.RemoveJob(nextJob);
+                                        nextJob = null;
+                                        continue;
+                                    }
 
                                     // Remove the nextJob job, because it's path is null
                                     Commands.PrintError("Remove job #" + nextJob.ID() + " because path was empty");
@@ -507,28 +529,43 @@ namespace BTCom
                         case STATUS_OBSTACLE:
                             if (CurrentJob != null)
                             {
-                                if (!(CurrentJob is TurnJob))
+                                if (!(CurrentJob is DebugJob))
                                 {
-                                    Database.Instance.Data.AddJob(CurrentJob);
-                                    CurrentJob = new TurnJob(Database.Instance.Data.Jobs.Keys.Min() - 1);
 
-                                    Commands.PrintSuccess("Sending turn-job to PALL-E...");
+                                    if (!(CurrentJob is TurnJob))
+                                    {
+                                        Database.Instance.Data.AddJob(CurrentJob);
+                                        CurrentJob = new TurnJob(Database.Instance.Data.Jobs.Keys.Min() - 1);
+
+                                        Commands.PrintSuccess("Sending turn-job to PALL-E...");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Resending turn-job to PALL-E...");
+                                    }
+
+                                    // Send turn job
+                                    SendPackageBT(CurrentJob.GetJobTypeBytes(), CurrentJob.GetBytes());
                                 }
                                 else
                                 {
-                                    Console.WriteLine("Resending turn-job to PALL-E...");
+                                    // Send empty package (so that obstacle status will be avoided
+                                    DebugJob dj = new DebugJob(-1, "");
+                                    SendPackageBT(dj.GetJobTypeBytes(), dj.GetBytes());
                                 }
-
-                                // Send turn job
-                                SendPackageBT(CurrentJob.GetJobTypeBytes(), CurrentJob.GetBytes());
                             }
                             else
                             {
                                 // throw new Exception("No current jobs");
                             }
 
-                            // Update the internal status
-                            forklift.Status = Status.OBSTACLE;
+                            // The status should not be updated if the current job is a debugjob
+                            if (!(CurrentJob is DebugJob))
+                            {
+                                // Update the internal status
+                                forklift.Status = Status.OBSTACLE;
+                            }
+
                             break;
 
                         // The NXT encoutered an error

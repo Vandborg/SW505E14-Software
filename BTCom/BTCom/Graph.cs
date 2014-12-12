@@ -417,7 +417,7 @@ namespace BTCom
                 // hence, there must be a gab in the path. Error!
                 else
                 {
-                    return null;
+                    throw new PathException("Gab in path");
                 }
             }
 

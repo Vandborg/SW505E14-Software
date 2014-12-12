@@ -101,7 +101,7 @@ namespace BTCom
                 Node from = f.FrontNode;
                 Node ignore = f.RearNode;
 
-                Path p =  g.ShortestPath(from, Destination, ignore);
+                Path p = g.ShortestPath(from, Destination, ignore);
 
                 if (p.Nodes.Last().Equals(f.FrontNode))
                 {
