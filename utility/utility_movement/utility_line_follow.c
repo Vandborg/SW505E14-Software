@@ -145,22 +145,22 @@ TASK(TASK_color_scan)
                 switch(next_direction)
                 {
                     case 'L':
-                        turn_direction(LEFT_TURN);
                         if (crossing_intersection)
                         {
                             crossing_intersection = false;
                             first_iteration = true;
                             drive_mode = LINE_RECOVER;  
                         }     
+                        turn_direction(LEFT_TURN);
                         break;
                     case 'R':
-                        turn_direction(RIGHT_TURN);
                         if (crossing_intersection)
                         {
                             crossing_intersection = false;
                             first_iteration = true;
                             drive_mode = LINE_RECOVER;  
                         }     
+                        turn_direction(RIGHT_TURN);
                         break;
                     case 'S':
                         first_iteration = true;
