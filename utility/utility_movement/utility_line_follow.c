@@ -90,6 +90,8 @@ bool last_color_red = false;
 // Indicates if the next has just come out of boot mode
 bool first_time = true;
 
+bool line_found = false;
+
 // Drive straight persistent variables
 bool first_iteration = true; // Indicates if the init count should be saved
 int integral_straight = 0;
@@ -140,30 +142,25 @@ TASK(TASK_color_scan)
                 // Debugging sound
                 play_sound(SOUND_TICK);
 
-
-                // char string[2] = {next_direction, '\0'};
-
-                // lcd_display_line(LCD_LINE_SIX, string, true);
-
                 switch(next_direction)
                 {
                     case 'L':
-                        turn_direction(LEFT_TURN);
                         if (crossing_intersection)
                         {
                             crossing_intersection = false;
                             first_iteration = true;
                             drive_mode = LINE_RECOVER;  
                         }     
+                        turn_direction(LEFT_TURN);
                         break;
                     case 'R':
-                        turn_direction(RIGHT_TURN);
                         if (crossing_intersection)
                         {
                             crossing_intersection = false;
                             first_iteration = true;
                             drive_mode = LINE_RECOVER;  
                         }     
+                        turn_direction(RIGHT_TURN);
                         break;
                     case 'S':
                         first_iteration = true;
@@ -245,8 +242,9 @@ TASK(TASK_check_navigation)
 {   
     if (first_time)
     {
+        display_clear(0);
         SetRelAlarm(ALARM_drive_control, 1, 50);
-        SetRelAlarm(ALARM_color_scan, 1, 100);
+        SetRelAlarm(ALARM_color_scan, 1, 75);
 
         // Calculate the left offset by taking the average of white & black rgb
         int black_light_level_left = 
@@ -277,14 +275,6 @@ TASK(TASK_check_navigation)
 
         first_time = false;
     }
-
-    // display_goto_xy(0,5);
-    // display_int(drive_mode, 1);
-
-
-    // display_goto_xy(0, 3);
-    // display_int(nxt_motor_get_count(FORK_MOTOR), 7);
-    // display_update();
 
     if(Navigation.next > -1 && !executing_task)
     {
@@ -622,7 +612,6 @@ void switch_sensors(void)
     swap(&color_motor, &light_motor);
 }
 
-bool line_found = false;
 
 void line_recover(void)
 {
@@ -712,8 +701,8 @@ void move_fork(int lifting_height)
 
         if (lifting_height == LIFTING_MODE_LOW)
         {
-            drive_mode = LINE_FOLLOW;
             first_iteration = true;
+            drive_mode = LINE_RECOVER;
             Navigation.next -= 1;
         }
         else

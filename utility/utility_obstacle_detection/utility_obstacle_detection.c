@@ -22,6 +22,8 @@ DeclareTask(TASK_obstacle_detection);
 #define MAX_DISTANCE 255
 #define MIN_DISTANCE 0
 #define HALF_ROTATION_DEGREES 180
+#define NUMBER_OF_INSTRUCTIONS_FOR_DELIVER 5
+#define NUMBER_OF_INSTRUCTIONS_FOR_FETCH 4
 
 S32 distance_front = MAX_DISTANCE;
 S32 distance_rear = MAX_DISTANCE;
@@ -30,7 +32,33 @@ bool use_rear_sonar_sensor;
 
 TASK(TASK_obstacle_detection)
 {
-    
+    switch(Navigation.type_of_task)
+    {
+        case TYPE_DELIVER_PALLET:
+            use_front_sonar_sensor = 
+                Navigation.next > NUMBER_OF_INSTRUCTIONS_FOR_DELIVER;
+            break;
+        case TYPE_FETCH_PALLET:
+            use_front_sonar_sensor = 
+                Navigation.next > NUMBER_OF_INSTRUCTIONS_FOR_FETCH;
+            break;
+        case TYPE_NAVIGATE_TO:
+            if(Navigation.next > -1)
+            {
+                use_front_sonar_sensor = 
+                    Navigation.directions[Navigation.next] != 'U' &&
+                    Navigation.directions[Navigation.next] != 'D';
+            }
+            else
+            {
+                use_front_sonar_sensor = false;
+            }
+            break;
+        default:
+            use_front_sonar_sensor = false;
+            break;
+    }
+
     if(use_front_sonar_sensor)
     {
         distance_rear = MAX_DISTANCE;
