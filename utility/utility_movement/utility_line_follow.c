@@ -243,7 +243,7 @@ TASK(TASK_check_navigation)
     if (first_time)
     {
         SetRelAlarm(ALARM_drive_control, 1, 50);
-        SetRelAlarm(ALARM_color_scan, 1, 100);
+        SetRelAlarm(ALARM_color_scan, 1, 75);
 
         // Calculate the left offset by taking the average of white & black rgb
         int black_light_level_left = 
