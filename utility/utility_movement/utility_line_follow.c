@@ -242,6 +242,7 @@ TASK(TASK_check_navigation)
 {   
     if (first_time)
     {
+        display_clear(0);
         SetRelAlarm(ALARM_drive_control, 1, 50);
         SetRelAlarm(ALARM_color_scan, 1, 75);
 
