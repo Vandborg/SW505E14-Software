@@ -700,8 +700,8 @@ void move_fork(int lifting_height)
 
         if (lifting_height == LIFTING_MODE_LOW)
         {
-            drive_mode = LINE_FOLLOW;
             first_iteration = true;
+            drive_mode = LINE_RECOVER;
             Navigation.next -= 1;
         }
         else
