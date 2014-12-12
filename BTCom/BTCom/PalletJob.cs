@@ -123,11 +123,19 @@ namespace BTCom
             // The instructions is inserted in reversed order
             if (Type == PalletJobType.fetch)
             {
-                directions = directions.Insert(0, "TUND");
+                // Removes the extra N
+                directions = directions.Substring(1, directions.Length - 1);
+
+                // Add directions to fetch the pallet
+                directions = directions.Insert(0, "TUNDR");
             }
             else if (Type == PalletJobType.deliver)
             {
-                directions = directions.Insert(0, "TUBDN");
+                // Removes the extra N
+                directions = directions.Substring(1, directions.Length - 1);
+
+                // Add directions to deliver the pallet
+                directions = directions.Insert(0, "TUBDNR");
             }
 
             return Encoding.ASCII.GetBytes(directions);
