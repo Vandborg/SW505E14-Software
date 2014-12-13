@@ -31,6 +31,7 @@ namespace BTCom
         private const String COMMAND_NODE = "node";
         private const String COMMAND_UNBLOCK = "unblock";
         private const String COMMAND_CLEAR = "clear";
+        private const String COMMAND_RELOAD = "reload";
         private const String COMMAND_SAVE = "save";
         private const String COMMAND_EXIT = "exit";
 
@@ -341,6 +342,18 @@ namespace BTCom
                     UnblockHelp();
                 }
             }
+            else if (commandIdentifier == COMMAND_RELOAD)
+            {
+                if (arguments == 0)
+                {
+                    Commands.Reload();
+                }
+                else
+                {
+                    PrintIncorrectUse();
+                    ReloadHelp();
+                }
+            }
             else if (commandIdentifier == COMMAND_SAVE)
             {
                 if (arguments == 0)
@@ -374,7 +387,7 @@ namespace BTCom
             ConsoleHandler.ClearCommand();
         }
 
-        private static void Help()
+        public static void Help()
         {
             PositionHelp();
             PayloadHelp();
@@ -392,7 +405,7 @@ namespace BTCom
             ExitHelp();
         }
 
-        private static void HelpHelp()
+        public static void HelpHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"help\"");
         }
@@ -487,14 +500,14 @@ namespace BTCom
             }
         }
 
-        private static void JoblistHelp()
+        public static void JoblistHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"joblist\"");
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"joblist\" \"clear\"");
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"joblist\" \"remove\" {[0-9]+}");
         }
 
-        private static void FetchNode(string node)
+        public static void FetchNode(string node)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -527,12 +540,12 @@ namespace BTCom
             }
         }
 
-        private static void FetchNodeHelp()
+        public static void FetchNodeHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"fetch\" \"node\" {node}");
         }
 
-        private static void DeliverNavigate(string type, string node)
+        public static void DeliverNavigate(string type, string node)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -585,13 +598,13 @@ namespace BTCom
             }
         }
 
-        private static void DeliverNavigateHelp()
+        public static void DeliverNavigateHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"deliver\" {node}");
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"navigate\" {node}");
         }
 
-        private static void FetchPallet(string palletName)
+        public static void FetchPallet(string palletName)
         {
             Pallet pallet = null;
 
@@ -621,12 +634,12 @@ namespace BTCom
             }
         }
 
-        private static void FetchPalletHelp()
+        public static void FetchPalletHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"fetch\" \"pallet\" {pallet}");
         }
 
-        private static void Debug(string directions)
+        public static void Debug(string directions)
         {
             try
             {
@@ -640,12 +653,12 @@ namespace BTCom
             
         }
 
-        private static void DebugHelp()
+        public static void DebugHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"debug\" {[BDLMRSTU]+}");
         }
 
-        private static void Position()
+        public static void Position()
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
@@ -653,7 +666,7 @@ namespace BTCom
             ConsoleHandler.AddMessage(MessageType.REGULAR, "Rear-node:  " + f.RearNode.Name);
         }
 
-        private static void Position(string frontNode, string rearNode)
+        public static void Position(string frontNode, string rearNode)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
@@ -685,13 +698,13 @@ namespace BTCom
             PrintSuccess("Position updated");
         }
 
-        private static void PositionHelp()
+        public static void PositionHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"position\"");
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"position\" <front node> <rear node>");
         }
 
-        private static void CurrentJob()
+        public static void CurrentJob()
         {
             if (BluetoothConnection.CurrentJob != null)
             {
@@ -703,12 +716,12 @@ namespace BTCom
             }
         }
 
-        private static void CurrentJobHelp()
+        public static void CurrentJobHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"currentjob\"");
         }
 
-        private static void Palletlist()
+        public static void Palletlist()
         {
             Dictionary<int, Pallet> pallets = Database.Instance.Data.Pallets;
 
@@ -724,7 +737,7 @@ namespace BTCom
             }
         }
 
-        private static void Palletlist(string subcommand)
+        public static void Palletlist(string subcommand)
         {
             if (subcommand == COMMAND_CLEAR)
             {
@@ -739,7 +752,7 @@ namespace BTCom
             }
         }
 
-        private static void Palletlist(string subcommand, string name, string location)
+        public static void Palletlist(string subcommand, string name, string location)
         {
             if (subcommand == SUBCOMMAND_ADD)
             {
@@ -814,7 +827,7 @@ namespace BTCom
             }
         }
 
-        private static void Palletlist(string subcommand, string name)
+        public static void Palletlist(string subcommand, string name)
         {
             if (subcommand == SUBCOMMAND_REMOVE)
             {
@@ -838,7 +851,7 @@ namespace BTCom
             }
         }
 
-        private static void PalletlistHelp()
+        public static void PalletlistHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"palletlist\"");
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"palletlist\" \"add\" <name> <node>");
@@ -846,7 +859,7 @@ namespace BTCom
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"palletlist\" \"remove\" <name>");
         }
 
-        private static void Payload()
+        public static void Payload()
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
@@ -860,7 +873,7 @@ namespace BTCom
             }
         }
 
-        private static void Payload(String newPayload)
+        public static void Payload(String newPayload)
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
@@ -891,13 +904,13 @@ namespace BTCom
             PrintSuccess("Payload updated");
         }
 
-        private static void PayloadHelp()
+        public static void PayloadHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"payload\"");
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"payload\" <pallet>");
         }
 
-        private static void Node(String node)
+        public static void Node(String node)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -932,12 +945,12 @@ namespace BTCom
             }
         }
 
-        private static void NodeHelp()
+        public static void NodeHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"node\" <node>");
         }
 
-        private static void Unblock(String all)
+        public static void Unblock(String all)
         {
             if (String.Equals(all, "all", StringComparison.CurrentCultureIgnoreCase))
             {
@@ -963,7 +976,7 @@ namespace BTCom
             }
         }
 
-        private static void Unblock(String nodeOne, String nodeTwo)
+        public static void Unblock(String nodeOne, String nodeTwo)
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
 
@@ -982,35 +995,53 @@ namespace BTCom
             }
         }
 
-        private static void UnblockHelp()
+        public static void UnblockHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"unblock\" \"all\"");
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"unblock\" <node> <node>");
         }
 
-        private static void Clear()
+        public static void Clear()
         {
             ConsoleHandler.Clear();
         }
 
-        private static void ClearHelp()
+        public static void ClearHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"clear\"");
         }
 
-        private static void Save()
+        public static void Reload()
         {
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "Reloading database...");
+
+            Database.Instance.Load();
+
+            PrintSuccess("Database loaded");
+
+            Program.UpdatePositionInformation();
+        }
+
+        public static void ReloadHelp()
+        {
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"reload\"");
+        }
+
+        public static void Save()
+        {
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "Saving database...");
+
             Database.Instance.Save();
 
             PrintSuccess("Saved database");
         }
 
-        private static void SaveHelp()
+        public static void SaveHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"save\"");
         }
 
-        private static void Exit()
+        public static void Exit()
         {
             PrintSuccess("Saving database...");
 
@@ -1023,7 +1054,7 @@ namespace BTCom
             Environment.Exit(1);
         }
 
-        private static void ExitHelp()
+        public static void ExitHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"exit\"");
         }

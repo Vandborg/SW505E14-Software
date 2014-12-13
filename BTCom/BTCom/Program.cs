@@ -56,7 +56,7 @@ namespace BTCom
         }
 
         // Used to check if position information is required
-        private static void UpdatePositionInformation()
+        public static void UpdatePositionInformation()
         {
             Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
@@ -106,6 +106,9 @@ namespace BTCom
 
                     // Update node information
                     result = f.UpdateNodes(frontNode, rearNode);
+
+                    Commands.PrintSuccess("Position updated");
+                    Commands.Position();
                 } 
                 while (!result);
             }
@@ -131,6 +134,7 @@ namespace BTCom
             PopulateDatabaseWithColors();
             PopulateDatabaseWithGraph();
             PopulateDatabaseWithForklift();
+            Commands.Save();
         }
 
         // Populates the database with the forklift
