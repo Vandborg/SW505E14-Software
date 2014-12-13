@@ -19,6 +19,8 @@ namespace BTCom
         private static void Main(string[] args)
         {
             Console.Title = ConsoleHandler.DNS + " console";
+            Console.WindowWidth = 120;
+            Console.WindowHeight = 60;
 
             Thread ConsoleThread = new Thread(() => ConsoleHandler.PrintMessages());
             ConsoleThread.Start();
