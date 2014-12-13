@@ -22,7 +22,7 @@ namespace BTCom
 
             if (!lrsRegex.IsMatch(dir))
             {
-                throw new FormatException("Directions can only be a combination of 'L', 'R', 'S' and 'N'");
+                throw new FormatException("Directions can only be a combination of 'L', 'R', 'S', 'N', 'T', 'U', 'D' and 'B'");
             }
 
             Directions = dir;

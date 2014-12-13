@@ -18,7 +18,7 @@ namespace BTCom
         {
             if (Database.Instance.Data.Pallets.Any(x => String.Equals(x.Value.Name, name, StringComparison.CurrentCultureIgnoreCase)))
             {
-                throw new PalletException("Pallet with name '" + name + "' already exists.");
+                throw new PalletException("Pallet with name '" + name + "' already exists");
             }
 
             Identifier = identifier;

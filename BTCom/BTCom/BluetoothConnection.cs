@@ -267,7 +267,7 @@ namespace BTCom
 
                             if (Math.Abs(nodeRearIndex % 1 - 0.5) < 0.1)
                             {
-                                Commands.PrintError("PALL-E: Something went wront, please fix it");
+                                Commands.PrintError(ConsoleHandler.DNS + ": 'Something went wront, please fix it'");
                                 throw new Exception();
                             }
                             else
@@ -532,6 +532,7 @@ namespace BTCom
                             }
                             else
                             {
+                                ConsoleHandler.AddMessage(MessageType.ERROR, "Tried to recover from obstacle, but there are no jobs left");
                                 // throw new Exception("No current jobs");
                             }
 
