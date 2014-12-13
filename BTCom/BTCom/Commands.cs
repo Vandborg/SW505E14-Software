@@ -683,6 +683,7 @@ namespace BTCom
             }
 
             PrintSuccess("Position updated");
+            Commands.Position();
         }
 
         private static void PositionHelp()
