@@ -696,6 +696,7 @@ namespace BTCom
             }
 
             PrintSuccess("Position updated");
+            Commands.Position();
         }
 
         public static void PositionHelp()

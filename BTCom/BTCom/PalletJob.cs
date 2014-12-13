@@ -91,7 +91,7 @@ namespace BTCom
 
             if (p.Nodes.Last().Equals(f.FrontNode))
             {
-                throw new JobException("PALL-E already at destination '" + f.FrontNode.Name + "'");
+                throw new JobException("Already at destination '" + f.FrontNode.Name + "'");
             }
 
             return p;

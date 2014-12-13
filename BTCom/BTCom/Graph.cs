@@ -157,7 +157,7 @@ namespace BTCom
 
             if (BreathFirstSearch().Count != Nodes.Count)
             {
-                throw new Exception("Graph is now not connected");
+                throw new Exception("Graph has been split, some nodes are inaccessible");
             }
             
             return true;
@@ -245,12 +245,12 @@ namespace BTCom
             // Check if no nodes were found
             if (nodesWithName.Count == 0)
             {
-                throw new NodeException("Node with name '" + name.ToLower() + "' not found.");
+                throw new NodeException("Node with name '" + name.ToUpper() + "' not found.");
             }
             // Check if multiple nodes were found
             else if(nodesWithName.Count > 1)
             {
-                throw new NodeException("Multiple nodes with same name: '" + name.ToLower() + "'.");
+                throw new NodeException("Multiple nodes with same name: '" + name.ToUpper() + "'.");
             }
             // Found exactly one node
             else
@@ -417,7 +417,7 @@ namespace BTCom
                 // hence, there must be a gab in the path. Error!
                 else
                 {
-                    throw new PathException("Gab in path");
+                    throw new PathException("Cannot generate path. Some edges might be blocked.");
                 }
             }
 
