@@ -77,6 +77,7 @@ namespace BTCom
                         {
                             ConsoleHandler.AddMessage(MessageType.REGULAR, "Enter name of front node...");
                             String faceing = Console.ReadLine();
+                            ConsoleHandler.ClearCommand();
                             frontNode = g.getNode(faceing);
                         }
                         catch (NodeException e)
@@ -92,6 +93,7 @@ namespace BTCom
                         {
                             ConsoleHandler.AddMessage(MessageType.REGULAR, "Enter name of rear node...");
                             String last = Console.ReadLine();
+                            ConsoleHandler.ClearCommand();
                             rearNode = g.getNode(last);
                         }
                         catch (NodeException e)
