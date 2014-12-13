@@ -201,7 +201,8 @@ void create_path_bt(char* package)
            package[i+2] != 'T' &&
            package[i+2] != 'B' &&
            package[i+2] != 'U' &&
-           package[i+2] != 'D'
+           package[i+2] != 'D' &&
+           package[i+2] != 'N'
         )
         {
             correct_instruction_set = false;
@@ -217,10 +218,6 @@ void create_path_bt(char* package)
         // we are currently doing.
         Navigation.next = direction_count-1;
         Navigation.type_of_task = package[1];
-    }
-    else
-    {
-        Navigation.directions[0] = '\0';
     }
 }
 
