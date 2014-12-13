@@ -226,16 +226,16 @@ namespace BTCom
             // The list of all colors when no database exists
             List<Color> colors = new List<Color> 
             { 
-                new Color("RED:LEFT", COLOR_RED_LEFT, 484, 122, 129), 
-                new Color("RED:RIGHT", COLOR_RED_RIGHT, 535, 225, 206),
+                new Color("RED:LEFT", COLOR_RED_LEFT, 487, 147, 149), 
+                new Color("RED:RIGHT", COLOR_RED_RIGHT, 538, 235, 210),
                 new Color("BLUE:LEFT", COLOR_BLUE_LEFT, 175, 138, 172), 
                 new Color("BLUE:RIGHT", COLOR_BLUE_RIGHT, 207, 219, 233), 
-                new Color("BLACK:LEFT", COLOR_BLACK_LEFT, 127, 99, 101), 
-                new Color("BLACK:RIGHT", COLOR_BLACK_RIGHT, 200, 191, 161), 
+                new Color("BLACK:LEFT", COLOR_BLACK_LEFT, 145, 114, 115), 
+                new Color("BLACK:RIGHT", COLOR_BLACK_RIGHT, 204, 199, 172), 
                 new Color("GRAY:LEFT", COLOR_GRAY_LEFT, 323, 255, 258), 
                 new Color("GRAY:RIGHT", COLOR_GRAY_RIGHT, 418, 398, 352), 
-                new Color("WHITE:LEFT", COLOR_WHITE_LEFT, 502, 415, 400), 
-                new Color("WHITE:RIGHT", COLOR_WHITE_RIGHT, 557, 555, 500)
+                new Color("WHITE:LEFT", COLOR_WHITE_LEFT, 505, 418, 402), 
+                new Color("WHITE:RIGHT", COLOR_WHITE_RIGHT, 554, 548, 493)
             };
             
             // Check if the database contains all colors
