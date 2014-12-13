@@ -61,6 +61,7 @@ namespace BTCom
             while (true)
             {
                 Commands.Execute(Console.ReadLine());
+                ConsoleHandler.ClearCommand();
                 Thread.Yield(); // Other threads should be able to run after each command
             }
         }

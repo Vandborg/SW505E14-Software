@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Windows.Forms;
 
 namespace BTCom
 {
     public static class ConsoleHandler
     {
         private static int old_top = 2;
-        private static bool clear_command = false;
+        private static bool clear_command = true;
+
+        private static Tuple<int, int> cursorPosition = new Tuple<int, int>(0, 0);
 
         public static String DNS = "PALL-E";
 
@@ -27,14 +30,16 @@ namespace BTCom
             {
                 if (messageList.Count > 0)
                 {
+                    Thread.BeginCriticalRegion();
+
+                    cursorPosition = new Tuple<int, int>(Console.CursorLeft, Console.CursorTop);
+
                     KeyValuePair<MessageType, String> message = messageList.First();
 
                     // Clear the current line
                     Console.SetCursorPosition(0, old_top + 2);
                     Console.Write(new string(' ', Console.WindowWidth));
-
-                    Thread.BeginCriticalRegion();
-
+                    
                     // Set the console color depending on message type
                     if (message.Key == MessageType.REGULAR)
                     {
@@ -62,16 +67,11 @@ namespace BTCom
                     Console.WriteLine(message.Value);
 
                     Console.ResetColor();
-
-                    Thread.EndCriticalRegion();
-
+                    
                     old_top++;
 
                     if (Console.CursorTop > 1)
                     {
-                        // Clear the next line 
-                        Thread.BeginCriticalRegion();
-
                         Console.SetCursorPosition(0, old_top + 2);
                         Console.Write(new string(' ', Console.WindowWidth));
                         Console.SetCursorPosition(0, old_top + 3);
@@ -80,15 +80,15 @@ namespace BTCom
                         Console.Write(new string(' ', Console.WindowWidth));
 
                         Console.SetCursorPosition(0, old_top + 2);
-
-                        Thread.EndCriticalRegion();
                     }
                     
                     old_top = old_top % (Console.WindowHeight - 3);
                     
                     messageList.Remove(message);
 
-                    Console.SetCursorPosition(0, 0);
+                    Console.SetCursorPosition(cursorPosition.Item1, cursorPosition.Item2);
+
+                    Thread.EndCriticalRegion();
                 }
                 
                 if (clear_command)
@@ -115,6 +115,8 @@ namespace BTCom
             Console.Clear();
 
             Thread.BeginCriticalRegion();
+
+            cursorPosition = new Tuple<int, int>(0, 0);
 
             Console.SetCursorPosition(0, 1);
             Console.Write(new string('-', Console.WindowWidth));
