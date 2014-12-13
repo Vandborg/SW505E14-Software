@@ -214,9 +214,13 @@ void create_path_bt(char* package)
     if(correct_instruction_set)
     {
         // Fill navigation with location of next direction and which type of task
-        // we are currently doing. 
+        // we are currently doing.
         Navigation.next = direction_count-1;
         Navigation.type_of_task = package[1];
+    }
+    else
+    {
+        Navigation.directions[0] = '\0';
     }
 }
 
