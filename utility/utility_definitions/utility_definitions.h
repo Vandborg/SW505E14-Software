@@ -122,9 +122,9 @@
     // Linefollow PID-controller definitions
     #define LINE_FOLLOW_SPEED       60
 
-    #define KP_RIGHT                16.7//17 //21
-    #define KI_RIGHT                 4.5//4// 4.2
-    #define KD_RIGHT                30//30   //26.25
+    #define KP_RIGHT                14  //16.7 //17 //21
+    #define KI_RIGHT                 4.5// 4.5 // 4 // 4.2
+    #define KD_RIGHT                50  //30   //30 //26.25
 
     #define KP_LEFT                 13//21
     #define KI_LEFT                  4.1// 4.2
