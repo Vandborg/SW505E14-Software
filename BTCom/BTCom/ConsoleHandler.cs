@@ -29,6 +29,12 @@ namespace BTCom
                 {
                     KeyValuePair<MessageType, String> message = messageList.First();
 
+                    // Clear the current line
+                    Console.SetCursorPosition(0, old_top + 2);
+                    Console.Write(new string(' ', Console.WindowWidth));
+
+                    Thread.BeginCriticalRegion();
+
                     // Set the console color depending on message type
                     if (message.Key == MessageType.REGULAR)
                     {
@@ -53,19 +59,29 @@ namespace BTCom
 
                     // Display the message
                     Console.SetCursorPosition(0, old_top + 2);
-                    Console.Write(new string(' ', Console.WindowWidth));
-                    Console.SetCursorPosition(0, old_top + 2);
                     Console.WriteLine(message.Value);
-                    old_top++;
+
                     Console.ResetColor();
+
+                    Thread.EndCriticalRegion();
+
+                    old_top++;
 
                     if (Console.CursorTop > 1)
                     {
                         // Clear the next line 
+                        Thread.BeginCriticalRegion();
+
                         Console.SetCursorPosition(0, old_top + 2);
-                        Console.WriteLine(new string(' ', Console.WindowWidth));
-                        Console.WriteLine(new string(' ', Console.WindowWidth));
-                        Console.WriteLine(new string(' ', Console.WindowWidth)); 
+                        Console.Write(new string(' ', Console.WindowWidth));
+                        Console.SetCursorPosition(0, old_top + 3);
+                        Console.Write(new string(' ', Console.WindowWidth));
+                        Console.SetCursorPosition(0, old_top + 4);
+                        Console.Write(new string(' ', Console.WindowWidth));
+
+                        Console.SetCursorPosition(0, old_top + 2);
+
+                        Thread.EndCriticalRegion();
                     }
                     
                     old_top = old_top % (Console.WindowHeight - 3);
@@ -78,9 +94,13 @@ namespace BTCom
                 if (clear_command)
                 {
                     // Clear the first line of the console
+                    Thread.BeginCriticalRegion();
+
                     Console.SetCursorPosition(0, 0);
                     Console.Write(new string(' ', Console.WindowWidth));
                     Console.SetCursorPosition(0, 0);
+
+                    Thread.EndCriticalRegion();
 
                     clear_command = false;
                 }
@@ -94,11 +114,13 @@ namespace BTCom
         {
             Console.Clear();
 
+            Thread.BeginCriticalRegion();
+
             Console.SetCursorPosition(0, 1);
             Console.Write(new string('-', Console.WindowWidth));
             Console.SetCursorPosition(0, 2);
 
-            Console.SetCursorPosition(0, 2);
+            Thread.EndCriticalRegion();
 
             old_top = 2;
         }
