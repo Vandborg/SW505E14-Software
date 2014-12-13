@@ -64,7 +64,7 @@ namespace BTCom
 
                     // Display the message
                     Console.SetCursorPosition(0, old_top + 2);
-                    Console.WriteLine("[" + DateTime.Now.Hour + ":" + DateTime.Now.Minute + ":" + DateTime.Now.Second + "]: " + message.Value);
+                    Console.WriteLine("[" + String.Format("{0:HH:mm:ss}", DateTime.Now) + "]: " + message.Value);
 
                     Console.ResetColor();
                     
