@@ -29,6 +29,7 @@ namespace BTCom
         private const String COMMAND_PALLETLIST = "palletlist";
         private const String COMMAND_PAYLOAD = "payload";
         private const String COMMAND_NODE = "node";
+        private const String COMMAND_UNBLOCK = "unblock";
         private const String COMMAND_CLEAR = "clear";
         private const String COMMAND_SAVE = "save";
         private const String COMMAND_EXIT = "exit";
@@ -325,6 +326,21 @@ namespace BTCom
                     NodeHelp();
                 }
             }
+            else if (commandIdentifier == COMMAND_UNBLOCK)
+            {
+                if (arguments == 2)
+                {
+                    Unblock(commandSplit[0], commandSplit[1]);
+                }
+                else if (arguments == 1)
+                {
+                    Unblock(commandSplit[0]);
+                }
+                else
+                {
+                    UnblockHelp();
+                }
+            }
             else if (commandIdentifier == COMMAND_SAVE)
             {
                 if (arguments == 0)
@@ -368,6 +384,8 @@ namespace BTCom
             FetchNodeHelp();
             FetchPalletHelp();
             DebugHelp();
+            NodeHelp();
+            UnblockHelp();
             HelpHelp();
             ClearHelp();
             SaveHelp();
@@ -917,6 +935,57 @@ namespace BTCom
         private static void NodeHelp()
         {
             ConsoleHandler.AddMessage(MessageType.REGULAR, "\"node\" <node>");
+        }
+
+        private static void Unblock(String all)
+        {
+            if (String.Equals(all, "all", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+
+                int blockedCount = g.BlockedEdges.Count;
+
+                // Unblock all edges
+                for (int i = blockedCount - 1; i >= 0; i--)
+                {
+                    Tuple<Node, Node> edge = g.BlockedEdges[i];
+                    g.UnblockEdge(edge.Item1, edge.Item2);
+
+                    ConsoleHandler.AddMessage(MessageType.SUCCESS, "Unblocked edge |" + edge.Item1 + " " + edge.Item2 + "|");
+                }
+
+                ConsoleHandler.AddMessage(MessageType.SUCCESS, "Unblocked " + blockedCount + " edges");
+            }
+            else
+            {
+                PrintIncorrectUse();
+                UnblockHelp();
+            }
+        }
+
+        private static void Unblock(String nodeOne, String nodeTwo)
+        {
+            Graph g = Database.Instance.Data.Graphs.FirstOrDefault().Value;
+
+            try
+            {
+                Node n1 = g.getNode(nodeOne);
+                Node n2 = g.getNode(nodeTwo);
+
+                g.UnblockEdge(n1, n2);
+
+                ConsoleHandler.AddMessage(MessageType.SUCCESS, "Unblocked edge |" + n1.Name + " " + n2.Name + "|");
+            }
+            catch (NodeException e)
+            {
+                ConsoleHandler.AddMessage(MessageType.ERROR, e.Message);
+            }
+        }
+
+        private static void UnblockHelp()
+        {
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"unblock\" \"all\"");
+            ConsoleHandler.AddMessage(MessageType.REGULAR, "\"unblock\" <node> <node>");
         }
 
         private static void Clear()
