@@ -31,42 +31,56 @@ S32 distance_rear = MAX_DISTANCE;
 bool use_front_sonar_sensor;
 bool use_rear_sonar_sensor;
 
+int measurements[3] = {MAX_DISTANCE, MAX_DISTANCE, MAX_DISTANCE};
+int current_index = 0;
+
 TASK(TASK_obstacle_detection)
 {
+    bool sonar_sensor_active = false;
+    
     switch(Navigation.type_of_task)
     {
         case TYPE_DELIVER_PALLET:
-            use_front_sonar_sensor = 
+            sonar_sensor_active = 
                 Navigation.next > NUMBER_OF_INSTRUCTIONS_FOR_DELIVER;
             break;
         case TYPE_FETCH_PALLET:
-            use_front_sonar_sensor = 
+            sonar_sensor_active = 
                 Navigation.next > NUMBER_OF_INSTRUCTIONS_FOR_FETCH;
             break;
         case TYPE_NAVIGATE_TO:
             if(Navigation.next > -1)
             {
-                use_front_sonar_sensor = 
+                sonar_sensor_active = 
                     Navigation.directions[Navigation.next] != 'U' &&
                     Navigation.directions[Navigation.next] != 'D';
             }
             else
             {
-                use_front_sonar_sensor = false;
+                sonar_sensor_active = false;
             }
             break;
         default:
-            use_front_sonar_sensor = false;
+            sonar_sensor_active = false;
             break;
     }
 
-    if(use_front_sonar_sensor)
+    if(use_front_sonar_sensor && sonar_sensor_active)
     {
+        measurements[current_index] = 
+            ecrobot_get_sonar_sensor(SONAR_SENSOR_FRONT);
+
+        current_index = (current_index + 1) % 3;
+
+        int distance = (measurements[0] +
+                        measurements[1] +
+                        measurements[2]) / 3;
+
         distance_rear = MAX_DISTANCE;
         distance_front += ecrobot_get_sonar_sensor(SONAR_SENSOR_FRONT);
         distance_front /= 2;
 
-        if(distance_front <= OBSTACLE_DISTANCE_THRESHOLD_FRONT)
+        if(distance <= OBSTACLE_DISTANCE_THRESHOLD_FRONT)
         {
             emergency_stop();
 
@@ -74,6 +88,10 @@ TASK(TASK_obstacle_detection)
 
             use_front_sonar_sensor = false;
             distance_front = MAX_DISTANCE;
+            measurements[0] = MAX_DISTANCE;
+            measurements[1] = MAX_DISTANCE;
+            measurements[2] = MAX_DISTANCE;
+
         }
     }
 
