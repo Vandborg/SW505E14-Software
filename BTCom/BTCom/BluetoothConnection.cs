@@ -36,7 +36,7 @@ namespace BTCom
         public const char STATUS_UNKNOWN = 'U';
 
         // Joblist queue of package type and data
-        private Dictionary<int, Job> JobList = Database.Instance.Data.Jobs;
+        private Dictionary<int, Job> JobList { get { return Database.Instance.Data.Jobs; } set { ; } }
         
         // The current job 
         public static Job CurrentJob = null;
@@ -229,8 +229,7 @@ namespace BTCom
                 case TYPE_REPORT_OBSTACLE:
 
                     ConsoleHandler.AddMessage(MessageType.ERROR, "Obstacle encountered!");
-                    ConsoleHandler.AddMessage(MessageType.REGULAR, "Calculating alternative path...");
-
+                    
                     int directionsIndex = int.Parse(dataString);
 
                     if (!(CurrentJob is TurnJob) && !(CurrentJob is DebugJob))
@@ -243,7 +242,7 @@ namespace BTCom
 
                             if (CurrentJob is PalletJob)
                             {
-                                PalletJob pj = (PalletJob) CurrentJob;
+                                PalletJob pj = (PalletJob)CurrentJob;
 
                                 if (pj.Type == PalletJobType.fetch)
                                 {
@@ -263,7 +262,7 @@ namespace BTCom
                                 max--;
                             }
 
-                            double nodeRearIndex = (max - 1 - i)/2;
+                            double nodeRearIndex = (max - 1 - i) / 2;
 
                             if (Math.Abs(nodeRearIndex % 1 - 0.5) < 0.1)
                             {
@@ -274,7 +273,7 @@ namespace BTCom
                             {
                                 Node newRearNode = null;
                                 Node newFrontNode = null;
-                                int roundedIndex = (int) nodeRearIndex;
+                                int roundedIndex = (int)nodeRearIndex;
 
                                 if (roundedIndex == 0)
                                 {
@@ -311,11 +310,12 @@ namespace BTCom
                                 }
 
                                 // Update forklift nodes (Must be reversed because of PALL-E behaviour)
-                                forklift.UpdateNodes(newRearNode, newFrontNode);
+                                forklift.UpdateNodes(newFrontNode, newRearNode);
 
                                 // Update edge the NXT is standing on
                                 Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
                             }
+                            
                         }
                         else
                         {
@@ -427,8 +427,11 @@ namespace BTCom
                                 CurrentJob = null;
                             }
 
-                            // Check if there is any jobs to be performed
-                            if (JobList.Count > 0)
+                            // Update the internal status
+                            forklift.Status = Status.IDLE;
+
+                            // Check if PALL-E should get another job
+                            if (CurrentJob == null && forklift.Status == Status.IDLE)
                             {
                                 Job nextJob = null;
 
@@ -479,8 +482,6 @@ namespace BTCom
                                 }
                             }
 
-                            // Update the internal status
-                            forklift.Status = Status.IDLE;
                             break;
 
                         // The NXT was busy
@@ -510,14 +511,22 @@ namespace BTCom
 
                                     if (!(CurrentJob is TurnJob))
                                     {
+                                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Calculating alternative path...");
+
                                         Database.Instance.Data.AddJob(CurrentJob);
                                         CurrentJob = new TurnJob(Database.Instance.Data.Jobs.Keys.Min() - 1);
 
-                                        Commands.PrintSuccess("Sending turn-job to PALL-E...");
+                                        Node oldFrontNode = forklift.FrontNode;
+                                        Node oldRearNode = forklift.RearNode;
+
+                                        forklift.FrontNode = oldRearNode;
+                                        forklift.RearNode = oldFrontNode;
+
+                                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Sending turn-job to PALL-E...");
                                     }
                                     else
                                     {
-                                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Resending turn-job to " + ConsoleHandler.DNS);
+                                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Resending turn-job to " + ConsoleHandler.DNS + "...");
                                     }
 
                                     // Send turn job
@@ -525,7 +534,7 @@ namespace BTCom
                                 }
                                 else
                                 {
-                                    // Send empty package (so that obstacle status will be avoided
+                                    // Send empty package (so that obstacle status will be avoided)
                                     DebugJob dj = new DebugJob(-1, "");
                                     SendPackageBT(dj.GetJobTypeBytes(), dj.GetBytes());
                                 }
