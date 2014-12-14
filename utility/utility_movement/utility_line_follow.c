@@ -315,40 +315,81 @@ void turn_around(void)
         first_iteration = false;
     }
 
-    // Calculate at which motor count the motors should stop at
-    int degrees_on_wheel_right = (180 * 
-                                 MOTOR_COUNT_PER_DEGREE) -
-                                 MOTOR_INSECURITY + 
-                                 init_motor_count_right;
+    if (COLOR_SENSOR_RIGHT == light_sensor)
+    {
+        // Calculate at which motor count the motors should stop at
+        int degrees_on_wheel_right = (180 * 
+                                     MOTOR_COUNT_PER_DEGREE) -
+                                     MOTOR_INSECURITY + 
+                                     init_motor_count_right;
 
-    int degrees_on_wheel_left  = -(180 * 
-                                 MOTOR_COUNT_PER_DEGREE) +
-                                 init_motor_count_left;
+        int degrees_on_wheel_left  = -(180 * 
+                                     MOTOR_COUNT_PER_DEGREE) +
+                                     init_motor_count_left;
 
-    if (nxt_motor_get_count(RIGHT_MOTOR) <= degrees_on_wheel_right)
-    {
-        nxt_motor_set_speed(RIGHT_MOTOR, 60, 1);
-    }
-    else 
-    {
-        nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
-    }
+        if (nxt_motor_get_count(RIGHT_MOTOR) <= degrees_on_wheel_right)
+        {
+            nxt_motor_set_speed(RIGHT_MOTOR, 60, 1);
+        }
+        else 
+        {
+            nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+        }
 
-    if (nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left)
-    {
-        nxt_motor_set_speed(LEFT_MOTOR, -60, 1);
-    }
-    else 
-    {
-        nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
-    }
+        if (nxt_motor_get_count(LEFT_MOTOR) >= degrees_on_wheel_left)
+        {
+            nxt_motor_set_speed(LEFT_MOTOR, -60, 1);
+        }
+        else 
+        {
+            nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
+        }
 
-    if(nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right &&
-       nxt_motor_get_count(LEFT_MOTOR)  <= degrees_on_wheel_left)
-    {
-        Navigation.next -= 1;
-        use_front_sonar_sensor = true;
+        if(nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right &&
+           nxt_motor_get_count(LEFT_MOTOR)  <= degrees_on_wheel_left)
+        {
+            Navigation.next -= 1;
+            use_front_sonar_sensor = true;
+        }
     }
+    else
+    {
+        // Calculate at which motor count the motors should stop at
+        int degrees_on_wheel_right = -(180 * 
+                                     MOTOR_COUNT_PER_DEGREE) +
+                                     MOTOR_INSECURITY + 
+                                     init_motor_count_right;
+
+        int degrees_on_wheel_left  = (180 * 
+                                     MOTOR_COUNT_PER_DEGREE) +
+                                     init_motor_count_left;
+
+        if (nxt_motor_get_count(RIGHT_MOTOR) >= degrees_on_wheel_right)
+        {
+            nxt_motor_set_speed(RIGHT_MOTOR, -60, 1);
+        }
+        else 
+        {
+            nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+        }
+
+        if (nxt_motor_get_count(LEFT_MOTOR) <= degrees_on_wheel_left)
+        {
+            nxt_motor_set_speed(LEFT_MOTOR, 60, 1);
+        }
+        else 
+        {
+            nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
+        }
+
+        if(nxt_motor_get_count(RIGHT_MOTOR) <= degrees_on_wheel_right &&
+           nxt_motor_get_count(LEFT_MOTOR)  >= degrees_on_wheel_left)
+        {
+            Navigation.next -= 1;
+            use_front_sonar_sensor = true;
+        }
+    }
+    
     
     return;
 }
