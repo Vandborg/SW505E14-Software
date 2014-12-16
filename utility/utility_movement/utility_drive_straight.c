@@ -11,16 +11,6 @@
 #include "utility_braking.h"
 #include "utility_distance.h"
 
-#define SPEED 60
-#define DISPLACED_STARTUP 60
-
-void drive_forward(void)
-{
-    nxt_motor_set_speed(RIGHT_MOTOR, DISPLACED_STARTUP, FALSE);
-    nxt_motor_set_speed(LEFT_MOTOR, SPEED, TRUE);
-    nxt_motor_set_speed(RIGHT_MOTOR, SPEED, TRUE);
-}
-
 void drive_straight_distance(int distance) {
     
     int Kp = 10;
