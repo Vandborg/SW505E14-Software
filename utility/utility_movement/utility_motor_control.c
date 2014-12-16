@@ -11,7 +11,6 @@
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_structs/utility_structs.h"
 #include "utility/utility_bluetooth/utility_bluetooth.h"
-#include "utility/utility_movement/utility_distance.h"
 #include "utility/utility_variables/utility_variables.h"
 
 
@@ -53,7 +52,8 @@ void switch_sensors(void);
 void cross_intersection(void);
 void line_recover(void);
 void line_following(void);
-void swap(U32* a, U32* b);
+void swap8(U8* a, U8* b);
+void swap32(U32* a, U32* b);
 void turn_around(void);
 void move_fork(int lifting_height);
 void drive_back(int a);
@@ -571,23 +571,15 @@ void line_following(void)
 
 void start_line_following(void)
 {
-    GetResource(RES_SCHEDULER);
-
     executing_task = true;
     first_iteration = true;
     drive_mode = LINE_RECOVER;
-
-    ReleaseResource(RES_SCHEDULER);
 }
 
 void stop_line_following(void)
 {
-    GetResource(RES_SCHEDULER);
-
     executing_task = false;
     drive_mode = NO_MODE;
-
-    ReleaseResource(RES_SCHEDULER);
 }
 
 bool is_red_color_colorsensor(void)
