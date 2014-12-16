@@ -40,7 +40,7 @@ namespace BTCom
             UpdatePositionInformation();
             
             // Instantiate threads
-            Thread ConsumeBTThread = new Thread(() => ConsumeBT(new BluetoothConnection("COM6")));
+            Thread ConsumeBTThread = new Thread(() => ConsumeBT(new BluetoothConnection("COM3")));
             
             // Start the threads
             ConsumeBTThread.Start();
