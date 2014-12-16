@@ -7,7 +7,6 @@ namespace BTCom
     {
         //Keys have to be strings in Dictionaries to be serializable to json
         public Dictionary<int, Color> Colors = new Dictionary<int, Color>();
-        public Dictionary<int, Light> Lights = new Dictionary<int, Light>();
         public Dictionary<int, Graph> Graphs = new Dictionary<int, Graph>();
         public Dictionary<int, Path> Paths = new Dictionary<int, Path>();
         public Dictionary<int, Forklift> Forklifts = new Dictionary<int, Forklift>();
@@ -39,25 +38,7 @@ namespace BTCom
             return result;
         }
 
-        public void AddLight(Light light)
-        {
-            try
-            {
-                Lights.Add(light.Identifier, light);
-            }
-            catch (ArgumentException)
-            {
-                Lights.Remove(light.Identifier);
-                Lights.Add(light.Identifier, light);
-            }
-        }
-
-        public bool RemoveLight(Light light)
-        {
-            bool result = Lights.Remove(light.Identifier);
-            
-            return result;
-        }
+        
 
         public void AddGraph(Graph graph)
         {

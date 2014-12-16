@@ -97,7 +97,6 @@
     <Compile Include="BluetoothConnection.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Light.cs" />
     <Compile Include="Path.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Program.cs" />
