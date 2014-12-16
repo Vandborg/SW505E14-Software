@@ -837,7 +837,15 @@ namespace BTCom
                     if (String.Equals(palletPair.Value.Name, name, StringComparison.CurrentCultureIgnoreCase))
                     {
                         Database.Instance.Data.RemovePallet(palletPair.Value);
-                        Database.Instance.Data.Forklifts.FirstOrDefault().Value.Payload = null;
+
+                        Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+                        // Remove the payload fron the forklift
+                        if (f.Payload.Equals(palletPair.Value))
+                        {
+                            f.Payload = null;
+                        }
+
                         PrintSuccess("Pallet removed");
                         return;
                     }
