@@ -5,7 +5,41 @@
 
 // Own libraries
 #include "utility/utility_definitions/utility_definitions.h"
-#include "utility_distance.h"
+
+#define WHEEL_CIRCUMFERENCE_MM 134
+#define MM_TO_CM 10
+#define DEGREES_IN_CIRCLE 360
+
+void reset_distance(void); 
+int current_distance(void);
+
+
+int start_motor_count_right = 0;
+int start_motor_count_left = 0;
+
+void reset_distance(void) 
+{
+    start_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
+    start_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
+}
+
+int current_distance(void)
+{
+    int distance_left = (nxt_motor_get_count(LEFT_MOTOR) -
+                        start_motor_count_left) * 
+                        WHEEL_CIRCUMFERENCE_MM / 
+                        DEGREES_IN_CIRCLE;
+
+    int distance_right = (nxt_motor_get_count(RIGHT_MOTOR) - 
+                         start_motor_count_right) *
+                         WHEEL_CIRCUMFERENCE_MM / 
+                         DEGREES_IN_CIRCLE;
+
+    int distance_average = (distance_left + distance_right) / 2;
+
+    return distance_average;
+}
+
 
 void drive_straight_distance(int distance) {
     

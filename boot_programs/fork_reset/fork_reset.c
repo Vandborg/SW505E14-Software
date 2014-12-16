@@ -10,7 +10,6 @@
 #include "utility/utility_definitions/utility_definitions.h"
 #include "utility/utility_lcd/utility_lcd.h"
 #include "utility/utility_sound/utility_sound.h"
-#include "utility/utility_movement/utility_distance.h"
 
 
 #define LIFTING_SPEED 70
