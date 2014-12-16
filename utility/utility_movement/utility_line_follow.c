@@ -39,10 +39,10 @@ char Status;
 int drive_mode = NO_MODE;
 
 DeclareTask(TASK_update_color_reg);
-DeclareTask(TASK_drive_control);
+DeclareTask(TASK_motor_control);
 DeclareTask(TASK_color_scan);
 DeclareTask(TASK_check_navigation);
-DeclareAlarm(ALARM_drive_control);
+DeclareAlarm(ALARM_motor_control);
 DeclareAlarm(ALARM_color_scan);
 DeclareAlarm(ALARM_update_color_reg);
 
@@ -207,7 +207,7 @@ TASK(TASK_color_scan)
     TerminateTask();
 }
 
-TASK(TASK_drive_control)
+TASK(TASK_motor_control)
 {   
     switch(drive_mode)
     {
@@ -248,7 +248,7 @@ TASK(TASK_check_navigation)
     if (first_time)
     {
         display_clear(0);
-        SetRelAlarm(ALARM_drive_control, 1, 50);
+        SetRelAlarm(ALARM_motor_control, 1, 50);
         SetRelAlarm(ALARM_color_scan, 1, 75);
 
         // Calculate the left offset by taking the average of white & black rgb
