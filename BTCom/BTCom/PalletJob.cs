@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using BTCom.Exceptions;
 
 namespace BTCom
@@ -165,9 +163,9 @@ namespace BTCom
             var other = (PalletJob)obj;
 
             // Compare properties of both objects
-            var sameIdentifier = this.Identifier == other.Identifier;
-            var sameType = this.Type.Equals(other.Type);
-            var sameDestination = this.Destination.Equals(other.Destination);
+            var sameIdentifier = Identifier == other.Identifier;
+            var sameType = Type.Equals(other.Type);
+            var sameDestination = Destination.Equals(other.Destination);
 
             // Check if all properties are the same
             return sameIdentifier && sameType && sameDestination;
