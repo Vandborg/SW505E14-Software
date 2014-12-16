@@ -31,9 +31,6 @@
 // Used to navigate
 navigation Navigation;
 
-// Sonar sensors
-bool use_front_sonar_sensor;
-
 // The status of the NXT
 char Status;
 int drive_mode = NO_MODE;
@@ -349,7 +346,6 @@ void turn_around(void)
            nxt_motor_get_count(LEFT_MOTOR)  <= degrees_on_wheel_left)
         {
             Navigation.next -= 1;
-            use_front_sonar_sensor = true;
         }
     }
     else
@@ -386,7 +382,6 @@ void turn_around(void)
            nxt_motor_get_count(LEFT_MOTOR)  >= degrees_on_wheel_left)
         {
             Navigation.next -= 1;
-            use_front_sonar_sensor = true;
         }
     }
     

@@ -10,7 +10,5 @@
     extern color Colors[AMOUNT_OF_COLORS];
     extern navigation Navigation = {"", -1, 0};
     extern char Status = IDLE; 
-    extern bool use_front_sonar_sensor = true;
-    extern bool use_rear_sonar_sensor = false;
 
 #endif
