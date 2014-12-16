@@ -8,7 +8,6 @@
 #include "boot_programs/fork_reset/fork_reset.h"
 #include "utility/utility_bluetooth/utility_bluetooth.h"
 #include "utility/utility_definitions/utility_definitions.h"
-#include "utility/utility_movement/utility_movement.h"
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_structs/utility_structs.h"
 #include "utility/utility_lcd/utility_lcd.h"
