@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BTCom.Exceptions;
+﻿using BTCom.Exceptions;
 
 namespace BTCom
 {
@@ -62,8 +57,8 @@ namespace BTCom
             var other = (Forklift) obj;
 
             // Compare properties of both objects
-            var sameIdentifier = this.Identifier == other.Identifier;
-            var sameLastNode = this.RearNode.Equals(other.RearNode);
+            var sameIdentifier = Identifier == other.Identifier;
+            var sameLastNode = RearNode.Equals(other.RearNode);
 
             // Check if all properties are the same
             return sameIdentifier && sameLastNode;
