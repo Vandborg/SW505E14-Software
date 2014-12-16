@@ -35,7 +35,7 @@ namespace BTCom
             var other = (TurnJob) obj;
 
             // Compare properties of both objects
-            var sameIdentifier = this.Identifier == other.Identifier;
+            var sameIdentifier = Identifier == other.Identifier;
 
             // Check if all properties are the same
             return sameIdentifier;
