@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO.Packaging;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BTCom.Exceptions;
 using BTCom.Interfaces;
 
@@ -200,8 +197,8 @@ namespace BTCom
             var other = (Graph) obj;
 
             // Compare properties of both objects
-            var sameIdentifier = this.Identifier == other.Identifier;
-            var sameNodeLength = this.Nodes.Count == other.Nodes.Count;
+            var sameIdentifier = Identifier == other.Identifier;
+            var sameNodeLength = Nodes.Count == other.Nodes.Count;
 
             // Check if all properties are the same
             return sameIdentifier && sameNodeLength;
@@ -247,16 +244,15 @@ namespace BTCom
             {
                 throw new NodeException("Node with name '" + name.ToUpper() + "' not found.");
             }
+
             // Check if multiple nodes were found
-            else if(nodesWithName.Count > 1)
+            if(nodesWithName.Count > 1)
             {
                 throw new NodeException("Multiple nodes with same name: '" + name.ToUpper() + "'.");
             }
+
             // Found exactly one node
-            else
-            {
-                return nodesWithName.FirstOrDefault();
-            }
+            return nodesWithName.FirstOrDefault();
         }
 
         public Path ShortestPath(String from, String to, String ignore = null)
