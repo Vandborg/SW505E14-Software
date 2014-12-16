@@ -1,8 +1,6 @@
 ﻿using System.Threading;
 using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
-//using System.Web.Script.Serialization;
 
 namespace BTCom
 {
