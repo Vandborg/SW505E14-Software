@@ -10,8 +10,6 @@
 // Own libraries
 #include "utility/utility_definitions/utility_definitions.h"
 #include "utility/utility_lcd/utility_lcd.h"
-#include "utility/utility_movement/utility_braking.h"
-#include "utility/utility_movement/utility_distance.h"
 #include "utility/utility_movement/utility_drive_straight.h"
 #include "utility/utility_sound/utility_sound.h"
 #include "utility/utility_string/utility_string.h"
