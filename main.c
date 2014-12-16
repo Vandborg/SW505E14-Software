@@ -19,8 +19,8 @@ navigation Navigation;
 
 DeclareCounter(SysTimerCnt);
 DeclareTask(TASK_update_color_reg);
-DeclareTask(TASK_drive_control);
-DeclareTask(TASK_color_scan);
+DeclareTask(TASK_motor_control);
+DeclareTask(TASK_information_handling);
 DeclareTask(TASK_check_navigation);
 DeclareTask(TASK_consume_bluetooth);
 
@@ -57,7 +57,7 @@ void ErrorHook(StatusType ercd)
         TaskType id;
         GetTaskID(&id);
 
-        if(TASK_color_scan == id) 
+        if(TASK_information_handling == id) 
         {
             lcd_display_line(LCD_LINE_ONE, "Scan fejl", true);
         }
@@ -69,7 +69,7 @@ void ErrorHook(StatusType ercd)
         {
             lcd_display_line(LCD_LINE_FOUR, "Check fejl", true);
         }
-        else if(TASK_drive_control)
+        else if(TASK_motor_control)
         {
             lcd_display_line(LCD_LINE_FIVE, "Line fejl", true);
         }

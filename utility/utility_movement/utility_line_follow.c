@@ -31,19 +31,16 @@
 // Used to navigate
 navigation Navigation;
 
-// Sonar sensors
-bool use_front_sonar_sensor;
-
 // The status of the NXT
 char Status;
 int drive_mode = NO_MODE;
 
 DeclareTask(TASK_update_color_reg);
-DeclareTask(TASK_drive_control);
-DeclareTask(TASK_color_scan);
+DeclareTask(TASK_motor_control);
+DeclareTask(TASK_information_handling);
 DeclareTask(TASK_check_navigation);
-DeclareAlarm(ALARM_drive_control);
-DeclareAlarm(ALARM_color_scan);
+DeclareAlarm(ALARM_motor_control);
+DeclareAlarm(ALARM_information_handling);
 DeclareAlarm(ALARM_update_color_reg);
 
 // Prototypes
@@ -107,7 +104,7 @@ TASK(TASK_update_color_reg)
     TerminateTask();
 }
 
-TASK(TASK_color_scan)
+TASK(TASK_information_handling)
 {
     // There is some path left to follow
     if(Navigation.next > -1)
@@ -207,7 +204,7 @@ TASK(TASK_color_scan)
     TerminateTask();
 }
 
-TASK(TASK_drive_control)
+TASK(TASK_motor_control)
 {   
     switch(drive_mode)
     {
@@ -248,8 +245,8 @@ TASK(TASK_check_navigation)
     if (first_time)
     {
         display_clear(0);
-        SetRelAlarm(ALARM_drive_control, 1, 50);
-        SetRelAlarm(ALARM_color_scan, 1, 75);
+        SetRelAlarm(ALARM_motor_control, 1, 50);
+        SetRelAlarm(ALARM_information_handling, 1, 75);
 
         // Calculate the left offset by taking the average of white & black rgb
         int black_light_level_left = 
@@ -349,7 +346,6 @@ void turn_around(void)
            nxt_motor_get_count(LEFT_MOTOR)  <= degrees_on_wheel_left)
         {
             Navigation.next -= 1;
-            use_front_sonar_sensor = true;
         }
     }
     else
@@ -386,7 +382,6 @@ void turn_around(void)
            nxt_motor_get_count(LEFT_MOTOR)  >= degrees_on_wheel_left)
         {
             Navigation.next -= 1;
-            use_front_sonar_sensor = true;
         }
     }
     
