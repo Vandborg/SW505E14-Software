@@ -115,7 +115,7 @@ namespace BTCom
             else
             {
                 ConsoleHandler.AddMessage(MessageType.REGULAR, ConsoleHandler.DNS + " position information:");
-                ConsoleHandler.AddMessage(MessageType.REGULAR, "Front-node: '" + f.RearNode.Name + "'. Rear-node: '" + f.FrontNode.Name + "'");
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Front-node: '" + f.FrontNode.Name + "'. Rear-node: '" + f.RearNode.Name + "'");
             }
         }
 
@@ -192,7 +192,7 @@ namespace BTCom
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 1), new Tuple<Node, int>(C, 0), 90);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(B, 2), new Tuple<Node, int>(H, 0), 51);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 1), new Tuple<Node, int>(D, 3), 30);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 1), new Tuple<Node, int>(D, 3), 43);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(C, 2), new Tuple<Node, int>(G, 1), 90);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(G, 0), new Tuple<Node, int>(H, 2), 50);
@@ -200,12 +200,12 @@ namespace BTCom
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(H, 3), new Tuple<Node, int>(J, 1), 60);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(I, 2), new Tuple<Node, int>(J, 0), 31);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(I, 2), new Tuple<Node, int>(J, 0), 41);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 3), new Tuple<Node, int>(N, 1), 52);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(J, 2), new Tuple<Node, int>(Q, 0), 50);
 
-                warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 2), new Tuple<Node, int>(O, 0), 31);
+                warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 2), new Tuple<Node, int>(O, 0), 41);
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(N, 3), new Tuple<Node, int>(P, 1), 51);
 
                 warehouse.AddUndirectedEdge(new Tuple<Node, int>(P, 2), new Tuple<Node, int>(Q, 3), 146);

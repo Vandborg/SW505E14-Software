@@ -270,6 +270,7 @@ namespace BTComTest
         }
 
         [TestMethod]
+        [ExpectedException(typeof(PathException))]
         public void ShortestPathTwoNodesNoPaths()
         {
             Graph g = new Graph(1);
@@ -529,7 +530,7 @@ namespace BTComTest
             ab.Visited += 1;
             bc.Visited += 1;
 
-            const double expected = 3.0;
+            const double expected = 4.0;
             double actualab = ab.Weight;
             double actualbc = bc.Weight;
 
