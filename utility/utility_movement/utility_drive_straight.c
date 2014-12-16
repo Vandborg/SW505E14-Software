@@ -4,11 +4,7 @@
 #include "kernel_id.h"
 
 // Own libraries
-#include "utility/utility_sound/utility_sound.h"
-#include "utility/utility_string/utility_string.h"
 #include "utility/utility_definitions/utility_definitions.h"
-#include "utility/utility_lcd/utility_lcd.h"
-#include "utility_braking.h"
 #include "utility_distance.h"
 
 void drive_straight_distance(int distance) {
@@ -56,6 +52,6 @@ void drive_straight_distance(int distance) {
     }
 
     // Brake (Update motor speeds when we can get them)
-    forklift_brake(HIGH_BRAKEPOWER, LINE_FOLLOW_SPEED, LINE_FOLLOW_SPEED);
-
+    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
 }
