@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text;
 
 namespace BTCom
 {
@@ -44,11 +38,11 @@ namespace BTCom
             var other = (Color) obj;
 
             // Compare properties of both objects
-            var sameIdentifier = this.Identifier == other.Identifier;
-            var sameName = this.Name == other.Name;
-            var sameRed = this.Red == other.Red;
-            var sameGreen = this.Green == other.Green;
-            var sameBlue = this.Blue == other.Blue;
+            var sameIdentifier = Identifier == other.Identifier;
+            var sameName = Name == other.Name;
+            var sameRed = Red == other.Red;
+            var sameGreen = Green == other.Green;
+            var sameBlue = Blue == other.Blue;
 
             // Check if all properties are the same
             return sameIdentifier && sameName && sameRed && sameGreen && sameBlue;
@@ -61,9 +55,9 @@ namespace BTCom
 
         public byte[] ToRGBBytes()
         {
-            string red = this.Red.ToString().PadLeft(3,'0');
-            string green = this.Green.ToString().PadLeft(3, '0');
-            string blue = this.Blue.ToString().PadLeft(3, '0');
+            string red = Red.ToString().PadLeft(3,'0');
+            string green = Green.ToString().PadLeft(3, '0');
+            string blue = Blue.ToString().PadLeft(3, '0');
             return Encoding.ASCII.GetBytes(red + green + blue);
         }
     }
