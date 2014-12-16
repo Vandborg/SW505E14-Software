@@ -456,14 +456,7 @@ namespace BTCom
             var PathOne = ShortestPath(startNode, edge.Item1);
             var PathTwo = ShortestPath(startNode, edge.Item2);
 
-            if (PathOne.Weight >= PathTwo.Weight)
-            {
-                return PathTwo;
-            }
-            else
-            {
-                return PathOne;
-            }
+            return PathOne.Weight >= PathTwo.Weight ? PathTwo : PathOne;
         }
         
     }
