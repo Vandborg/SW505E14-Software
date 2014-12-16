@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BTCom
 {
     public class Data
     {
-        //Keys have to be strings in Dictionaries to be serializable to json
+        // Keys have to be strings in Dictionaries to be serializable to json
         public Dictionary<int, Color> Colors = new Dictionary<int, Color>();
         public Dictionary<int, Graph> Graphs = new Dictionary<int, Graph>();
         public Dictionary<int, Path> Paths = new Dictionary<int, Path>();
@@ -13,9 +14,14 @@ namespace BTCom
         public Dictionary<int, Job> Jobs = new Dictionary<int, Job>();
         public Dictionary<int, Pallet> Pallets = new Dictionary<int, Pallet>();
 
+        // Identifiers for jobs and pallets
+        private int lastJobIdentifier;
+        private int lastPalletIdentifier;
+
         public Data()
-        { 
-            
+        {
+            lastJobIdentifier = Jobs.Count > 0 ? Jobs.Keys.Max() : 0;
+            lastJobIdentifier = Pallets.Count > 0 ? Pallets.Keys.Max() : 0;
         }
 
         public void AddColor(Color color)
@@ -37,9 +43,7 @@ namespace BTCom
             
             return result;
         }
-
         
-
         public void AddGraph(Graph graph)
         {
             try
@@ -122,7 +126,7 @@ namespace BTCom
 
         public int GetNewJobIdentifier()
         {
-            int max = -1;
+            int max = lastJobIdentifier;
 
             foreach (KeyValuePair<int, Job> job in Jobs)
             {
@@ -131,6 +135,8 @@ namespace BTCom
                     max = job.Key;
                 }
             }
+
+            lastJobIdentifier = max + 1;
 
             return max + 1;
         }
@@ -157,7 +163,7 @@ namespace BTCom
 
         public int GetNewPalletIdentifier()
         {
-            int max = -1;
+            int max = lastPalletIdentifier;
 
             foreach (KeyValuePair<int, Pallet> pallet in Pallets)
             {
@@ -166,6 +172,8 @@ namespace BTCom
                     max = pallet.Key;
                 }
             }
+
+            lastPalletIdentifier = max + 1;
 
             return max + 1;
         }

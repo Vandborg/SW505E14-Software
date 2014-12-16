@@ -662,8 +662,15 @@ namespace BTCom
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
-            ConsoleHandler.AddMessage(MessageType.REGULAR, "Front-node: " + f.FrontNode.Name);
-            ConsoleHandler.AddMessage(MessageType.REGULAR, "Rear-node:  " + f.RearNode.Name);
+            if (f.FrontNode == null || f.RearNode == null)
+            {
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Position: Unknown");
+            }
+            else
+            {
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Front-node: " + f.FrontNode.Name);
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Rear-node:  " + f.RearNode.Name);   
+            }
         }
 
         public static void Position(string frontNode, string rearNode)

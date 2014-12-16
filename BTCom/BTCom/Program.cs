@@ -11,6 +11,10 @@ namespace BTCom
     {
         public static bool HasConnection = false;
 
+        public static Thread ConsoleThread;
+        public static Thread ConsumeBTThread;
+        public static Thread CommandThread;
+
         // Main 
         private static void Main()
         {
@@ -18,7 +22,7 @@ namespace BTCom
             Console.WindowWidth = 120;
             Console.WindowHeight = 60;
 
-            Thread ConsoleThread = new Thread(ConsoleHandler.PrintMessages);
+            ConsoleThread = new Thread(ConsoleHandler.PrintMessages);
             ConsoleThread.Start();
 
             ConsoleHandler.AddMessage(MessageType.SUCCESS, "______    ___    _       _                _____ ");
@@ -36,7 +40,7 @@ namespace BTCom
             UpdatePositionInformation();
             
             // Instantiate threads
-            Thread ConsumeBTThread = new Thread(() => ConsumeBT(new BluetoothConnection("COM3")));
+            ConsumeBTThread = new Thread(() => ConsumeBT(new BluetoothConnection("COM3")));
             
             // Start the threads
             ConsumeBTThread.Start();
@@ -47,7 +51,7 @@ namespace BTCom
                 ; // Busy wait
             }
 
-            Thread CommandThread = new Thread(Commands.Execute);
+            CommandThread = new Thread(Commands.Execute);
             CommandThread.Start();          
         }
 
