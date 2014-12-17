@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using BTCom.Exceptions;
 
 namespace BTCom
@@ -62,7 +58,7 @@ namespace BTCom
         {
             while (true)
             {
-                Commands.Execute(Console.ReadLine());
+                Execute(Console.ReadLine());
                 ConsoleHandler.ClearCommand();
                 Thread.Yield(); // Other threads should be able to run after each command
             }
@@ -148,7 +144,7 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.Help();    
+                    Help();    
                 }
                 else
                 {
@@ -173,15 +169,15 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.Joblist();
+                    Joblist();
                 }
                 else if (arguments == 1)
                 {
-                    Commands.Joblist(commandSplit[0]);
+                    Joblist(commandSplit[0]);
                 }
                 else if (arguments == 2)
                 {
-                    Commands.Joblist(commandSplit[0], commandSplit[1]);
+                    Joblist(commandSplit[0], commandSplit[1]);
                 }
                 else
                 {
@@ -193,7 +189,7 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.CurrentJob();
+                    CurrentJob();
                 }
                 else
                 {
@@ -268,7 +264,7 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.Clear();
+                    Clear();
                 }
                 else
                 {
@@ -280,19 +276,19 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.Palletlist();
+                    Palletlist();
                 }
                 else if (arguments == 1)
                 {
-                    Commands.Palletlist(commandSplit[0]);
+                    Palletlist(commandSplit[0]);
                 }
                 else if (arguments == 2)
                 {
-                    Commands.Palletlist(commandSplit[0], commandSplit[1]);
+                    Palletlist(commandSplit[0], commandSplit[1]);
                 }
                 else if (arguments == 3)
                 {
-                    Commands.Palletlist(commandSplit[0], commandSplit[1], commandSplit[2]);
+                    Palletlist(commandSplit[0], commandSplit[1], commandSplit[2]);
                 }
                 else
                 {
@@ -346,7 +342,7 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.Reload();
+                    Reload();
                 }
                 else
                 {
@@ -358,7 +354,7 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.Save();
+                    Save();
                 }
                 else
                 {
@@ -370,7 +366,7 @@ namespace BTCom
             {
                 if (arguments == 0)
                 {
-                    Commands.Exit();
+                    Exit();
                 }
                 else
                 {
@@ -662,8 +658,15 @@ namespace BTCom
         {
             Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
 
-            ConsoleHandler.AddMessage(MessageType.REGULAR, "Front-node: " + f.FrontNode.Name);
-            ConsoleHandler.AddMessage(MessageType.REGULAR, "Rear-node:  " + f.RearNode.Name);
+            if (f.FrontNode == null || f.RearNode == null)
+            {
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Position: Unknown");
+            }
+            else
+            {
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Front-node: " + f.FrontNode.Name);
+                ConsoleHandler.AddMessage(MessageType.REGULAR, "Rear-node:  " + f.RearNode.Name);   
+            }
         }
 
         public static void Position(string frontNode, string rearNode)
@@ -696,7 +699,7 @@ namespace BTCom
             }
 
             PrintSuccess("Position updated");
-            Commands.Position();
+            Position();
         }
 
         public static void PositionHelp()
@@ -837,7 +840,15 @@ namespace BTCom
                     if (String.Equals(palletPair.Value.Name, name, StringComparison.CurrentCultureIgnoreCase))
                     {
                         Database.Instance.Data.RemovePallet(palletPair.Value);
-                        Database.Instance.Data.Forklifts.FirstOrDefault().Value.Payload = null;
+
+                        Forklift f = Database.Instance.Data.Forklifts.FirstOrDefault().Value;
+
+                        // Remove the payload fron the forklift
+                        if (f.Payload.Equals(palletPair.Value))
+                        {
+                            f.Payload = null;
+                        }
+
                         PrintSuccess("Pallet removed");
                         return;
                     }
@@ -942,7 +953,7 @@ namespace BTCom
             }
             catch (NodeException e)
             {
-                Commands.PrintError(e.Message);
+                PrintError(e.Message);
             }
         }
 
@@ -1050,7 +1061,7 @@ namespace BTCom
 
             PrintSuccess("Database saved, bye bye");
 
-            System.Threading.Thread.Sleep(251);
+            Thread.Sleep(251);
 
             Environment.Exit(1);
         }

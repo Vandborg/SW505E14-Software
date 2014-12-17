@@ -2,14 +2,8 @@
     #define UTILITY_DRIVE_STRAIGHT_H_
 
     /*
-     * Makes the truck move forward without displaced start
-     * Takes no parameters
-     */
-    void drive_forward(void);
-
-    /*
-     * Drives a specific distance forwards 
-     * distance   Distance meassuared in motor count
+     * Makes the truck move forward a given distance
+     * Distance: the distance to drive
      */
     void drive_straight_distance(int distance);
 

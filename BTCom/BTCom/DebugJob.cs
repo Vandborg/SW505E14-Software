@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace BTCom
 {
@@ -53,8 +49,8 @@ namespace BTCom
             var other = (DebugJob) obj;
 
             // Compare properties of both objects
-            var sameIdentifier = this.Identifier == other.Identifier;
-            var sameDirectionns = this.Directions.Equals(other.Directions);
+            var sameIdentifier = Identifier == other.Identifier;
+            var sameDirectionns = Directions.Equals(other.Directions);
 
             // Check if all properties are the same
             return sameIdentifier && sameDirectionns;

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace BTCom
 {
@@ -15,7 +14,7 @@ namespace BTCom
 
         public static String DNS = "PALL-E";
 
-        private static readonly List<KeyValuePair<MessageType, String>> messageList = new List<KeyValuePair<MessageType, string>>();
+        public static readonly List<KeyValuePair<MessageType, String>> messageList = new List<KeyValuePair<MessageType, string>>();
 
         public static void AddMessage(MessageType type, String message)
         {
@@ -83,7 +82,7 @@ namespace BTCom
                     }
                     
                     old_top = old_top % (Console.WindowHeight - 3);
-                    
+
                     messageList.Remove(message);
 
                     Console.SetCursorPosition(cursorPosition.Item1, cursorPosition.Item2);

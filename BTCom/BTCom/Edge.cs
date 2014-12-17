@@ -1,9 +1,5 @@
 using BTCom.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BTCom
 {
@@ -41,10 +37,10 @@ namespace BTCom
             if (ReferenceEquals(this, other)) return true;    // Compare reference to each other
 
             // Compare properties of both objects
-            var sameDistance = Math.Abs(this.Distance - other.Distance) < 1;
-            var sameBlocked = Math.Abs(this.Blocked - other.Blocked) < 1;
-            var sameVisited = this.Visited == other.Visited;
-            var sameWeight = Math.Abs(this.Weight - other.Weight) < 1;
+            var sameDistance = Math.Abs(Distance - other.Distance) < 1;
+            var sameBlocked = Math.Abs(Blocked - other.Blocked) < 1;
+            var sameVisited = Visited == other.Visited;
+            var sameWeight = Math.Abs(Weight - other.Weight) < 1;
 
             // Check if all properties are the same
             return sameDistance && sameBlocked && sameVisited && sameWeight;

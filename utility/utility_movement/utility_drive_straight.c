@@ -4,22 +4,42 @@
 #include "kernel_id.h"
 
 // Own libraries
-#include "utility/utility_sound/utility_sound.h"
-#include "utility/utility_string/utility_string.h"
 #include "utility/utility_definitions/utility_definitions.h"
-#include "utility/utility_lcd/utility_lcd.h"
-#include "utility_braking.h"
-#include "utility_distance.h"
 
-#define SPEED 60
-#define DISPLACED_STARTUP 60
+#define WHEEL_CIRCUMFERENCE_MM 134
+#define MM_TO_CM 10
+#define DEGREES_IN_CIRCLE 360
 
-void drive_forward(void)
+void reset_distance(void); 
+int current_distance(void);
+
+
+int start_motor_count_right = 0;
+int start_motor_count_left = 0;
+
+void reset_distance(void) 
 {
-    nxt_motor_set_speed(RIGHT_MOTOR, DISPLACED_STARTUP, FALSE);
-    nxt_motor_set_speed(LEFT_MOTOR, SPEED, TRUE);
-    nxt_motor_set_speed(RIGHT_MOTOR, SPEED, TRUE);
+    start_motor_count_right = nxt_motor_get_count(RIGHT_MOTOR);
+    start_motor_count_left = nxt_motor_get_count(LEFT_MOTOR);
 }
+
+int current_distance(void)
+{
+    int distance_left = (nxt_motor_get_count(LEFT_MOTOR) -
+                        start_motor_count_left) * 
+                        WHEEL_CIRCUMFERENCE_MM / 
+                        DEGREES_IN_CIRCLE;
+
+    int distance_right = (nxt_motor_get_count(RIGHT_MOTOR) - 
+                         start_motor_count_right) *
+                         WHEEL_CIRCUMFERENCE_MM / 
+                         DEGREES_IN_CIRCLE;
+
+    int distance_average = (distance_left + distance_right) / 2;
+
+    return distance_average;
+}
+
 
 void drive_straight_distance(int distance) {
     
@@ -66,6 +86,6 @@ void drive_straight_distance(int distance) {
     }
 
     // Brake (Update motor speeds when we can get them)
-    forklift_brake(HIGH_BRAKEPOWER, LINE_FOLLOW_SPEED, LINE_FOLLOW_SPEED);
-
+    nxt_motor_set_speed(RIGHT_MOTOR, 0, 1);
+    nxt_motor_set_speed(LEFT_MOTOR, 0, 1);
 }

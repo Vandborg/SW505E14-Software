@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO.Ports;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using BTCom.Exceptions;
 
 
@@ -15,14 +11,18 @@ namespace BTCom
     {
         public static bool HasConnection = false;
 
+        public static Thread ConsoleThread;
+        public static Thread ConsumeBTThread;
+        public static Thread CommandThread;
+
         // Main 
-        private static void Main(string[] args)
+        private static void Main()
         {
             Console.Title = ConsoleHandler.DNS + " console";
             Console.WindowWidth = 120;
             Console.WindowHeight = 60;
 
-            Thread ConsoleThread = new Thread(() => ConsoleHandler.PrintMessages());
+            ConsoleThread = new Thread(ConsoleHandler.PrintMessages);
             ConsoleThread.Start();
 
             ConsoleHandler.AddMessage(MessageType.SUCCESS, "______    ___    _       _                _____ ");
@@ -40,7 +40,7 @@ namespace BTCom
             UpdatePositionInformation();
             
             // Instantiate threads
-            Thread ConsumeBTThread = new Thread(() => ConsumeBT(new BluetoothConnection("COM6")));
+            ConsumeBTThread = new Thread(() => ConsumeBT(new BluetoothConnection("COM3")));
             
             // Start the threads
             ConsumeBTThread.Start();
@@ -51,7 +51,7 @@ namespace BTCom
                 ; // Busy wait
             }
 
-            Thread CommandThread = new Thread(() => Commands.Execute());
+            CommandThread = new Thread(Commands.Execute);
             CommandThread.Start();          
         }
 
@@ -65,7 +65,7 @@ namespace BTCom
             {
                 ConsoleHandler.AddMessage(MessageType.REGULAR, "Information about PALL-E position is required.");
 
-                bool result = false;
+                bool result;
 
                 do
                 {

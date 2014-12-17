@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using BTCom.Exceptions;
 using System.Text.RegularExpressions;
 
@@ -262,12 +264,22 @@ namespace BTCom
                                 max--;
                             }
 
-                            double nodeRearIndex = (max - 1 - i) / 2;
+                            double nodeRearIndex = (max - 1.0 - i) / 2.0;
 
-                            if (Math.Abs(nodeRearIndex % 1 - 0.5) < 0.1)
+                            if (Math.Abs(nodeRearIndex % 1 - 0.5) < 0.4)
                             {
-                                Commands.PrintError(ConsoleHandler.DNS + ": 'Something went wront, please fix it'");
-                                throw new Exception();
+                                ConsoleHandler.AddMessage(MessageType.ERROR, "Currently inside intersection - aborting all jobs");
+
+                                forklift.FrontNode = null;
+                                forklift.FrontNode = null;
+
+                                // Inform the user to update the position
+                                ConsoleHandler.AddMessage(MessageType.ERROR, "Please update the position of the forklift...");
+
+                                while (forklift.FrontNode == null || forklift.RearNode == null)
+                                {
+                                    ;
+                                }
                             }
                             else
                             {
@@ -309,8 +321,9 @@ namespace BTCom
                                     previousNode = n;
                                 }
 
-                                // Update forklift nodes (Must be reversed because of PALL-E behaviour)
-                                forklift.UpdateNodes(newFrontNode, newRearNode);
+                                // Update forklift nodes
+                                forklift.FrontNode = newFrontNode;
+                                forklift.RearNode = newRearNode;
 
                                 // Update edge the NXT is standing on
                                 Database.Instance.Data.Graphs.FirstOrDefault().Value.BlockEdge(newFrontNode, newRearNode);
