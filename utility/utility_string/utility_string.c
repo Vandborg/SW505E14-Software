@@ -6,7 +6,7 @@
 // Own libraries
 #include "utility/utility_string/utility_string.h"
 
-// Stolen from http://developer.mbed.org/forum/bugs-suggestions/topic/2319/
+// Source (reformatted): http://developer.mbed.org/forum/bugs-suggestions/topic/2319/
 void reverse(s) char *s; 
 {
     char *j;
@@ -21,7 +21,7 @@ void reverse(s) char *s;
     }
 }
 
-// Stolen from http://developer.mbed.org/forum/bugs-suggestions/topic/2319/
+// Source (reformatted): http://developer.mbed.org/forum/bugs-suggestions/topic/2319/
 char* int_to_string(int number, char string[])
 {
         int i, sign;

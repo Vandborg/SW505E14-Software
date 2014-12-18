@@ -385,10 +385,8 @@ void turn_around(void)
         }
     }
     
-    
     return;
 }
-
 
 void cross_intersection(void)
 {
