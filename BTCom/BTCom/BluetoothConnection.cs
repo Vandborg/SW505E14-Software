@@ -121,7 +121,7 @@ namespace PALL_E_Terminal
             // Check whether total data size is bigger than 256 bytes.
             if (packageTotalSize > 256)
             {
-                // TODO: Send an error code for too big data array
+                ConsoleHandler.AddMessage(MessageType.ERROR, "Tried to send package with over 256 bytes (package was not sent)");
                 return;
             }
 
@@ -333,12 +333,11 @@ namespace PALL_E_Terminal
                     }
                     else if(CurrentJob is TurnJob)
                     {
-                        Commands.PrintError("Already performing turn-job, ignoreing...");
+                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Already performing turn-job... (ignoreing)");
                     }
                     else if (CurrentJob is DebugJob)
                     {
-                        // TODO: Change to notification
-                        Commands.PrintError("Performing debug-job, ignoreing...");
+                        ConsoleHandler.AddMessage(MessageType.REGULAR, "Performing debug-job... (ignoreing debugjobs)");
                     }
                     
                     break;
