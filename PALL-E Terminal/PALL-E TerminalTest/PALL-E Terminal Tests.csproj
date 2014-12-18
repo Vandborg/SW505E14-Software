@@ -57,7 +57,7 @@
     <Compile Include="GraphTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BTCom\PALL-E Terminal.csproj">
+    <ProjectReference Include="..\PALL-E Terminal\PALL-E Terminal.csproj">
       <Project>{e65afb34-bf37-4e88-8fe0-7852e5e4dd78}</Project>
       <Name>PALL-E Terminal</Name>
     </ProjectReference>
