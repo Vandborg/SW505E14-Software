@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BTCom.Exceptions;
-using BTCom.Interfaces;
+using PALL_E_Terminal.Exceptions;
+using PALL_E_Terminal.Interfaces;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public class Graph : DataEntry, IDecayable
     {

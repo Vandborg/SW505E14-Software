@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Policy;
-using BTCom;
-using BTCom.Exceptions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PALL_E_Terminal;
+using PALL_E_Terminal.Exceptions;
 
-namespace BTComTest
+namespace PALL_E_Terminal_Test
 {
     [TestClass]
     public class GraphTest

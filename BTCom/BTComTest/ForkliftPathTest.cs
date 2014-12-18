@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BTCom;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PALL_E_Terminal;
 
-namespace BTComTest
+namespace PALL_E_Terminal_Test
 {
     [TestClass]
     public class ForkliftPathTest

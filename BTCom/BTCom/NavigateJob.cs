@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
-using BTCom.Exceptions;
+using PALL_E_Terminal.Exceptions;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public class NavigateJob : Job
     {

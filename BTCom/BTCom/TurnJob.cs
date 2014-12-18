@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public class TurnJob : Job
     {

@@ -1,4 +1,4 @@
-﻿namespace BTCom
+﻿namespace PALL_E_Terminal
 {
     public abstract class Job : DataEntry
     {

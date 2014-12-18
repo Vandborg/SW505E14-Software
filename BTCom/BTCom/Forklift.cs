@@ -1,6 +1,6 @@
-﻿using BTCom.Exceptions;
+﻿using PALL_E_Terminal.Exceptions;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public enum Status { UNKNOWN, IDLE, BUSY, OBSTACLE, ERROR }
 

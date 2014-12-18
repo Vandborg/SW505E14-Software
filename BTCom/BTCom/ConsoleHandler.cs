@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public static class ConsoleHandler
     {

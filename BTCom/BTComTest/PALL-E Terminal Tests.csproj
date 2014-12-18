@@ -6,8 +6,8 @@
     <ProjectGuid>{BF59BEC8-AFC0-4943-AD34-56DB9E06901A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BTComTest</RootNamespace>
-    <AssemblyName>BTComTest</AssemblyName>
+    <RootNamespace>PALL_E_Terminal_Test</RootNamespace>
+    <AssemblyName>PALL-E Terminal Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,7 +36,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -58,9 +57,9 @@
     <Compile Include="GraphTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BTCom\BTCom.csproj">
+    <ProjectReference Include="..\BTCom\PALL-E Terminal.csproj">
       <Project>{e65afb34-bf37-4e88-8fe0-7852e5e4dd78}</Project>
-      <Name>BTCom</Name>
+      <Name>PALL-E Terminal</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

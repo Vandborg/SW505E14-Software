@@ -1,5 +1,6 @@
 ﻿using System;
-namespace BTCom.Exceptions
+
+namespace PALL_E_Terminal.Exceptions
 {
     public class PathException : System.Exception
     {
