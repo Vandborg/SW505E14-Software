@@ -1,4 +1,4 @@
-﻿namespace BTCom.Interfaces
+﻿namespace PALL_E_Terminal.Interfaces
 {
     interface IDecayable
     {

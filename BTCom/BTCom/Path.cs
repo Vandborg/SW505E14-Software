@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public class Path : DataEntry
     {

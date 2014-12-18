@@ -2,7 +2,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public class DebugJob : Job
     {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using BTCom.Exceptions;
+using PALL_E_Terminal.Exceptions;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public class PalletJob : Job
     {

@@ -1,7 +1,7 @@
-using BTCom.Interfaces;
 using System;
+using PALL_E_Terminal.Interfaces;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public class Edge : IEquatable<Edge>, IDecayable
     {

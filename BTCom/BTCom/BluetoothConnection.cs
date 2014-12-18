@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using BTCom.Exceptions;
-using System.Text.RegularExpressions;
+using PALL_E_Terminal.Exceptions;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     public class BluetoothConnection : SerialPort
     {

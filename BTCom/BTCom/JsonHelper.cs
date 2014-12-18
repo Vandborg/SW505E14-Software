@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace BTCom
+namespace PALL_E_Terminal
 {
     class JsonHelper
     {
